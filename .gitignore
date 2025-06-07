@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.local
+vault-analysis-report.json
+consolidation-queue.json
+.DS_Store
+*.log
+.vscode/
+.idea/
+.claude/

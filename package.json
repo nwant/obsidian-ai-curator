@@ -1,0 +1,38 @@
+{
+  "name": "obsidian-ai-curator",
+  "version": "0.1.0",
+  "description": "AI-powered system for consolidating and managing Obsidian notes",
+  "main": "src/cli.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/cli.js",
+    "analyze": "node src/vault-analyzer.js",
+    "review": "node src/cli.js review",
+    "config": "node src/cli.js config",
+    "test": "node --test"
+  },
+  "keywords": [
+    "obsidian",
+    "knowledge-management",
+    "ai",
+    "claude",
+    "notes"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "gray-matter": "^4.0.3",
+    "inquirer": "^12.3.0",
+    "ora": "^8.1.1",
+    "simple-git": "^3.27.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
