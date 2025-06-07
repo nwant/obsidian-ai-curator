@@ -107,17 +107,17 @@ The `config/config.json` file contains:
 
 ## Roadmap
 
-### Phase 1: Vault Analysis ✅
+### Phase 1: Vault Analysis ✅ (Complete)
 - Basic project structure
-- Vault scanning and analysis
+- Vault scanning and analysis  
 - Duplicate/fragment detection
 - CLI review interface
 
-### Phase 2: AI Consolidation (Next)
-- Integrate Claude API for intelligent merging
-- Generate consolidated notes preserving your voice
-- Implement git safety (commit before changes)
-- Add rollback capabilities
+### Phase 2: MCP Server (Current) 
+- Convert to MCP server architecture
+- Integrate Claude API for consolidation
+- Maintain git safety workflows
+- See MCP-IMPLEMENTATION.md for technical details
 
 ### Phase 3: Active Management
 - Automated scheduling
