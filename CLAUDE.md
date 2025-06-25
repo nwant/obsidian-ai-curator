@@ -107,6 +107,55 @@ obsidian-ai-curator/
 ## Current Vault Location
 [User should specify their Obsidian vault path]
 
+## AI Research Partner Vision
+
+### Core Interaction Philosophy
+**What I Want**: An AI research partner that proactively works with your vault, NOT a manual copy-paste interface.
+
+### The Research Collaboration Loop
+1. **AI Discovery**: Scan vault → identify patterns across notes
+2. **Human Guidance**: You steer insights → direct consolidation priorities  
+3. **AI Execution**: Automatically refine vault structure
+4. **Knowledge Evolution**: Vault becomes living research database
+
+### Example Ideal Workflow
+```
+AI: "I analyzed your 180 Calendar files and found recurring patterns:
+     • 12 incidents with similar root causes
+     • 8 project decision frameworks 
+     • 15 technical architecture insights
+     
+     Should I extract 'Incident Response Patterns' from these notes?"
+
+You: "Yes, but also look for monitoring strategies"
+
+AI: "Found 6 monitoring approaches. Creating 'System Monitoring Strategy' 
+     note and linking it to your existing 'Reliability in atom.md'. 
+     Also archiving 23 redundant daily notes. Approve?"
+
+You: "Perfect. What other patterns do you see?"
+```
+
+### Claude Interaction Guidelines for New Chats
+
+#### Always Start With
+1. Use `get_research_context` MCP tool to load this vision
+2. Scan vault with `vault_scan` to understand current state
+3. Proactively identify consolidation opportunities
+4. Focus on pattern discovery, not manual operations
+
+#### Default Behavior
+- **Discovery-First**: Look for patterns across multiple notes
+- **Consolidation-Focused**: Suggest merging related content
+- **Execution-Ready**: Automatically create refined notes when approved
+- **Evolution-Minded**: Help vault become smarter research corpus
+
+#### What Success Looks Like
+- "I found these 5 patterns across your meeting notes..."
+- "Should I extract that incident response pattern and combine it with monitoring insights?"
+- "Creating consolidated note and archiving 23 redundant fragments"
+- Vault density improves through intelligent consolidation
+
 ## Questions for Implementation
 1. What's the current structure/size of the Obsidian vault?
 2. Are there specific note patterns or templates already in use?

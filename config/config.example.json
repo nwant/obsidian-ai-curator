@@ -1,18 +1,14 @@
 {
-  "vaultPath": "/Users/nathan/obsidian",
+  "vaultPath": "/path/to/your/obsidian/vault",
   "ignorePatterns": [
     ".obsidian",
     ".git",
     ".trash",
-    "node_modules"
+    "_archived"
   ],
   "thresholds": {
     "similarityScore": 0.7,
     "minNoteLength": 50,
     "maxFragmentLength": 500
-  },
-  "consolidation": {
-    "archiveFolder": "_archived",
-    "maxConsolidationSize": 5000
   }
 }

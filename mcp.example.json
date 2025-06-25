@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "obsidian-ai-curator": {
+      "command": "node",
+      "args": ["/path/to/obsidian-ai-curator/src/mcp-server.js"],
+      "cwd": "/path/to/obsidian-ai-curator",
+      "env": {
+        "OBSIDIAN_VAULT_PATH": "/path/to/your/obsidian/vault",
+        "ANTHROPIC_API_KEY": "your-anthropic-api-key-here"
+      }
+    }
+  }
+}

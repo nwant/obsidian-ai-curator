@@ -8,3 +8,10 @@ consolidation-queue.json
 .vscode/
 .idea/
 .claude/
+
+# Configuration files with personal paths
+config/config.json
+mcp.json
+
+# Archive folders (may contain personal notes)
+_archived/
