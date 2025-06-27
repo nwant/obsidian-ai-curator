@@ -159,7 +159,7 @@ class SimpleVaultServer {
         },
         {
           name: 'get_research_context',
-          description: 'Get AI research partner context and interaction guidelines',
+          description: 'Get configured research context and guidelines. Configure via config.json researchContext field',
           inputSchema: {
             type: 'object',
             properties: {}
@@ -472,14 +472,60 @@ class SimpleVaultServer {
   }
 
   async getResearchContext() {
-    const context = {
-      "context_documents": {
-        "workflow_procedures": "/Meta/AI Research Partner Workflow.md",
-        "active_decisions": "/Knowledge/Decisions-Active.md",
-        "research_context": "/Meta/AI Incubator Research Context.md",
-      },
-      "system_capabilities": { "atomic_records": true, "autonomous_operation": true }
+    // Use configured context or default
+    const defaultContext = {
+      "description": "Default research context - configure in config.json",
+      "context_documents": {},
+      "system_capabilities": { 
+        "atomic_records": true, 
+        "autonomous_operation": false 
+      }
     };
+    
+    const context = config.researchContext || defaultContext;
+    
+    // If context documents are configured, read their contents
+    if (context.contextDocuments) {
+      const documents = {};
+      
+      for (const [key, docPath] of Object.entries(context.contextDocuments)) {
+        try {
+          // Check if it's a relative path within the vault
+          const fullPath = path.isAbsolute(docPath) 
+            ? docPath 
+            : path.join(config.vaultPath, docPath);
+          
+          if (await fs.access(fullPath).then(() => true).catch(() => false)) {
+            const content = await fs.readFile(fullPath, 'utf-8');
+            documents[key] = {
+              path: docPath,
+              content: content
+            };
+          } else {
+            documents[key] = {
+              path: docPath,
+              error: "File not found"
+            };
+          }
+        } catch (error) {
+          documents[key] = {
+            path: docPath,
+            error: error.message
+          };
+        }
+      }
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            ...context,
+            contextDocuments: documents,
+            vaultPath: config.vaultPath
+          }, null, 2)
+        }]
+      };
+    }
     
     return { 
       content: [{ 

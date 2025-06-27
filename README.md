@@ -53,9 +53,36 @@ Edit `config/config.json`:
 ```json
 {
   "vaultPath": "/path/to/your/obsidian/vault",
-  "ignorePatterns": [".obsidian", ".git", ".trash"]
+  "ignorePatterns": [".obsidian", ".git", ".trash"],
+  "researchContext": {
+    "description": "Your custom AI research partner context",
+    "contextDocuments": {
+      "workflow": "Meta/workflow.md",
+      "guidelines": "Meta/guidelines.md",
+      "activeProjects": "Projects/active.md"
+    },
+    "systemCapabilities": {
+      "atomicRecords": true,
+      "autonomousOperation": false
+    },
+    "customInstructions": "Additional instructions for your AI partner"
+  }
 }
 ```
+
+#### Research Context Configuration
+
+The `researchContext` field allows you to customize how Claude interacts with your vault:
+
+- **contextDocuments**: Reference markdown files in your vault that define workflows, guidelines, or project context. Paths can be:
+  - Relative to your vault root (e.g., `"Meta/workflow.md"`)
+  - Absolute paths (e.g., `"/Users/you/documents/guidelines.md"`)
+  
+- **systemCapabilities**: Toggle features like atomic records or autonomous operation
+
+- **customInstructions**: Add any specific instructions for how Claude should work with your vault
+
+When you use the `get_research_context` tool, it will read these documents and provide them to Claude for context.
 
 ## Available Tools
 
@@ -96,7 +123,7 @@ Rollback to a previous commit
 - Parameters: `commit`
 
 ### `get_research_context`
-Get AI research partner context and guidelines
+Get configured research context and guidelines from your config.json. Reads and returns the content of any configured context documents.
 
 ## Usage Example
 

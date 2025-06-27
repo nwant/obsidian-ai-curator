@@ -10,5 +10,18 @@
     "similarityScore": 0.7,
     "minNoteLength": 50,
     "maxFragmentLength": 500
+  },
+  "researchContext": {
+    "description": "Configure your AI research partner's behavior and context",
+    "contextDocuments": {
+      "workflow": "/path/to/workflow.md",
+      "guidelines": "/path/to/guidelines.md",
+      "activeProjects": "/path/to/projects.md"
+    },
+    "systemCapabilities": {
+      "atomicRecords": true,
+      "autonomousOperation": false
+    },
+    "customInstructions": "Additional instructions for your AI research partner"
   }
 }
