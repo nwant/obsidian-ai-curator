@@ -1,35 +1,25 @@
 {
-  "name": "obsidian-ai-curator",
-  "version": "0.1.0",
-  "description": "AI-powered system for consolidating and managing Obsidian notes",
-  "main": "src/cli.js",
+  "name": "obsidian-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Obsidian vault integration with Claude Desktop",
+  "main": "src/mcp-server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/cli.js",
-    "analyze": "node src/vault-analyzer.js",
-    "review": "node src/cli.js review",
-    "config": "node src/cli.js config",
-    "test": "node --test",
-    "mcp": "node src/mcp-server.js",
-    "mcp:simple": "node src/mcp-server-simple.js"
+    "start": "node src/mcp-server.js",
+    "test": "node --test"
   },
   "keywords": [
     "obsidian",
-    "knowledge-management",
-    "ai",
+    "mcp",
+    "modelcontextprotocol",
     "claude",
-    "notes"
+    "knowledge-management"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.1",
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "chalk": "^5.3.0",
-    "commander": "^12.1.0",
     "gray-matter": "^4.0.3",
-    "inquirer": "^12.3.0",
-    "ora": "^8.1.1",
     "simple-git": "^3.27.0",
     "zod": "^3.25.56"
   },
