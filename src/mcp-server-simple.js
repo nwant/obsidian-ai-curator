@@ -368,7 +368,31 @@ class SimpleVaultServer {
           // Check frontmatter
           if (frontmatter) {
             for (const [key, value] of Object.entries(frontmatter)) {
-              if (data[key] !== value) {
+              // Handle nested objects and arrays
+              const dataValue = data[key];
+              
+              // Check if value exists in data
+              if (dataValue === undefined) {
+                matches = false;
+                break;
+              }
+              
+              // Handle array includes
+              if (Array.isArray(dataValue) && !Array.isArray(value)) {
+                if (!dataValue.includes(value)) {
+                  matches = false;
+                  break;
+                }
+              }
+              // Handle string partial matches (case-insensitive)
+              else if (typeof dataValue === 'string' && typeof value === 'string') {
+                if (!dataValue.toLowerCase().includes(value.toLowerCase())) {
+                  matches = false;
+                  break;
+                }
+              }
+              // Handle exact match for other types
+              else if (JSON.stringify(dataValue) !== JSON.stringify(value)) {
                 matches = false;
                 break;
               }
@@ -395,7 +419,21 @@ class SimpleVaultServer {
     };
     
     await searchDir(config.vaultPath);
-    return { content: [{ type: 'text', text: JSON.stringify({ paths: matchingPaths }, null, 2) }] };
+    
+    // Include more details in response for debugging
+    const response = {
+      paths: matchingPaths,
+      query: {
+        frontmatter: frontmatter || null,
+        minWords: minWords || null,
+        maxWords: maxWords || null,
+        modifiedAfter: modifiedAfter || null
+      },
+      totalScanned: 0,
+      matched: matchingPaths.length
+    };
+    
+    return { content: [{ type: 'text', text: JSON.stringify(response, null, 2) }] };
   }
 
   async gitCheckpoint({ message }) {
@@ -433,44 +471,14 @@ class SimpleVaultServer {
     };
   }
 
-  async getResearchContext(args) {
+  async getResearchContext() {
     const context = {
-      role: "AI Research Partner",
-      vision: "Proactive vault evolution through intelligent pattern discovery",
-      interaction_style: {
-        discovery: "AI scans vault → identifies patterns across notes",
-        guidance: "Human steers insights → directs consolidation priorities", 
-        execution: "AI executes changes → creates refined notes, archives redundant content",
-        evolution: "Vault becomes living research corpus that improves through collaboration"
+      "context_documents": {
+        "workflow_procedures": "/Meta/AI Research Partner Workflow.md",
+        "active_decisions": "/Knowledge/Decisions-Active.md",
+        "research_context": "/Meta/AI Incubator Research Context.md",
       },
-      example_workflow: {
-        ai_discovery: "I analyzed your 180 Calendar files and found recurring patterns: 12 incidents with similar root causes, 8 project decision frameworks, 15 technical architecture insights. Should I extract 'Incident Response Patterns' from these notes?",
-        human_guidance: "Yes, but also look for monitoring strategies",
-        ai_execution: "Found 6 monitoring approaches. Creating 'System Monitoring Strategy' note and linking it to your existing 'Reliability in atom.md'. Also archiving 23 redundant daily notes. Approve?",
-        continuation: "Perfect. What other patterns do you see?"
-      },
-      core_principles: [
-        "AI-driven pattern discovery across vault content",
-        "Proactive consolidation suggestions with human approval",
-        "Automatic refinement of vault structure",
-        "Living knowledge base that evolves through research collaboration",
-        "Focus on extracting insights, not manual copy-paste operations"
-      ],
-      safety_requirements: [
-        "ALWAYS create git checkpoint before making ANY vault changes",
-        "Use git_checkpoint tool before write_note or archive_notes operations",
-        "Commit message should describe what patterns were consolidated",
-        "Never make changes without version control safety net",
-        "If git fails, stop and report - do not proceed with changes"
-      ],
-      collaboration_loop: [
-        "AI Discovery → Scans vault, identifies patterns",
-        "Human Guidance → You steer the insights and connections", 
-        "AI Execution → Automatically refines vault structure",
-        "Knowledge Evolution → Vault becomes smarter research database"
-      ],
-      always_remember: "You are an AI research partner that proactively works an obsidian vault. Focus on discovering patterns, suggesting consolidations, and evolving the vault into a living knowledge base. The vault should be optimized to be a living research corpus that improves through collaboration between humans and AI.", 
-      mandatory_workflow: "1. git_checkpoint FIRST 2. Make changes 3. Explain what was consolidated"
+      "system_capabilities": { "atomic_records": true, "autonomous_operation": true }
     };
     
     return { 
