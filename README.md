@@ -107,8 +107,66 @@ Search for content across all notes
 - Parameters: `query`, `maxResults`, `contextLines`
 
 ### `find_by_metadata`
-Find notes by frontmatter or file properties
-- Parameters: `frontmatter`, `minWords`, `maxWords`, `modifiedAfter`
+Find notes by frontmatter or file properties with advanced query support
+- Parameters: `frontmatter`, `minWords`, `maxWords`, `modifiedAfter`, `modifiedBefore`
+
+#### Advanced Query Operators:
+
+**Basic Queries:**
+```json
+{ "frontmatter": { "status": "active" } }  // Find notes with status: active
+{ "frontmatter": { "tags": "research" } }  // Find notes where tags includes "research"
+```
+
+**Existence Queries:**
+```json
+{ "frontmatter": { "description": { "$exists": false } } }  // Find notes missing description
+{ "frontmatter": { "author": { "$exists": true } } }       // Find notes with author field
+```
+
+**Empty Value Queries:**
+```json
+{ "frontmatter": { "summary": { "$empty": true } } }   // Find notes with empty summary
+{ "frontmatter": { "tags": { "$empty": false } } }     // Find notes with non-empty tags
+```
+
+**Pattern Matching:**
+```json
+{ "frontmatter": { "title": { "$regex": "^Project.*2025$" } } }  // Regex match
+{ "frontmatter": { "content": { "$regex": "TODO", "$flags": "i" } } }  // Case-insensitive
+```
+
+**Negation:**
+```json
+{ "frontmatter": { "status": { "$not": "archived" } } }  // Find notes NOT archived
+{ "frontmatter": { "priority": { "$not": 5 } } }         // Find notes with priority != 5
+```
+
+**Range Queries (numbers/dates):**
+```json
+{ "frontmatter": { "priority": { "$gt": 3 } } }          // Priority > 3
+{ "frontmatter": { "created": { "$gte": "2025-01-01" } } }  // Created after Jan 1
+{ "frontmatter": { "score": { "$lt": 100, "$gte": 50 } } }  // Score between 50-99
+```
+
+**Array Inclusion:**
+```json
+{ "frontmatter": { "status": { "$in": ["active", "pending"] } } }  // Status is one of these
+```
+
+**Combined Queries:**
+```json
+{
+  "frontmatter": {
+    "status": "active",
+    "description": { "$exists": true },
+    "priority": { "$gte": 3 },
+    "tags": { "$empty": false }
+  },
+  "minWords": 100,
+  "modifiedAfter": "2025-01-01"
+}
+```
 
 ### `git_checkpoint`
 Create a git commit checkpoint
@@ -125,14 +183,23 @@ Rollback to a previous commit
 ### `get_research_context`
 Get configured research context and guidelines from your config.json. Reads and returns the content of any configured context documents.
 
-## Usage Example
+## Usage Examples
 
 Once configured in Claude Desktop, you can use natural language to interact with your vault:
 
+**Basic Operations:**
 - "Scan my vault and show me notes modified in the last week"
 - "Find all notes with status 'active' in frontmatter"
 - "Search for notes mentioning 'project planning'"
 - "Create a git checkpoint before making changes"
+
+**Advanced Metadata Queries:**
+- "Find all notes missing a description field"
+- "Show me notes with empty tags"
+- "Find notes with priority greater than 3"
+- "Find all notes NOT marked as archived"
+- "Show me notes created in 2025 with more than 500 words"
+- "Find notes where the title matches 'Project.*2025' regex"
 
 ## Development
 

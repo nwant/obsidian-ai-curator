@@ -114,14 +114,18 @@ class SimpleVaultServer {
         },
         {
           name: 'find_by_metadata',
-          description: 'Find notes by frontmatter or file properties',
+          description: 'Find notes by frontmatter or file properties. Supports advanced queries like missing fields, empty values, regex, and ranges',
           inputSchema: {
             type: 'object',
             properties: {
-              frontmatter: { type: 'object', description: 'Frontmatter fields to match' },
+              frontmatter: { 
+                type: 'object', 
+                description: 'Frontmatter queries. Special operators: $exists (boolean), $empty (boolean), $regex (string), $not (any), $gt/$gte/$lt/$lte (number/date), $in (array)'
+              },
               minWords: { type: 'number', description: 'Minimum word count' },
               maxWords: { type: 'number', description: 'Maximum word count' },
-              modifiedAfter: { type: 'string', description: 'ISO date string' }
+              modifiedAfter: { type: 'string', description: 'ISO date string' },
+              modifiedBefore: { type: 'string', description: 'ISO date string' }
             }
           }
         },
@@ -159,7 +163,7 @@ class SimpleVaultServer {
         },
         {
           name: 'get_research_context',
-          description: 'Get configured research context and guidelines. Configure via config.json researchContext field',
+          description: 'Get AI research partner context and interaction guidelines',
           inputSchema: {
             type: 'object',
             properties: {}
@@ -346,7 +350,7 @@ class SimpleVaultServer {
     return { content: [{ type: 'text', text: JSON.stringify({ matches }, null, 2) }] };
   }
 
-  async findByMetadata({ frontmatter, minWords, maxWords, modifiedAfter }) {
+  async findByMetadata({ frontmatter, minWords, maxWords, modifiedAfter, modifiedBefore }) {
     const matchingPaths = [];
     
     const searchDir = async (dir, baseDir = '') => {
@@ -368,33 +372,108 @@ class SimpleVaultServer {
           // Check frontmatter
           if (frontmatter) {
             for (const [key, value] of Object.entries(frontmatter)) {
-              // Handle nested objects and arrays
               const dataValue = data[key];
               
-              // Check if value exists in data
-              if (dataValue === undefined) {
-                matches = false;
-                break;
+              // Handle special operators
+              if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                // Check for operator queries
+                if ('$exists' in value) {
+                  const exists = dataValue !== undefined;
+                  if (exists !== value.$exists) {
+                    matches = false;
+                    break;
+                  }
+                  continue;
+                }
+                
+                if ('$empty' in value) {
+                  const isEmpty = dataValue === '' || dataValue === null || 
+                                (Array.isArray(dataValue) && dataValue.length === 0);
+                  if (isEmpty !== value.$empty) {
+                    matches = false;
+                    break;
+                  }
+                  continue;
+                }
+                
+                if ('$regex' in value && typeof dataValue === 'string') {
+                  const regex = new RegExp(value.$regex, value.$flags || 'i');
+                  if (!regex.test(dataValue)) {
+                    matches = false;
+                    break;
+                  }
+                  continue;
+                }
+                
+                if ('$not' in value) {
+                  const notValue = value.$not;
+                  if (JSON.stringify(dataValue) === JSON.stringify(notValue)) {
+                    matches = false;
+                    break;
+                  }
+                  continue;
+                }
+                
+                if ('$in' in value && Array.isArray(value.$in)) {
+                  if (!value.$in.includes(dataValue)) {
+                    matches = false;
+                    break;
+                  }
+                  continue;
+                }
+                
+                // Range operators for numbers and dates
+                if (typeof dataValue === 'number' || dataValue instanceof Date || 
+                    (typeof dataValue === 'string' && !isNaN(Date.parse(dataValue)))) {
+                  const numValue = typeof dataValue === 'number' ? dataValue : new Date(dataValue).getTime();
+                  
+                  if ('$gt' in value && numValue <= (typeof value.$gt === 'number' ? value.$gt : new Date(value.$gt).getTime())) {
+                    matches = false;
+                    break;
+                  }
+                  if ('$gte' in value && numValue < (typeof value.$gte === 'number' ? value.$gte : new Date(value.$gte).getTime())) {
+                    matches = false;
+                    break;
+                  }
+                  if ('$lt' in value && numValue >= (typeof value.$lt === 'number' ? value.$lt : new Date(value.$lt).getTime())) {
+                    matches = false;
+                    break;
+                  }
+                  if ('$lte' in value && numValue > (typeof value.$lte === 'number' ? value.$lte : new Date(value.$lte).getTime())) {
+                    matches = false;
+                    break;
+                  }
+                  continue;
+                }
               }
               
-              // Handle array includes
-              if (Array.isArray(dataValue) && !Array.isArray(value)) {
-                if (!dataValue.includes(value)) {
+              // Regular value matching (backward compatibility)
+              else {
+                // Check if value exists in data
+                if (dataValue === undefined) {
                   matches = false;
                   break;
                 }
-              }
-              // Handle string partial matches (case-insensitive)
-              else if (typeof dataValue === 'string' && typeof value === 'string') {
-                if (!dataValue.toLowerCase().includes(value.toLowerCase())) {
+                
+                // Handle array includes
+                if (Array.isArray(dataValue) && !Array.isArray(value)) {
+                  if (!dataValue.includes(value)) {
+                    matches = false;
+                    break;
+                  }
+                }
+                // Handle string partial matches (case-insensitive)
+                else if (typeof dataValue === 'string' && typeof value === 'string') {
+                  if (!dataValue.toLowerCase().includes(value.toLowerCase())) {
+                    matches = false;
+                    break;
+                  }
+                }
+                // Handle exact match for other types
+                else if (JSON.stringify(dataValue) !== JSON.stringify(value)) {
                   matches = false;
                   break;
                 }
-              }
-              // Handle exact match for other types
-              else if (JSON.stringify(dataValue) !== JSON.stringify(value)) {
-                matches = false;
-                break;
               }
             }
           }
@@ -409,6 +488,10 @@ class SimpleVaultServer {
           // Check modified date
           if (matches && modifiedAfter) {
             if (stats.mtime < new Date(modifiedAfter)) matches = false;
+          }
+          
+          if (matches && modifiedBefore) {
+            if (stats.mtime > new Date(modifiedBefore)) matches = false;
           }
           
           if (matches) {
@@ -427,7 +510,8 @@ class SimpleVaultServer {
         frontmatter: frontmatter || null,
         minWords: minWords || null,
         maxWords: maxWords || null,
-        modifiedAfter: modifiedAfter || null
+        modifiedAfter: modifiedAfter || null,
+        modifiedBefore: modifiedBefore || null
       },
       totalScanned: 0,
       matched: matchingPaths.length
