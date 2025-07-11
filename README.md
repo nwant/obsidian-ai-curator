@@ -198,6 +198,43 @@ Rollback to a previous commit
 ### `get_research_context`
 Get configured research context and guidelines from your config.json. Reads and returns the content of any configured context documents.
 
+### `run_benchmark`
+Execute search benchmark scenarios and track performance metrics
+- Parameters: `scenario` (scenario name or 'all' or 'list'), `compare` (boolean to compare with baseline)
+
+## Automatic Metrics Collection
+
+The MCP server now automatically collects performance metrics for all search operations. This feature runs in the background without affecting normal operations.
+
+### What's Collected
+- **Operation timing**: Duration of each search operation
+- **Result counts**: Number of results returned by each search
+- **Success rates**: Tracking of successful vs failed operations
+- **Tool usage patterns**: Which tools are used most frequently
+
+### Storage
+- Metrics are stored in `data/search-metrics.json`
+- Only the last 1000 operations are kept to prevent unbounded growth
+- Data is saved asynchronously to avoid performance impact
+
+### Daily Reports
+The system can generate daily performance reports that are automatically saved to your vault:
+- Location: `{vault}/Benchmarks/Daily-Reports/search-metrics-YYYY-MM-DD.md`
+- Includes performance summaries, trends, and raw metrics
+- Reports can be generated programmatically via the metrics collector
+
+### Privacy & Security
+- Sensitive content is sanitized before storage
+- Search queries are truncated to 50 characters
+- File contents are replaced with placeholder text
+- No personal information is included in metrics
+
+### Benefits
+- **Performance monitoring**: Track search performance over time
+- **Optimization insights**: Identify slow operations or patterns
+- **Quality assurance**: Monitor success rates and result quality
+- **Usage analytics**: Understand how different search tools are being used
+
 ## Usage Examples
 
 Once configured in Claude Desktop or Claude Code, you can use natural language to interact with your vault:
@@ -215,6 +252,12 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "Find all notes NOT marked as archived"
 - "Show me notes created in 2025 with more than 500 words"
 - "Find notes where the title matches 'Project.*2025' regex"
+
+**Benchmark & Performance:**
+- "Run all benchmarks to test search performance"
+- "List available benchmark scenarios"
+- "Run the find_recent_files benchmark and compare with baseline"
+- "Show me the vault_scan_performance benchmark results"
 
 ## Development
 

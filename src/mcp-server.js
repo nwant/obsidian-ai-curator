@@ -8,6 +8,7 @@ import matter from 'gray-matter';
 import simpleGit from 'simple-git';
 import { z } from 'zod';
 import { benchmarkTool } from './tools/benchmark.js';
+import { AutoMetricsCollector } from './metrics/auto-collector.js';
 
 const CONFIG_PATH = path.join(process.cwd(), 'config', 'config.json');
 let config = { vaultPath: '', ignorePatterns: [] };
@@ -28,6 +29,7 @@ class SimpleVaultServer {
       { name: 'obsidian-vault-simple', version: '2.0.0' },
       { capabilities: { tools: {} } }
     );
+    this.metricsCollector = new AutoMetricsCollector(config);
     this.setupHandlers();
   }
 
@@ -174,6 +176,23 @@ class SimpleVaultServer {
           name: benchmarkTool.name,
           description: benchmarkTool.description,
           inputSchema: benchmarkTool.parameters
+        },
+        {
+          name: 'view_search_metrics',
+          description: 'View automatically collected search performance metrics',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              timeWindow: {
+                type: 'number',
+                description: 'Time window in hours (default: 24)'
+              },
+              exportReport: {
+                type: 'boolean',
+                description: 'Export daily report to vault'
+              }
+            }
+          }
         }
       ]
     }));
@@ -184,7 +203,9 @@ class SimpleVaultServer {
       try {
         switch (name) {
           case 'vault_scan':
-            return await this.vaultScan(args);
+            return await this.metricsCollector.trackSearchOperation(
+              'vault_scan', args, () => this.vaultScan(args)
+            );
           case 'read_notes':
             return await this.readNotes(args);
           case 'write_note':
@@ -192,9 +213,13 @@ class SimpleVaultServer {
           case 'archive_notes':
             return await this.archiveNotes(args);
           case 'search_content':
-            return await this.searchContent(args);
+            return await this.metricsCollector.trackSearchOperation(
+              'search_content', args, () => this.searchContent(args)
+            );
           case 'find_by_metadata':
-            return await this.findByMetadata(args);
+            return await this.metricsCollector.trackSearchOperation(
+              'find_by_metadata', args, () => this.findByMetadata(args)
+            );
           case 'git_checkpoint':
             return await this.gitCheckpoint(args);
           case 'git_changes':
@@ -205,6 +230,8 @@ class SimpleVaultServer {
             return await this.getResearchContext(args);
           case 'run_benchmark':
             return await benchmarkTool.execute(args, this, config);
+          case 'view_search_metrics':
+            return await this.viewSearchMetrics(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -638,7 +665,9 @@ class SimpleVaultServer {
     
     switch (name) {
       case 'vault_scan':
-        return await this.vaultScan(args);
+        return await this.metricsCollector.trackSearchOperation(
+          'vault_scan', args, () => this.vaultScan(args)
+        );
       case 'read_notes':
         return await this.readNotes(args);
       case 'write_note':
@@ -646,9 +675,13 @@ class SimpleVaultServer {
       case 'archive_notes':
         return await this.archiveNotes(args);
       case 'search_content':
-        return await this.searchContent(args);
+        return await this.metricsCollector.trackSearchOperation(
+          'search_content', args, () => this.searchContent(args)
+        );
       case 'find_by_metadata':
-        return await this.findByMetadata(args);
+        return await this.metricsCollector.trackSearchOperation(
+          'find_by_metadata', args, () => this.findByMetadata(args)
+        );
       case 'git_checkpoint':
         return await this.gitCheckpoint(args);
       case 'git_changes':
@@ -657,9 +690,45 @@ class SimpleVaultServer {
         return await this.gitRollback(args);
       case 'get_research_context':
         return await this.getResearchContext(args);
+      case 'view_search_metrics':
+        return await this.viewSearchMetrics(args);
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
+  }
+
+  async viewSearchMetrics({ timeWindow = 24, exportReport = false }) {
+    const timeWindowMs = timeWindow * 60 * 60 * 1000;
+    const metrics = this.metricsCollector.getAggregatedMetrics(timeWindowMs);
+    
+    let result = `# Search Performance Metrics\n\n`;
+    result += `## Summary (${metrics.timeWindow})\n`;
+    result += `- Total Operations: ${metrics.totalOperations}\n\n`;
+    
+    if (metrics.totalOperations === 0) {
+      result += 'No search operations recorded in this time window.\n';
+    } else {
+      result += '## Performance by Tool\n';
+      for (const [tool, stats] of Object.entries(metrics.byTool)) {
+        result += `\n### ${tool}\n`;
+        result += `- Total Calls: ${stats.count}\n`;
+        result += `- Average Duration: ${stats.avgDuration.toFixed(2)}ms\n`;
+        result += `- Success Rate: ${(stats.successRate * 100).toFixed(1)}%\n`;
+        result += `- Average Results: ${stats.avgResultCount.toFixed(1)}\n`;
+      }
+    }
+    
+    if (exportReport) {
+      const reportPath = await this.metricsCollector.exportDailyReport();
+      result += `\n✅ Daily report exported to: ${reportPath}`;
+    }
+    
+    return {
+      content: [{
+        type: 'text',
+        text: result
+      }]
+    };
   }
 
   async run() {
