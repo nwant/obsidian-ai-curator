@@ -207,6 +207,7 @@ class SimpleVaultServer {
             return await benchmarkTool.execute(args, this, config);
           default:
             throw new Error(`Unknown tool: ${name}`);
+        }
       } catch (error) {
         return {
           content: [{ 
