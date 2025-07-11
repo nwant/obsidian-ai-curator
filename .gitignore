@@ -15,3 +15,11 @@ config/config.json
 
 # Archive folders (may contain personal notes)
 _archived/
+
+# Benchmark data (may contain vault-specific results)
+data/benchmark-cache.json
+data/ground-truth.json
+
+# Keep example files
+!config/config.example.json
+!data/ground-truth.example.json

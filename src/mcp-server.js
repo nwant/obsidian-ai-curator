@@ -7,6 +7,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import simpleGit from 'simple-git';
 import { z } from 'zod';
+import { benchmarkTool } from './tools/benchmark.js';
 
 const CONFIG_PATH = path.join(process.cwd(), 'config', 'config.json');
 let config = { vaultPath: '', ignorePatterns: [] };
@@ -168,6 +169,11 @@ class SimpleVaultServer {
             type: 'object',
             properties: {}
           }
+        },
+        {
+          name: benchmarkTool.name,
+          description: benchmarkTool.description,
+          inputSchema: benchmarkTool.parameters
         }
       ]
     }));
@@ -197,9 +203,10 @@ class SimpleVaultServer {
             return await this.gitRollback(args);
           case 'get_research_context':
             return await this.getResearchContext(args);
+          case 'run_benchmark':
+            return await benchmarkTool.execute(args, this, config);
           default:
             throw new Error(`Unknown tool: ${name}`);
-        }
       } catch (error) {
         return {
           content: [{ 
@@ -622,6 +629,36 @@ class SimpleVaultServer {
   shouldIgnore(name) {
     const ignorePatterns = ['.git', '.obsidian', '_archived', ...config.ignorePatterns];
     return ignorePatterns.includes(name);
+  }
+
+  async callTool(request) {
+    // Method to allow benchmark runner to call other tools
+    const { name, arguments: args } = request.params;
+    
+    switch (name) {
+      case 'vault_scan':
+        return await this.vaultScan(args);
+      case 'read_notes':
+        return await this.readNotes(args);
+      case 'write_note':
+        return await this.writeNote(args);
+      case 'archive_notes':
+        return await this.archiveNotes(args);
+      case 'search_content':
+        return await this.searchContent(args);
+      case 'find_by_metadata':
+        return await this.findByMetadata(args);
+      case 'git_checkpoint':
+        return await this.gitCheckpoint(args);
+      case 'git_changes':
+        return await this.gitChanges(args);
+      case 'git_rollback':
+        return await this.gitRollback(args);
+      case 'get_research_context':
+        return await this.getResearchContext(args);
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
   }
 
   async run() {

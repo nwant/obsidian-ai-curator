@@ -1,0 +1,82 @@
+{
+  "find_recent_files": {
+    "ttfr": 3.5,
+    "iterations": 2,
+    "toolCalls": 4,
+    "precision": 0.85,
+    "recall": 0.75,
+    "f1Score": 0.80,
+    "tokensUsed": 1500,
+    "description": "Baseline for finding recently modified files"
+  },
+  "search_by_frontmatter": {
+    "ttfr": 4.0,
+    "iterations": 2,
+    "toolCalls": 5,
+    "precision": 0.80,
+    "recall": 0.70,
+    "f1Score": 0.75,
+    "tokensUsed": 1800,
+    "description": "Baseline for frontmatter-based searches"
+  },
+  "complex_metadata_query": {
+    "ttfr": 6.0,
+    "iterations": 3,
+    "toolCalls": 8,
+    "precision": 0.70,
+    "recall": 0.65,
+    "f1Score": 0.67,
+    "tokensUsed": 2500,
+    "description": "Baseline for complex metadata queries"
+  },
+  "content_search_patterns": {
+    "ttfr": 2.5,
+    "iterations": 3,
+    "toolCalls": 6,
+    "precision": 0.90,
+    "recall": 0.85,
+    "f1Score": 0.87,
+    "tokensUsed": 1200,
+    "description": "Baseline for content search patterns"
+  },
+  "vault_scan_performance": {
+    "ttfr": 5.0,
+    "iterations": 2,
+    "toolCalls": 3,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1Score": 1.0,
+    "tokensUsed": 2000,
+    "description": "Baseline for vault scanning operations"
+  },
+  "batch_read_test": {
+    "ttfr": 4.5,
+    "iterations": 2,
+    "toolCalls": 4,
+    "precision": 0.95,
+    "recall": 0.90,
+    "f1Score": 0.92,
+    "tokensUsed": 3000,
+    "description": "Baseline for batch reading operations"
+  },
+  "date_range_search": {
+    "ttfr": 3.8,
+    "iterations": 2,
+    "toolCalls": 5,
+    "precision": 0.82,
+    "recall": 0.78,
+    "f1Score": 0.80,
+    "tokensUsed": 1600,
+    "description": "Baseline for date range searches"
+  },
+  "word_count_filtering": {
+    "ttfr": 4.2,
+    "iterations": 3,
+    "toolCalls": 6,
+    "precision": 0.88,
+    "recall": 0.82,
+    "f1Score": 0.85,
+    "tokensUsed": 1400,
+    "description": "Baseline for word count filtering"
+  }
+}
