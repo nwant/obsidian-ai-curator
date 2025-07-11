@@ -1,6 +1,6 @@
 # Obsidian MCP Server
 
-A Model Context Protocol (MCP) server that enables Claude Desktop to interact with your Obsidian vault. This server provides tools for reading, writing, searching, and managing notes programmatically.
+A Model Context Protocol (MCP) server that enables Claude Desktop and Claude Code to interact with your Obsidian vault. This server provides tools for reading, writing, searching, and managing notes programmatically.
 
 ## Features
 
@@ -34,6 +34,21 @@ cp config/config.example.json config/config.json
 ### Claude Desktop Setup
 
 Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "obsidian-vault": {
+      "command": "node",
+      "args": ["/path/to/obsidian-mcp-server/src/mcp-server.js"]
+    }
+  }
+}
+```
+
+### Claude Code Setup
+
+Add to your Claude Code configuration (`~/.claude/settings.json`):
 
 ```json
 {
@@ -185,7 +200,7 @@ Get configured research context and guidelines from your config.json. Reads and 
 
 ## Usage Examples
 
-Once configured in Claude Desktop, you can use natural language to interact with your vault:
+Once configured in Claude Desktop or Claude Code, you can use natural language to interact with your vault:
 
 **Basic Operations:**
 - "Scan my vault and show me notes modified in the last week"

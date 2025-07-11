@@ -11,7 +11,7 @@ consolidation-queue.json
 
 # Configuration files with personal paths
 config/config.json
-mcp.json
+.mcp.json
 
 # Archive folders (may contain personal notes)
 _archived/
