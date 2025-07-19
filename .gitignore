@@ -17,8 +17,10 @@ config/config.json
 _archived/
 
 # Benchmark data (may contain vault-specific results)
-data/benchmark-cache.json
-data/ground-truth.json
+/data/ground-truth.json
+/data/benchmark-results.json
+/data/benchmark-results-*.json
+/data/search-metrics.json
 
 # Keep example files
 !config/config.example.json

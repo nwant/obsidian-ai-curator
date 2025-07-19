@@ -9,6 +9,7 @@ import simpleGit from 'simple-git';
 import { z } from 'zod';
 import { benchmarkTool } from './tools/benchmark.js';
 import { AutoMetricsCollector } from './metrics/auto-collector.js';
+import { VaultCache } from './cache/vault-cache.js';
 
 const CONFIG_PATH = path.join(process.cwd(), 'config', 'config.json');
 let config = { vaultPath: '', ignorePatterns: [] };
@@ -30,6 +31,7 @@ class SimpleVaultServer {
       { capabilities: { tools: {} } }
     );
     this.metricsCollector = new AutoMetricsCollector(config);
+    this.cache = new VaultCache(config);
     this.setupHandlers();
   }
 
@@ -50,6 +52,27 @@ class SimpleVaultServer {
               includeStats: {
                 type: 'boolean',
                 description: 'Include word count and size stats'
+              },
+              includePreview: {
+                type: 'boolean',
+                description: 'Include content preview (first 200 chars)'
+              },
+              includeFrontmatter: {
+                type: 'boolean',
+                description: 'Include frontmatter fields'
+              },
+              sortBy: {
+                type: 'string',
+                enum: ['modified', 'path', 'size'],
+                description: 'Sort results by field (default: modified)'
+              },
+              limit: {
+                type: 'number',
+                description: 'Maximum number of results to return'
+              },
+              useCache: {
+                type: 'boolean',
+                description: 'Use cached results if available (default: true)'
               }
             }
           }
@@ -173,6 +196,38 @@ class SimpleVaultServer {
           }
         },
         {
+          name: 'get_working_context',
+          description: 'Load focused context for specific work (project, topic, or recent files)',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              scope: {
+                type: 'string',
+                enum: ['project', 'topic', 'recent', 'linked'],
+                description: 'Type of context to load'
+              },
+              identifier: {
+                type: 'string',
+                description: 'Project name, topic, or note path (depends on scope)'
+              },
+              maxNotes: {
+                type: 'number',
+                description: 'Maximum number of notes to return (default: 10)'
+              },
+              depth: {
+                type: 'string',
+                enum: ['preview', 'summary', 'full'],
+                description: 'Level of detail to return (default: preview)'
+              },
+              useCache: {
+                type: 'boolean',
+                description: 'Use cached results if available (default: true)'
+              }
+            },
+            required: ['scope']
+          }
+        },
+        {
           name: benchmarkTool.name,
           description: benchmarkTool.description,
           inputSchema: benchmarkTool.parameters
@@ -228,6 +283,10 @@ class SimpleVaultServer {
             return await this.gitRollback(args);
           case 'get_research_context':
             return await this.getResearchContext(args);
+          case 'get_working_context':
+            return await this.metricsCollector.trackSearchOperation(
+              'get_working_context', args, () => this.getWorkingContext(args)
+            );
           case 'run_benchmark':
             return await benchmarkTool.execute(args, this, config);
           case 'view_search_metrics':
@@ -246,37 +305,94 @@ class SimpleVaultServer {
     });
   }
 
-  async vaultScan({ patterns = ['**/*.md'], includeStats = false }) {
-    const files = [];
-    const scanDir = async (dir, baseDir = '') => {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
+  async vaultScan({ 
+    patterns = ['**/*.md'], 
+    includeStats = false,
+    includePreview = false,
+    includeFrontmatter = false,
+    sortBy = 'modified',
+    limit,
+    useCache = true 
+  }) {
+    const startTime = Date.now();
+    
+    // Get files from cache or scan
+    let files = useCache 
+      ? await this.cache.getVaultStructure()
+      : await this.cache.getVaultStructure(true);
+    
+    // Sort files
+    files.sort((a, b) => {
+      switch (sortBy) {
+        case 'modified':
+          return new Date(b.modified).getTime() - new Date(a.modified).getTime();
+        case 'size':
+          return b.size - a.size;
+        case 'path':
+          return a.path.localeCompare(b.path);
+        default:
+          return 0;
+      }
+    });
+    
+    // Apply limit if specified
+    if (limit && limit > 0) {
+      files = files.slice(0, limit);
+    }
+    
+    // Enhance with additional data if requested
+    const enhancedFiles = await Promise.all(files.map(async (fileInfo) => {
+      const result = { ...fileInfo };
       
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        const relativePath = path.join(baseDir, entry.name);
-        
-        if (entry.isDirectory() && !this.shouldIgnore(entry.name)) {
-          await scanDir(fullPath, relativePath);
-        } else if (entry.isFile() && entry.name.endsWith('.md')) {
-          const stats = await fs.stat(fullPath);
-          const fileInfo = {
-            path: relativePath,
-            size: stats.size,
-            modified: stats.mtime.toISOString()
-          };
+      if (includeStats || includePreview || includeFrontmatter) {
+        try {
+          const cached = await this.cache.getFileContent(fileInfo.path);
+          const { data: frontmatter, content: body } = matter(cached.content);
           
           if (includeStats) {
-            const content = await fs.readFile(fullPath, 'utf-8');
-            fileInfo.wordCount = content.split(/\s+/).filter(w => w.length > 0).length;
+            result.wordCount = body.split(/\s+/).filter(w => w.length > 0).length;
           }
           
-          files.push(fileInfo);
+          if (includePreview) {
+            result.preview = cached.preview;
+          }
+          
+          if (includeFrontmatter && Object.keys(frontmatter).length > 0) {
+            result.frontmatter = frontmatter;
+          }
+          
+          // Always include basic metadata for better context
+          const tagMatches = body.match(/#[\w-]+/g) || [];
+          const linkMatches = body.match(/\[\[([^\]]+)\]\]/g) || [];
+          
+          result.tags = [...new Set(tagMatches)];
+          result.linkCount = linkMatches.length;
+          
+        } catch (error) {
+          console.error(`Error processing ${fileInfo.path}:`, error);
         }
       }
-    };
+      
+      return result;
+    }));
     
-    await scanDir(config.vaultPath);
-    return { content: [{ type: 'text', text: JSON.stringify({ files }, null, 2) }] };
+    const duration = Date.now() - startTime;
+    const cacheStats = this.cache.getStats();
+    
+    return { 
+      content: [{ 
+        type: 'text', 
+        text: JSON.stringify({ 
+          files: enhancedFiles,
+          stats: {
+            totalFiles: enhancedFiles.length,
+            scanDuration: duration,
+            cacheHit: useCache && cacheStats.cacheAge > 0,
+            cacheAge: cacheStats.cacheAge
+          }
+        }, null, 2) 
+      }] 
+    };
   }
 
   async readNotes({ paths }) {
@@ -652,6 +768,200 @@ class SimpleVaultServer {
         text: JSON.stringify(context, null, 2) 
       }] 
     };
+  }
+
+  async getWorkingContext({ 
+    scope, 
+    identifier = '', 
+    maxNotes = 10, 
+    depth = 'preview',
+    useCache = true 
+  }) {
+    // Use cache if available
+    const cacheKey = { scope, identifier, maxNotes, depth };
+    
+    if (useCache) {
+      const cached = await this.cache.getContext(cacheKey, async () => {
+        return await this.computeWorkingContext(scope, identifier, maxNotes, depth);
+      });
+      return cached;
+    }
+    
+    const result = await this.computeWorkingContext(scope, identifier, maxNotes, depth);
+    return result;
+  }
+
+  async computeWorkingContext(scope, identifier, maxNotes, depth) {
+    const files = await this.cache.getVaultStructure();
+    let selectedFiles = [];
+    
+    switch (scope) {
+      case 'recent':
+        // Get most recently modified files
+        selectedFiles = files
+          .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime())
+          .slice(0, maxNotes);
+        break;
+        
+      case 'project':
+        // Find all files related to a project
+        selectedFiles = await this.findProjectFiles(files, identifier, maxNotes);
+        break;
+        
+      case 'topic':
+        // Find files related to a topic
+        selectedFiles = await this.findTopicFiles(files, identifier, maxNotes);
+        break;
+        
+      case 'linked':
+        // Find files linked from a specific note
+        selectedFiles = await this.findLinkedFiles(files, identifier, maxNotes);
+        break;
+        
+      default:
+        throw new Error(`Unknown scope: ${scope}`);
+    }
+    
+    // Load content based on depth
+    const notes = await Promise.all(selectedFiles.map(async (file) => {
+      const cached = await this.cache.getFileContent(file.path);
+      const { data: frontmatter, content: body } = matter(cached.content);
+      
+      let result = {
+        path: file.path,
+        modified: file.modified,
+        frontmatter
+      };
+      
+      switch (depth) {
+        case 'preview':
+          result.preview = cached.preview;
+          break;
+        case 'summary':
+          // Extract first paragraph and headings
+          const headings = body.match(/^#{1,6}\s+(.+)$/gm) || [];
+          result.summary = {
+            preview: cached.preview,
+            headings: headings.map(h => h.replace(/^#+\s+/, '')),
+            wordCount: body.split(/\s+/).filter(w => w.length > 0).length
+          };
+          break;
+        case 'full':
+          result.content = body;
+          break;
+      }
+      
+      return result;
+    }));
+    
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          scope,
+          identifier,
+          notes,
+          totalFound: selectedFiles.length,
+          returned: notes.length
+        }, null, 2)
+      }]
+    };
+  }
+
+  async findProjectFiles(files, projectName, maxNotes) {
+    // Find files that mention the project or are in project folder
+    const projectPattern = projectName.toLowerCase();
+    const matchingFiles = [];
+    
+    for (const file of files) {
+      try {
+        const cached = await this.cache.getFileContent(file.path);
+        const { data: frontmatter, content: body } = matter(cached.content);
+        
+        // Check if file is related to project
+        const inProjectFolder = file.path.toLowerCase().includes(projectPattern);
+        const mentionsProject = body.toLowerCase().includes(projectPattern);
+        const taggedWithProject = frontmatter.tags && 
+          frontmatter.tags.some(tag => tag.toLowerCase().includes(projectPattern));
+        const relatedToProject = frontmatter.related && 
+          frontmatter.related.some(rel => rel.toLowerCase().includes(projectPattern));
+        
+        if (inProjectFolder || mentionsProject || taggedWithProject || relatedToProject) {
+          matchingFiles.push({
+            ...file,
+            relevance: (inProjectFolder ? 3 : 0) + 
+                      (taggedWithProject ? 2 : 0) + 
+                      (relatedToProject ? 2 : 0) +
+                      (mentionsProject ? 1 : 0)
+          });
+        }
+      } catch (error) {
+        console.error(`Error checking ${file.path}:`, error);
+      }
+    }
+    
+    // Sort by relevance and recency
+    return matchingFiles
+      .sort((a, b) => {
+        if (b.relevance !== a.relevance) return b.relevance - a.relevance;
+        return new Date(b.modified).getTime() - new Date(a.modified).getTime();
+      })
+      .slice(0, maxNotes);
+  }
+
+  async findTopicFiles(files, topic, maxNotes) {
+    // Similar to project but focuses on content matching
+    const topicPattern = topic.toLowerCase();
+    const matchingFiles = [];
+    
+    for (const file of files) {
+      try {
+        const cached = await this.cache.getFileContent(file.path);
+        const { data: frontmatter, content: body } = matter(cached.content);
+        
+        // Count occurrences of topic
+        const contentMatches = (body.toLowerCase().match(new RegExp(topicPattern, 'g')) || []).length;
+        
+        if (contentMatches > 0) {
+          matchingFiles.push({
+            ...file,
+            relevance: contentMatches
+          });
+        }
+      } catch (error) {
+        console.error(`Error checking ${file.path}:`, error);
+      }
+    }
+    
+    return matchingFiles
+      .sort((a, b) => b.relevance - a.relevance)
+      .slice(0, maxNotes);
+  }
+
+  async findLinkedFiles(files, notePath, maxNotes) {
+    // Find files linked from the specified note
+    const noteContent = await this.cache.getFileContent(notePath);
+    const linkMatches = noteContent.content.matchAll(/\[\[([^\]]+)\]\]/g);
+    const linkedPaths = new Set();
+    
+    for (const match of linkMatches) {
+      const linkPath = match[1];
+      // Handle both full paths and note names
+      const matchingFile = files.find(f => 
+        f.path === linkPath + '.md' || 
+        f.path.endsWith('/' + linkPath + '.md') ||
+        f.path === linkPath
+      );
+      
+      if (matchingFile) {
+        linkedPaths.add(matchingFile.path);
+      }
+    }
+    
+    return files
+      .filter(f => linkedPaths.has(f.path))
+      .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime())
+      .slice(0, maxNotes);
   }
 
   shouldIgnore(name) {
