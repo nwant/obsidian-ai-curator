@@ -14,13 +14,20 @@ import { VaultCache } from './cache/vault-cache.js';
 const CONFIG_PATH = path.join(process.cwd(), 'config', 'config.json');
 let config = { vaultPath: '', ignorePatterns: [] };
 
-try {
-  const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
-  config = JSON.parse(configData);
-} catch (error) {
-  console.warn('Config not found, using environment variables');
-  config.vaultPath = process.env.OBSIDIAN_VAULT_PATH || '';
+async function loadConfig() {
+  try {
+    const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
+    config = JSON.parse(configData);
+    console.error('Config loaded successfully from:', CONFIG_PATH);
+  } catch (error) {
+    console.warn('Config not found, using environment variables');
+    config.vaultPath = process.env.OBSIDIAN_VAULT_PATH || '';
+  }
+  return config;
 }
+
+// Load config initially
+await loadConfig();
 
 const git = simpleGit(config.vaultPath);
 
@@ -707,6 +714,9 @@ class SimpleVaultServer {
   }
 
   async getResearchContext() {
+    // Reload config to get latest changes
+    await loadConfig();
+    
     // Use configured context or default
     const defaultContext = {
       "description": "Default research context - configure in config.json",
@@ -725,10 +735,13 @@ class SimpleVaultServer {
       
       for (const [key, docPath] of Object.entries(context.contextDocuments)) {
         try {
+          // Remove leading slash if present for relative paths
+          const cleanPath = docPath.startsWith('/') ? docPath.substring(1) : docPath;
+          
           // Check if it's a relative path within the vault
           const fullPath = path.isAbsolute(docPath) 
             ? docPath 
-            : path.join(config.vaultPath, docPath);
+            : path.join(config.vaultPath, cleanPath);
           
           if (await fs.access(fullPath).then(() => true).catch(() => false)) {
             const content = await fs.readFile(fullPath, 'utf-8');
@@ -739,7 +752,7 @@ class SimpleVaultServer {
           } else {
             documents[key] = {
               path: docPath,
-              error: "File not found"
+              error: `File not found at: ${fullPath}`
             };
           }
         } catch (error) {
