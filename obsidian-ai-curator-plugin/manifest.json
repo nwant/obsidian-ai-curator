@@ -1,0 +1,11 @@
+{
+  "id": "obsidian-ai-curator",
+  "name": "AI Curator",
+  "version": "0.1.0",
+  "minAppVersion": "0.15.0",
+  "description": "AI-powered knowledge consolidation with MCP server integration",
+  "author": "Nathan",
+  "authorUrl": "https://github.com/nathan",
+  "fundingUrl": "",
+  "isDesktopOnly": true
+}

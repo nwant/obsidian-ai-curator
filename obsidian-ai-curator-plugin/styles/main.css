@@ -1,0 +1,64 @@
+/* AI Curator Plugin Styles */
+
+/* Status bar styles */
+.ai-curator-connected {
+  color: var(--text-success);
+}
+
+.ai-curator-connecting {
+  color: var(--text-warning);
+}
+
+.ai-curator-error {
+  color: var(--text-error);
+}
+
+.ai-curator-disconnected {
+  color: var(--text-muted);
+}
+
+/* Settings styles */
+.ai-curator-settings-status {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: var(--background-secondary);
+  margin: 10px 0;
+}
+
+/* Future: Consolidation view styles */
+.ai-curator-consolidation-view {
+  padding: 20px;
+}
+
+.ai-curator-consolidation-card {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: var(--background-secondary);
+  transition: all 0.2s ease;
+}
+
+.ai-curator-consolidation-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Animation for future "Tetris" effect */
+@keyframes consolidate {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+}
+
+.ai-curator-consolidating {
+  animation: consolidate 0.5s ease-out;
+}
