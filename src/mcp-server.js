@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { benchmarkTool } from './tools/benchmark.js';
 import { AutoMetricsCollector } from './metrics/auto-collector.js';
 import { VaultCache } from './cache/vault-cache.js';
+import { DataviewRenderer } from './dataview/renderer.js';
 
 const CONFIG_PATH = path.join(process.cwd(), 'config', 'config.json');
 let config = { vaultPath: '', ignorePatterns: [] };
@@ -38,6 +39,7 @@ class SimpleVaultServer {
     );
     this.metricsCollector = new AutoMetricsCollector(config);
     this.cache = new VaultCache(config);
+    this.dataviewRenderer = new DataviewRenderer(config, this.cache);
     this.setupHandlers();
   }
 
@@ -93,6 +95,10 @@ class SimpleVaultServer {
                 type: 'array',
                 items: { type: 'string' },
                 description: 'Note paths relative to vault'
+              },
+              renderDataview: {
+                type: 'boolean',
+                description: 'Render Dataview queries to show actual data (default: false)'
               }
             },
             required: ['paths']
@@ -401,7 +407,7 @@ class SimpleVaultServer {
     };
   }
 
-  async readNotes({ paths }) {
+  async readNotes({ paths, renderDataview = false }) {
     const notes = await Promise.all(paths.map(async (notePath) => {
       const fullPath = path.join(config.vaultPath, notePath);
       const content = await fs.readFile(fullPath, 'utf-8');
@@ -422,9 +428,24 @@ class SimpleVaultServer {
         links.push(match[1]);
       }
       
+      // Render Dataview queries if requested
+      let processedBody = body;
+      if (renderDataview) {
+        try {
+          processedBody = await this.dataviewRenderer.renderDataviewBlocks(body, notePath);
+        } catch (error) {
+          console.error(`Failed to render Dataview for ${notePath}:`, error);
+        }
+      }
+      
+      // Reconstruct content with potentially rendered Dataview
+      const finalContent = renderDataview && processedBody !== body
+        ? matter.stringify(processedBody, frontmatter)
+        : content;
+      
       return {
         path: notePath,
-        content,
+        content: finalContent,
         frontmatter,
         headings,
         links
