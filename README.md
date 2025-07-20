@@ -5,10 +5,13 @@ A Model Context Protocol (MCP) server that enables Claude Desktop and Claude Cod
 ## Features
 
 - **Vault Operations**: Scan, read, write, and archive notes
-- **Search**: Content search and metadata filtering
+- **Search**: Content search and metadata filtering with caching
 - **Git Integration**: Version control with checkpoint/rollback capabilities
 - **Metadata Support**: Parse and query frontmatter fields
 - **Pattern Matching**: Find notes by various criteria
+- **Dataview Rendering**: Render Dataview queries to see actual data (NEW)
+- **Context Management**: Load focused context for specific work sessions
+- **Performance**: Intelligent caching for sub-50ms operations
 
 ## Installation
 
