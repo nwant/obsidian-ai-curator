@@ -1,0 +1,6 @@
+{
+  "mpcServerUrl": "ws://localhost:3000",
+  "autoConnect": true,
+  "showStatusBar": true,
+  "debugMode": true
+}
