@@ -791,21 +791,21 @@ class SimpleVaultServer {
           // Remove leading slash if present for relative paths
           const cleanPath = docPath.startsWith('/') ? docPath.substring(1) : docPath;
           
-          // Check if it's a relative path within the vault
-          const fullPath = path.isAbsolute(docPath) 
-            ? docPath 
-            : path.join(config.vaultPath, cleanPath);
+          // Build full path
+          const fullPath = path.join(config.vaultPath, cleanPath);
           
-          if (await fs.access(fullPath).then(() => true).catch(() => false)) {
+          // Check if file exists using fs.stat instead of fs.access for better error info
+          try {
+            await fs.stat(fullPath);
             const content = await fs.readFile(fullPath, 'utf-8');
             documents[key] = {
               path: docPath,
               content: content
             };
-          } else {
+          } catch (statError) {
             documents[key] = {
               path: docPath,
-              error: `File not found at: ${fullPath}`
+              error: `File not found: ${fullPath} (${statError.code})`
             };
           }
         } catch (error) {
