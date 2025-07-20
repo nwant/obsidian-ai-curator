@@ -19,13 +19,10 @@ let config = { vaultPath: '', ignorePatterns: [] };
 
 async function loadConfig() {
   try {
-    console.error('Loading config from:', CONFIG_PATH);
     const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
     config = JSON.parse(configData);
-    console.error('Config loaded successfully, keys:', Object.keys(config));
   } catch (error) {
-    console.warn('Config not found at', CONFIG_PATH, '- Error:', error.message);
-    console.warn('Using environment variables');
+    console.warn('Config not found, using environment variables');
     config.vaultPath = process.env.OBSIDIAN_VAULT_PATH || '';
   }
   return config;
@@ -772,7 +769,6 @@ class SimpleVaultServer {
     try {
       // Reload config to get latest changes
       await loadConfig();
-      console.error('Config loaded, researchContext:', JSON.stringify(config.researchContext, null, 2));
       
       // Use configured context or default
       const defaultContext = {
@@ -785,7 +781,6 @@ class SimpleVaultServer {
       };
       
       const context = config.researchContext || defaultContext;
-      console.error('Using context:', JSON.stringify(context, null, 2));
     
     // If context documents are configured, read their contents
     if (context.contextDocuments) {
