@@ -39,6 +39,7 @@ export class AutoMetricsCollector {
     let result;
     let error;
     let resultCount = 0;
+    let cacheHit = false;
 
     try {
       result = await operation();
@@ -46,8 +47,9 @@ export class AutoMetricsCollector {
       // Extract result count based on tool type
       switch (toolName) {
         case 'vault_scan':
-          resultCount = result.content?.[0]?.text ? 
-            JSON.parse(result.content[0].text).files?.length || 0 : 0;
+          const vaultData = result.content?.[0]?.text ? JSON.parse(result.content[0].text) : {};
+          resultCount = vaultData.files?.length || 0;
+          cacheHit = vaultData.stats?.cacheHit || false;
           break;
         case 'search_content':
           resultCount = result.content?.[0]?.text ? 
@@ -76,11 +78,12 @@ export class AutoMetricsCollector {
         duration,
         resultCount,
         success: !error,
+        cacheHit,
         error
       };
 
       this.metrics.push(metric);
-      console.error(`Metric tracked: ${toolName} - ${duration.toFixed(2)}ms - ${resultCount} results`);
+      console.error(`Metric tracked: ${toolName} - ${duration.toFixed(2)}ms - ${resultCount} results - Cache: ${cacheHit ? 'HIT' : 'MISS'}`);
       
       // Keep only last 1000 metrics to prevent unbounded growth
       if (this.metrics.length > 1000) {
