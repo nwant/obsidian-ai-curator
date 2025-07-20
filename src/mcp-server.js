@@ -11,16 +11,21 @@ import { benchmarkTool } from './tools/benchmark.js';
 import { AutoMetricsCollector } from './metrics/auto-collector.js';
 import { VaultCache } from './cache/vault-cache.js';
 import { DataviewRenderer } from './dataview/renderer.js';
+import { fileURLToPath } from 'url';
 
-const CONFIG_PATH = path.join(process.cwd(), 'config', 'config.json');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONFIG_PATH = path.join(__dirname, '..', 'config', 'config.json');
 let config = { vaultPath: '', ignorePatterns: [] };
 
 async function loadConfig() {
   try {
+    console.error('Loading config from:', CONFIG_PATH);
     const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
     config = JSON.parse(configData);
+    console.error('Config loaded successfully, keys:', Object.keys(config));
   } catch (error) {
-    console.warn('Config not found, using environment variables');
+    console.warn('Config not found at', CONFIG_PATH, '- Error:', error.message);
+    console.warn('Using environment variables');
     config.vaultPath = process.env.OBSIDIAN_VAULT_PATH || '';
   }
   return config;
@@ -99,6 +104,11 @@ class SimpleVaultServer {
               renderDataview: {
                 type: 'boolean',
                 description: 'Render Dataview queries to show actual data (default: false)'
+              },
+              dataviewMode: {
+                type: 'string',
+                enum: ['smart', 'summary', 'count', 'table', 'compact'],
+                description: 'Dataview rendering mode: smart (auto-decide), summary (grouped counts), count (totals only), table (full), compact (limited rows). Default: smart'
               }
             },
             required: ['paths']
@@ -260,6 +270,29 @@ class SimpleVaultServer {
               }
             }
           }
+        },
+        {
+          name: 'query_dataview',
+          description: 'Execute a Dataview query directly without reading entire notes. Efficient for specific data retrieval.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: {
+                type: 'string',
+                description: 'Dataview query (e.g., TABLE status, created FROM "Records" WHERE type = "decision")'
+              },
+              renderMode: {
+                type: 'string',
+                enum: ['smart', 'summary', 'count', 'table', 'compact'],
+                description: 'Rendering mode: smart (auto), summary (grouped), count (totals), table (full), compact (limited). Default: smart'
+              },
+              contextPath: {
+                type: 'string',
+                description: 'Context path for relative queries (optional)'
+              }
+            },
+            required: ['query']
+          }
         }
       ]
     }));
@@ -303,6 +336,8 @@ class SimpleVaultServer {
             return await benchmarkTool.execute(args, this, config);
           case 'view_search_metrics':
             return await this.viewSearchMetrics(args);
+          case 'query_dataview':
+            return await this.queryDataview(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -407,7 +442,7 @@ class SimpleVaultServer {
     };
   }
 
-  async readNotes({ paths, renderDataview = false }) {
+  async readNotes({ paths, renderDataview = false, dataviewMode = 'smart' }) {
     const notes = await Promise.all(paths.map(async (notePath) => {
       const fullPath = path.join(config.vaultPath, notePath);
       const content = await fs.readFile(fullPath, 'utf-8');
@@ -432,7 +467,7 @@ class SimpleVaultServer {
       let processedBody = body;
       if (renderDataview) {
         try {
-          processedBody = await this.dataviewRenderer.renderDataviewBlocks(body, notePath);
+          processedBody = await this.dataviewRenderer.renderDataviewBlocks(body, notePath, dataviewMode);
         } catch (error) {
           console.error(`Failed to render Dataview for ${notePath}:`, error);
         }
@@ -734,20 +769,23 @@ class SimpleVaultServer {
   }
 
   async getResearchContext() {
-    // Reload config to get latest changes
-    await loadConfig();
-    
-    // Use configured context or default
-    const defaultContext = {
-      "description": "Default research context - configure in config.json",
-      "context_documents": {},
-      "system_capabilities": { 
-        "atomic_records": true, 
-        "autonomous_operation": false 
-      }
-    };
-    
-    const context = config.researchContext || defaultContext;
+    try {
+      // Reload config to get latest changes
+      await loadConfig();
+      console.error('Config loaded, researchContext:', JSON.stringify(config.researchContext, null, 2));
+      
+      // Use configured context or default
+      const defaultContext = {
+        "description": "Default research context - configure in config.json",
+        "context_documents": {},
+        "system_capabilities": { 
+          "atomic_records": true, 
+          "autonomous_operation": false 
+        }
+      };
+      
+      const context = config.researchContext || defaultContext;
+      console.error('Using context:', JSON.stringify(context, null, 2));
     
     // If context documents are configured, read their contents
     if (context.contextDocuments) {
@@ -801,6 +839,18 @@ class SimpleVaultServer {
         text: JSON.stringify(context, null, 2) 
       }] 
     };
+    } catch (error) {
+      console.error('Error in getResearchContext:', error);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            error: error.message,
+            description: "Failed to load research context"
+          }, null, 2)
+        }]
+      };
+    }
   }
 
   async getWorkingContext({ 
@@ -1035,6 +1085,8 @@ class SimpleVaultServer {
         return await this.getResearchContext(args);
       case 'view_search_metrics':
         return await this.viewSearchMetrics(args);
+      case 'query_dataview':
+        return await this.queryDataview(args);
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -1072,6 +1124,30 @@ class SimpleVaultServer {
         text: result
       }]
     };
+  }
+
+  async queryDataview({ query, renderMode = 'smart', contextPath = '' }) {
+    try {
+      // Execute the query directly
+      const results = await this.dataviewRenderer.executeQuery(query, contextPath);
+      
+      // Format results according to render mode
+      const formatted = this.dataviewRenderer.formatResults(results, query, renderMode);
+      
+      return {
+        content: [{
+          type: 'text',
+          text: formatted
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: `Error executing Dataview query: ${error.message}\n\nQuery: ${query}`
+        }]
+      };
+    }
   }
 
   async run() {

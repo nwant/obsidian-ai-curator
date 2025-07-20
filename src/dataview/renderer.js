@@ -8,7 +8,7 @@ export class DataviewRenderer {
     this.cache = cache;
   }
 
-  async renderDataviewBlocks(content, contextPath) {
+  async renderDataviewBlocks(content, contextPath, renderMode = 'smart') {
     // Find all dataview code blocks
     const dataviewRegex = /```dataview\s*\n([\s\S]*?)\n```/g;
     let rendered = content;
@@ -18,7 +18,7 @@ export class DataviewRenderer {
       const query = match[1].trim();
       try {
         const results = await this.executeQuery(query, contextPath);
-        const renderedTable = this.formatResults(results, query);
+        const renderedTable = this.formatResults(results, query, renderMode);
         rendered = rendered.replace(match[0], renderedTable);
       } catch (error) {
         // If we can't render, leave the original query
@@ -175,12 +175,129 @@ export class DataviewRenderer {
     });
   }
 
-  formatResults(results, originalQuery) {
+  formatResults(results, originalQuery, renderMode = 'smart') {
     if (results.length === 0) {
       return '*No results found*';
     }
     
-    // Extract column names from first result
+    // Smart rendering based on result count
+    const resultCount = results.length;
+    
+    // If mode is 'smart', decide based on result count
+    if (renderMode === 'smart') {
+      if (resultCount > 10) {
+        renderMode = 'summary';
+      } else {
+        renderMode = 'table';
+      }
+    }
+    
+    switch (renderMode) {
+      case 'summary':
+        return this.formatSummary(results, originalQuery);
+      case 'count':
+        return this.formatCount(results, originalQuery);
+      case 'table':
+        return this.formatTable(results, originalQuery);
+      case 'compact':
+        return this.formatCompact(results, originalQuery);
+      default:
+        return this.formatTable(results, originalQuery);
+    }
+  }
+  
+  formatSummary(results, originalQuery) {
+    const count = results.length;
+    const columns = Object.keys(results[0]).filter(k => k !== '_path');
+    
+    // Group by first column (usually type or status)
+    const groups = {};
+    const groupCol = columns[0];
+    
+    for (const row of results) {
+      const key = row[groupCol] || 'Other';
+      groups[key] = (groups[key] || 0) + 1;
+    }
+    
+    let summary = `\n📊 **Summary**: ${count} total results\n\n`;
+    
+    // Show distribution
+    for (const [key, count] of Object.entries(groups)) {
+      summary += `- ${key}: ${count}\n`;
+    }
+    
+    // Show recent 5 items
+    if (count > 5) {
+      summary += `\n**Recent items:**\n`;
+      for (let i = 0; i < Math.min(5, results.length); i++) {
+        const row = results[i];
+        const title = row[columns[0]] || 'Untitled';
+        summary += `- ${title}\n`;
+      }
+      summary += `*...and ${count - 5} more*\n`;
+    }
+    
+    return summary + `\n*Dataview summary (${count} results)*`;
+  }
+  
+  formatCount(results, originalQuery) {
+    const count = results.length;
+    const columns = Object.keys(results[0]).filter(k => k !== '_path');
+    
+    // Group by status/type if available
+    const statusCol = columns.find(c => c.toLowerCase().includes('status') || c.toLowerCase().includes('type'));
+    
+    if (statusCol) {
+      const groups = {};
+      for (const row of results) {
+        const key = row[statusCol] || 'Unknown';
+        groups[key] = (groups[key] || 0) + 1;
+      }
+      
+      let output = `\n**Total**: ${count} items\n`;
+      for (const [key, count] of Object.entries(groups)) {
+        output += `- ${key}: ${count}\n`;
+      }
+      return output + `\n*Dataview count*`;
+    }
+    
+    return `\n**Count**: ${count} items\n*Dataview count*`;
+  }
+  
+  formatCompact(results, originalQuery) {
+    const maxRows = 10;
+    const columns = Object.keys(results[0]).filter(k => k !== '_path');
+    
+    // Only show first 2 columns for compact view
+    const compactCols = columns.slice(0, 2);
+    
+    let table = '\n| ' + compactCols.join(' | ') + ' |\n';
+    table += '| ' + compactCols.map(() => '---').join(' | ') + ' |\n';
+    
+    const rowsToShow = Math.min(maxRows, results.length);
+    
+    for (let i = 0; i < rowsToShow; i++) {
+      const row = results[i];
+      const values = compactCols.map(col => {
+        const val = row[col];
+        // Truncate long values
+        if (typeof val === 'string' && val.length > 30) {
+          return val.substring(0, 30) + '...';
+        }
+        return val;
+      });
+      table += '| ' + values.join(' | ') + ' |\n';
+    }
+    
+    if (results.length > maxRows) {
+      table += `\n*...and ${results.length - maxRows} more results*\n`;
+    }
+    
+    return table + `\n*Dataview compact view (${results.length} total)*`;
+  }
+  
+  formatTable(results, originalQuery) {
+    // Original full table implementation
     const columns = Object.keys(results[0]).filter(k => k !== '_path');
     
     // Build markdown table
