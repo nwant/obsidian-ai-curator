@@ -1,11 +1,16 @@
 import { performance } from 'perf_hooks';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class AutoMetricsCollector {
   constructor(config) {
     this.config = config;
-    this.metricsFile = path.join(process.cwd(), 'data', 'search-metrics.json');
+    // Use a path relative to the source file, not process.cwd()
+    this.metricsFile = path.join(__dirname, '..', '..', 'data', 'search-metrics.json');
+    console.error('Metrics file path:', this.metricsFile);
     this.metrics = [];
     this.loadMetrics();
   }
@@ -20,8 +25,13 @@ export class AutoMetricsCollector {
   }
 
   async saveMetrics() {
-    await fs.mkdir(path.dirname(this.metricsFile), { recursive: true });
-    await fs.writeFile(this.metricsFile, JSON.stringify(this.metrics, null, 2));
+    try {
+      await fs.mkdir(path.dirname(this.metricsFile), { recursive: true });
+      await fs.writeFile(this.metricsFile, JSON.stringify(this.metrics, null, 2));
+      console.error(`Metrics saved: ${this.metrics.length} total entries`);
+    } catch (error) {
+      console.error('Failed to save metrics:', error);
+    }
   }
 
   async trackSearchOperation(toolName, params, operation) {
@@ -47,6 +57,10 @@ export class AutoMetricsCollector {
           resultCount = result.content?.[0]?.text ? 
             JSON.parse(result.content[0].text).paths?.length || 0 : 0;
           break;
+        case 'get_working_context':
+          resultCount = result.content?.[0]?.text ? 
+            JSON.parse(result.content[0].text).notes?.length || 0 : 0;
+          break;
       }
     } catch (err) {
       error = err.message;
@@ -66,6 +80,7 @@ export class AutoMetricsCollector {
       };
 
       this.metrics.push(metric);
+      console.error(`Metric tracked: ${toolName} - ${duration.toFixed(2)}ms - ${resultCount} results`);
       
       // Keep only last 1000 metrics to prevent unbounded growth
       if (this.metrics.length > 1000) {

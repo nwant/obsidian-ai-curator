@@ -18,7 +18,6 @@ async function loadConfig() {
   try {
     const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
     config = JSON.parse(configData);
-    console.error('Config loaded successfully from:', CONFIG_PATH);
   } catch (error) {
     console.warn('Config not found, using environment variables');
     config.vaultPath = process.env.OBSIDIAN_VAULT_PATH || '';
