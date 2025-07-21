@@ -43,7 +43,11 @@ export class MCPClient {
         this.debug('WebSocket closed', event);
         this.updateState({ status: 'disconnected' });
         
-        if (!event.wasClean) {
+        // Always try to reconnect unless we explicitly disconnected
+        // Check if this was a manual disconnect (code 1000 with our message)
+        const isManualDisconnect = event.code === 1000 && event.reason === 'Client disconnect';
+        
+        if (!isManualDisconnect) {
           this.scheduleReconnect();
         }
       };
@@ -172,7 +176,7 @@ export class MCPClient {
   private scheduleReconnect(): void {
     if (this.reconnectTimeout) return;
 
-    const delay = Math.min(1000 * Math.pow(2, this.state.reconnectAttempts), 30000);
+    const delay = Math.min(500 * Math.pow(2, this.state.reconnectAttempts), 30000);
     this.debug(`Scheduling reconnect in ${delay}ms`);
 
     this.reconnectTimeout = setTimeout(() => {

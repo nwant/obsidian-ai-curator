@@ -9,7 +9,10 @@
     "start:ws": "node src/websocket-server.js",
     "dev": "node --watch src/mcp-server.js",
     "dev:ws": "node --watch src/websocket-server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "start:all": "./start.sh",
+    "dev:all": "./start-dev.sh",
+    "build:plugin": "cd obsidian-ai-curator-plugin && npm run build"
   },
   "keywords": [
     "obsidian",

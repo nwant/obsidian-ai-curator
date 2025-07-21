@@ -62,3 +62,49 @@
 .ai-curator-consolidating {
   animation: consolidate 0.5s ease-out;
 }
+
+/* Link validation styles */
+.link-validation-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 10px 0;
+}
+
+.link-validation-item {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: var(--background-secondary);
+}
+
+.link-validation-broken {
+  color: var(--text-error);
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.link-validation-suggestion {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+/* Move preview styles */
+.move-preview-info {
+  background-color: var(--background-secondary);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.move-preview-info p {
+  margin: 5px 0;
+}
+
+.move-preview-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

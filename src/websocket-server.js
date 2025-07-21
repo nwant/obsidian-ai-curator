@@ -35,6 +35,7 @@ class VaultWebSocketServer {
     this.cache = new VaultCache(config);
     this.linkIndex = new LinkIndexManager(config);
     this.git = simpleGit(config.vaultPath);
+    this.isShuttingDown = false;
     
     // Initialize WebSocket server
     this.wss = new WebSocketServer({ 
@@ -125,6 +126,9 @@ class VaultWebSocketServer {
       case 'read-note':
         return await this.readNote(params);
       
+      case 'preview-move':
+        return await this.previewMove(params);
+      
       default:
         throw new Error(`Unknown request method: ${method}`);
     }
@@ -138,6 +142,10 @@ class VaultWebSocketServer {
       
       case 'vault-sync':
         await this.handleVaultSync(params);
+        break;
+      
+      case 'workspace-context':
+        await this.handleWorkspaceContext(params);
         break;
       
       default:
@@ -178,7 +186,7 @@ class VaultWebSocketServer {
       }
 
       // Update cache
-      await this.cache.invalidateFile(path);
+      this.cache.invalidate(path);
       
     } catch (error) {
       console.error(`Error handling file ${type}:`, error);
@@ -187,6 +195,12 @@ class VaultWebSocketServer {
 
   async handleVaultSync(params) {
     console.log(`Vault sync: ${params.totalFiles} files`);
+    
+    // Don't start indexing if shutting down
+    if (this.isShuttingDown) {
+      console.log('Server is shutting down, skipping index build');
+      return;
+    }
     
     // Initialize or rebuild link index
     const hasIndex = await this.linkIndex.load();
@@ -197,6 +211,27 @@ class VaultWebSocketServer {
           console.log(`Indexing: ${progress.current}/${progress.total}`);
         }
       });
+    }
+  }
+
+  async handleWorkspaceContext(params) {
+    const { activeFile, recentFiles, openFiles, currentFolder } = params;
+    
+    console.log('Workspace context update:');
+    console.log(`  Active: ${activeFile || 'none'}`);
+    console.log(`  Recent: ${recentFiles.length} files`);
+    console.log(`  Open: ${openFiles.length} files`);
+    console.log(`  Folder: ${currentFolder || 'root'}`);
+    
+    // Store context for intelligent operations
+    this.workspaceContext = params;
+    
+    // Could trigger intelligent suggestions based on context
+    if (activeFile) {
+      const backlinks = this.linkIndex.getBacklinks(activeFile);
+      if (backlinks.length > 0) {
+        console.log(`  Active file has ${backlinks.length} backlinks`);
+      }
     }
   }
 
@@ -274,6 +309,35 @@ class VaultWebSocketServer {
     }
   }
 
+  async previewMove(params) {
+    const { from, to } = params;
+    
+    // Get all files that link to the file being moved
+    const backlinks = this.linkIndex.getBacklinks(from);
+    const linkUpdates = [];
+    
+    // Calculate what links would need to be updated
+    for (const linkingFile of backlinks) {
+      const linkDetails = this.linkIndex.index.linkDetails[`${linkingFile}->${from}`] || [];
+      
+      for (const detail of linkDetails) {
+        linkUpdates.push({
+          file: linkingFile,
+          oldLink: detail.raw,
+          newLink: detail.raw.replace(path.basename(from, '.md'), path.basename(to, '.md')),
+          line: detail.line
+        });
+      }
+    }
+    
+    return {
+      from,
+      to,
+      affectedFiles: backlinks,
+      linkUpdates
+    };
+  }
+
   async start() {
     // Load or build link index
     const hasIndex = await this.linkIndex.load();
@@ -282,6 +346,26 @@ class VaultWebSocketServer {
     } else {
       console.log('Link index loaded');
     }
+  }
+
+  async shutdown() {
+    this.isShuttingDown = true;
+    
+    // Cancel any ongoing index build
+    if (this.linkIndex.isBuilding) {
+      console.log('Cancelling index build...');
+      this.linkIndex.cancelBuild();
+    }
+    
+    // Close all connections
+    this.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.close(1000, 'Server shutting down');
+      }
+    });
+    
+    // Clear clients
+    this.clients.clear();
   }
 }
 
@@ -303,12 +387,32 @@ async function main() {
   console.log(`WebSocket port: ${server.port}`);
   
   // Handle graceful shutdown
-  process.on('SIGINT', () => {
+  let isShuttingDown = false;
+  
+  const shutdown = async () => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+    
     console.log('\nShutting down...');
-    server.wss.close(() => {
-      process.exit(0);
+    
+    // Tell server to shutdown
+    await server.shutdown();
+    
+    // Close the WebSocket server
+    await new Promise((resolve) => {
+      server.wss.close(() => {
+        console.log('WebSocket server closed');
+        resolve();
+      });
     });
-  });
+    
+    // Exit cleanly
+    console.log('Shutdown complete');
+    process.exit(0);
+  };
+  
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
 
 main().catch(console.error);

@@ -1,6 +1,9 @@
 import { Plugin, Notice } from 'obsidian';
 import { MCPClient } from './src/mcp-client';
 import { FileWatcher } from './src/file-watcher';
+import { ContextTracker } from './src/context-tracker';
+import { LinkValidator } from './src/link-validator';
+import { FileInterceptor } from './src/file-interceptor';
 import { AICuratorSettingTab } from './src/settings';
 import { AICuratorSettings, DEFAULT_SETTINGS, ConnectionState } from './src/types';
 
@@ -8,6 +11,9 @@ export default class AICuratorPlugin extends Plugin {
   settings: AICuratorSettings;
   mpcClient: MCPClient;
   fileWatcher: FileWatcher;
+  contextTracker: ContextTracker;
+  linkValidator: LinkValidator;
+  fileInterceptor: FileInterceptor;
   statusBarItem: HTMLElement;
 
   async onload() {
@@ -35,6 +41,15 @@ export default class AICuratorPlugin extends Plugin {
     // Initialize file watcher
     this.fileWatcher = new FileWatcher(this.app, this.mpcClient);
 
+    // Initialize context tracker
+    this.contextTracker = new ContextTracker(this.app, this.mpcClient);
+
+    // Initialize link validator
+    this.linkValidator = new LinkValidator(this.app, this.mpcClient);
+
+    // Initialize file interceptor
+    this.fileInterceptor = new FileInterceptor(this.app, this.linkValidator);
+
     // Add commands
     this.addCommand({
       id: 'connect-mcp-server',
@@ -54,6 +69,18 @@ export default class AICuratorPlugin extends Plugin {
       callback: () => this.syncVaultState()
     });
 
+    this.addCommand({
+      id: 'show-workspace-context',
+      name: 'Show current workspace context',
+      callback: () => this.showWorkspaceContext()
+    });
+
+    this.addCommand({
+      id: 'validate-links',
+      name: 'Validate links in current file',
+      callback: () => this.linkValidator.validateCurrentFile()
+    });
+
     // Auto-connect if enabled
     if (this.settings.autoConnect) {
       // Delay connection to ensure Obsidian is fully loaded
@@ -70,6 +97,8 @@ export default class AICuratorPlugin extends Plugin {
     console.log('Unloading AI Curator plugin');
     this.disconnect();
     this.fileWatcher?.stop();
+    this.contextTracker?.stop();
+    this.fileInterceptor?.uninstall();
   }
 
   async loadSettings() {
@@ -84,6 +113,8 @@ export default class AICuratorPlugin extends Plugin {
     try {
       await this.mpcClient.connect();
       this.fileWatcher.start();
+      this.contextTracker.start();
+      this.fileInterceptor.install();
       
       // Send initial vault state
       await this.syncVaultState();
@@ -98,6 +129,8 @@ export default class AICuratorPlugin extends Plugin {
 
   disconnect() {
     this.fileWatcher?.stop();
+    this.contextTracker?.stop();
+    this.fileInterceptor?.uninstall();
     this.mpcClient?.disconnect();
     new Notice('AI Curator: Disconnected');
   }
@@ -182,5 +215,28 @@ export default class AICuratorPlugin extends Plugin {
 
     this.statusBarItem.setText(text);
     this.statusBarItem.className = className;
+  }
+
+  async showWorkspaceContext() {
+    if (!this.contextTracker) {
+      new Notice('AI Curator: Context tracker not initialized');
+      return;
+    }
+
+    const activeFile = this.contextTracker.getActiveFile();
+    const recentFiles = this.contextTracker.getRecentFiles();
+    
+    let message = 'Workspace Context:\n';
+    message += `Active file: ${activeFile?.path || 'None'}\n`;
+    message += `Recent files: ${recentFiles.length}\n`;
+    
+    if (recentFiles.length > 0) {
+      message += 'Recent:\n';
+      recentFiles.slice(0, 5).forEach(file => {
+        message += `  - ${file}\n`;
+      });
+    }
+    
+    new Notice(message, 10000);
   }
 }

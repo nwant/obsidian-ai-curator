@@ -15,6 +15,7 @@ export class LinkIndexManager {
       version: '1.0'
     };
     this.isBuilding = false;
+    this.shouldCancelBuild = false;
   }
 
   async load() {
@@ -105,6 +106,7 @@ export class LinkIndexManager {
   async buildIndex(progressCallback) {
     if (this.isBuilding) return;
     this.isBuilding = true;
+    this.shouldCancelBuild = false;
     
     try {
       // Reset index
@@ -123,6 +125,12 @@ export class LinkIndexManager {
       let processed = 0;
       
       for (const file of files) {
+        // Check if we should cancel
+        if (this.shouldCancelBuild) {
+          console.log('Index building cancelled');
+          break;
+        }
+        
         await this.indexFile(file);
         processed++;
         
@@ -135,10 +143,18 @@ export class LinkIndexManager {
         }
       }
       
-      await this.save();
+      // Only save if we completed
+      if (!this.shouldCancelBuild) {
+        await this.save();
+      }
     } finally {
       this.isBuilding = false;
+      this.shouldCancelBuild = false;
     }
+  }
+
+  cancelBuild() {
+    this.shouldCancelBuild = true;
   }
 
   async scanVault(dir = '', files = []) {
