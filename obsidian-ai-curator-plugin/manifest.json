@@ -3,7 +3,7 @@
   "name": "AI Curator",
   "version": "0.1.0",
   "minAppVersion": "0.15.0",
-  "description": "AI-powered knowledge consolidation with MCP server integration",
+  "description": "AI-powered knowledge consolidation for Obsidian. Works with Claude Desktop via API server.",
   "author": "Nathan",
   "authorUrl": "https://github.com/nathan",
   "fundingUrl": "",

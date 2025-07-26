@@ -28,6 +28,10 @@ cd ..
 echo -e "${GREEN}✅ Plugin built successfully!${NC}"
 echo ""
 
-# Start the WebSocket server
-echo -e "${GREEN}🌐 Starting WebSocket server...${NC}"
-exec npm run start:ws
+echo -e "${BLUE}The Obsidian plugin is now ready!${NC}"
+echo -e "${BLUE}To use with Claude Desktop/Code:${NC}"
+echo -e "  1. Open Obsidian with the AI Curator plugin enabled"
+echo -e "  2. The API server will start automatically on port 3001"
+echo -e "  3. Use Claude Desktop/Code with the MCP server"
+echo ""
+echo -e "${GREEN}MCP server is configured in your Claude Desktop/Code settings.${NC}"

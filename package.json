@@ -6,9 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/mcp-server.js",
-    "start:ws": "node src/websocket-server.js",
     "dev": "node --watch src/mcp-server.js",
-    "dev:ws": "node --watch src/websocket-server.js",
     "test": "node --test",
     "start:all": "./start.sh",
     "dev:all": "./start-dev.sh",
@@ -27,7 +25,6 @@
     "@modelcontextprotocol/sdk": "^1.12.1",
     "gray-matter": "^4.0.3",
     "simple-git": "^3.27.0",
-    "ws": "^8.16.0",
     "zod": "^3.25.56"
   },
   "devDependencies": {

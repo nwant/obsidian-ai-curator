@@ -1,13 +1,13 @@
 # Obsidian AI Curator Plugin
 
-AI-powered knowledge consolidation plugin for Obsidian that integrates with the MCP server.
+AI-powered knowledge consolidation plugin for Obsidian that works with Claude Desktop/Code via MCP.
 
 ## Features
 
-- **Real-time Sync**: Automatically syncs file changes with the MCP server
-- **Connection Management**: Robust WebSocket connection with auto-reconnect
-- **Rich Metadata**: Shares links, tags, headings, and frontmatter with AI
-- **Status Indicator**: Visual connection status in the status bar
+- **API Server**: Exposes Obsidian's native APIs (search, tags, links) for MCP server optimization
+- **Smart Consolidation**: Find and consolidate related notes with AI assistance
+- **Git Integration**: Automatic commits before/after consolidation operations
+- **Claude Desktop/Code Compatible**: Works seamlessly with Claude via MCP protocol
 
 ## Installation
 
@@ -82,26 +82,31 @@ npm run dev
 ## Configuration
 
 1. Open Settings → AI Curator
-2. Set the MCP Server URL (default: `ws://localhost:3000`)
-3. Toggle auto-connect and other preferences
+2. Configure API server settings (default port: 3001)
+3. Set consolidation preferences (archive folder, auto-commit, etc.)
+4. Choose Claude model for consolidation operations
 
 ## Usage
 
 ### Commands
 
-- **Connect to MCP server**: Manually connect to the server
-- **Disconnect from MCP server**: Disconnect from the server
-- **Sync vault state**: Send current vault state to the server
+- **Find notes to consolidate**: Analyze vault for consolidation opportunities
 
-### File Operations
+### API Server
 
-The plugin automatically tracks:
-- File creation
-- File modification
-- File deletion
-- File renaming
+The plugin runs an API server on port 3001 that exposes:
+- `/api/search` - Obsidian's search with cached index
+- `/api/tags` - All tags from metadata cache
+- `/api/links` - Outgoing links from any note
+- `/api/backlinks` - Incoming links to any note
+- `/api/metadata` - Full metadata for notes
+- `/api/swagger` - API documentation
 
-All changes are sent to the MCP server in real-time with rich metadata.
+### Using with Claude Desktop
+
+1. Start Obsidian with the AI Curator plugin enabled
+2. The API server starts automatically on port 3001
+3. Use Claude Desktop with the MCP server - it will automatically detect and use Obsidian's APIs
 
 ## Development
 
@@ -113,14 +118,16 @@ The plugin is located in the `obsidian-ai-curator-plugin` subdirectory of the ma
 obsidian-ai-curator/                 # Main repository
 └── obsidian-ai-curator-plugin/      # Plugin directory
     ├── src/
-    │   ├── types.ts         # TypeScript type definitions
-    │   ├── mcp-client.ts    # WebSocket client implementation
-    │   ├── file-watcher.ts  # File change detection
-    │   └── settings.ts      # Settings tab UI
-    ├── styles/
-    │   └── main.css        # Plugin styles
-    ├── main.ts             # Plugin entry point
-    └── manifest.json       # Plugin metadata
+    │   ├── types.ts                # TypeScript type definitions
+    │   ├── settings.ts             # Settings tab UI
+    │   ├── obsidian-api-server.ts  # API server for MCP optimization
+    │   ├── consolidation-service.ts # Note consolidation logic
+    │   ├── consolidation-modal.ts  # UI for consolidation
+    │   ├── git-service.ts          # Git integration
+    │   └── openapi-spec.ts         # Swagger documentation
+    ├── main.css                    # Plugin styles
+    ├── main.ts                     # Plugin entry point
+    └── manifest.json               # Plugin metadata
 ```
 
 ### Building
@@ -146,11 +153,12 @@ npm run build
 
 ## Roadmap
 
-- [ ] Visual consolidation interface
-- [ ] Conversation memory persistence
-- [ ] Link validation warnings
-- [ ] Batch operation support
-- [ ] Knowledge density indicators
+- [x] API server for Obsidian native APIs
+- [x] Smart consolidation with Claude
+- [x] Git integration for version control
+- [ ] Batch consolidation operations
+- [ ] Knowledge density visualization
+- [ ] Custom consolidation rules
 
 ## License
 

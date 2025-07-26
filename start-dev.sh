@@ -12,10 +12,6 @@ echo ""
 # Function to cleanup on exit
 cleanup() {
     echo -e "\n${YELLOW}Shutting down...${NC}"
-    # Kill the WebSocket server if it's running
-    if [ ! -z "$WS_PID" ]; then
-        kill $WS_PID 2>/dev/null
-    fi
     # Kill the plugin dev server if it's running
     if [ ! -z "$DEV_PID" ]; then
         kill $DEV_PID 2>/dev/null
@@ -42,15 +38,7 @@ if [ $? -ne 0 ]; then
 fi
 cd ..
 
-# Start the WebSocket server
-echo -e "${GREEN}🌐 Starting WebSocket server...${NC}"
-npm run start:ws &
-WS_PID=$!
-
-# Give the server a moment to start
-sleep 2
-
-# Optional: Start plugin in dev mode for auto-rebuild
+# Start plugin in dev mode for auto-rebuild
 echo -e "${GREEN}👁️  Starting plugin in watch mode...${NC}"
 cd obsidian-ai-curator-plugin
 npm run dev &
@@ -60,8 +48,8 @@ cd ..
 echo ""
 echo -e "${BLUE}✅ Development environment is running!${NC}"
 echo ""
-echo -e "WebSocket server: ${GREEN}http://localhost:3000${NC}"
 echo -e "Plugin watching: ${GREEN}Enabled${NC}"
+echo -e "Obsidian API server: ${GREEN}Port 3001 (starts with plugin)${NC}"
 echo ""
 echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
 

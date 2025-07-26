@@ -11,6 +11,7 @@ import { benchmarkTool } from './tools/benchmark.js';
 import { AutoMetricsCollector } from './metrics/auto-collector.js';
 import { VaultCache } from './cache/vault-cache.js';
 import { DataviewRenderer } from './dataview/renderer.js';
+import { ObsidianAPIClient } from './obsidian-api-client.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,7 +23,7 @@ async function loadConfig() {
     const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
     config = JSON.parse(configData);
   } catch (error) {
-    console.warn('Config not found, using environment variables');
+    // Config not found, using environment variables
     config.vaultPath = process.env.OBSIDIAN_VAULT_PATH || '';
   }
   return config;
@@ -42,6 +43,7 @@ class SimpleVaultServer {
     this.metricsCollector = new AutoMetricsCollector(config);
     this.cache = new VaultCache(config);
     this.dataviewRenderer = new DataviewRenderer(config, this.cache);
+    this.obsidianAPI = new ObsidianAPIClient();
     this.setupHandlers();
   }
 
@@ -290,6 +292,47 @@ class SimpleVaultServer {
             },
             required: ['query']
           }
+        },
+        {
+          name: 'get_tags',
+          description: 'Get tags from the vault, either all tags or for a specific file',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'Optional file path to get tags for a specific file'
+              }
+            }
+          }
+        },
+        {
+          name: 'get_links',
+          description: 'Get outgoing links from a specific file',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'File path to get links from'
+              }
+            },
+            required: ['path']
+          }
+        },
+        {
+          name: 'get_backlinks',
+          description: 'Get backlinks (files that link to) a specific file',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'File path to get backlinks for'
+              }
+            },
+            required: ['path']
+          }
         }
       ]
     }));
@@ -335,6 +378,12 @@ class SimpleVaultServer {
             return await this.viewSearchMetrics(args);
           case 'query_dataview':
             return await this.queryDataview(args);
+          case 'get_tags':
+            return await this.getTags(args);
+          case 'get_links':
+            return await this.getLinks(args);
+          case 'get_backlinks':
+            return await this.getBacklinks(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -522,6 +571,27 @@ class SimpleVaultServer {
   }
 
   async searchContent({ query, maxResults = 50, contextLines = 2 }) {
+    // Try Obsidian API first if available
+    if (this.obsidianAPI.isAvailable()) {
+      const apiResult = await this.obsidianAPI.search(query, { maxResults, contextLines });
+      if (apiResult) {
+        // Transform API result to match expected format
+        const matches = [];
+        for (const result of apiResult) {
+          for (const match of result.matches || []) {
+            matches.push({
+              path: result.path,
+              line: match.line,
+              match: match.text,
+              context: result.context
+            });
+          }
+        }
+        return { content: [{ type: 'text', text: JSON.stringify({ matches }, null, 2) }] };
+      }
+    }
+    
+    // Fallback to file system search
     const matches = [];
     
     const searchDir = async (dir, baseDir = '') => {
@@ -557,10 +627,13 @@ class SimpleVaultServer {
     };
     
     await searchDir(config.vaultPath);
-    return { content: [{ type: 'text', text: JSON.stringify({ matches }, null, 2) }] };
+    return { content: [{ type: 'text', text: JSON.stringify({ matches: matches.slice(0, maxResults) }, null, 2) }] };
   }
 
   async findByMetadata({ frontmatter, minWords, maxWords, modifiedAfter, modifiedBefore }) {
+    // Note: Could optimize with Obsidian API in the future by adding a bulk metadata endpoint
+    
+    // Fallback to file system
     const matchingPaths = [];
     
     const searchDir = async (dir, baseDir = '') => {
@@ -1082,6 +1155,12 @@ class SimpleVaultServer {
         return await this.viewSearchMetrics(args);
       case 'query_dataview':
         return await this.queryDataview(args);
+      case 'get_tags':
+        return await this.getTags(args);
+      case 'get_links':
+        return await this.getLinks(args);
+      case 'get_backlinks':
+        return await this.getBacklinks(args);
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -1143,6 +1222,223 @@ class SimpleVaultServer {
         }]
       };
     }
+  }
+
+  async getTags({ path: filePath }) {
+    // Try Obsidian API first if available
+    if (this.obsidianAPI.isAvailable()) {
+      const apiResult = await this.obsidianAPI.getTags(filePath);
+      if (apiResult) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(apiResult, null, 2)
+          }]
+        };
+      }
+    }
+
+    // Fallback to file system
+    const tags = {};
+    
+    if (filePath) {
+      // Get tags for specific file
+      const fullPath = path.join(config.vaultPath, filePath);
+      try {
+        const content = await fs.readFile(fullPath, 'utf-8');
+        const { data } = matter(content);
+        
+        // Extract tags from frontmatter
+        if (data.tags) {
+          const fileTags = Array.isArray(data.tags) ? data.tags : [data.tags];
+          fileTags.forEach(tag => {
+            const tagName = tag.startsWith('#') ? tag : `#${tag}`;
+            tags[tagName] = 1;
+          });
+        }
+        
+        // Extract tags from content
+        const tagMatches = content.match(/#[\w\-_]+/g);
+        if (tagMatches) {
+          tagMatches.forEach(tag => {
+            tags[tag] = (tags[tag] || 0) + 1;
+          });
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ error: `File not found: ${filePath}` }, null, 2)
+          }]
+        };
+      }
+    } else {
+      // Get all tags in vault
+      const scanDir = async (dir, baseDir = '') => {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          const relativePath = path.join(baseDir, entry.name);
+          
+          if (entry.isDirectory() && !this.shouldIgnore(entry.name)) {
+            await scanDir(fullPath, relativePath);
+          } else if (entry.isFile() && entry.name.endsWith('.md')) {
+            const content = await fs.readFile(fullPath, 'utf-8');
+            const { data } = matter(content);
+            
+            // Extract tags from frontmatter
+            if (data.tags) {
+              const fileTags = Array.isArray(data.tags) ? data.tags : [data.tags];
+              fileTags.forEach(tag => {
+                const tagName = tag.startsWith('#') ? tag : `#${tag}`;
+                tags[tagName] = (tags[tagName] || 0) + 1;
+              });
+            }
+            
+            // Extract tags from content
+            const tagMatches = content.match(/#[\w\-_]+/g);
+            if (tagMatches) {
+              tagMatches.forEach(tag => {
+                tags[tag] = (tags[tag] || 0) + 1;
+              });
+            }
+          }
+        }
+      };
+      
+      await scanDir(config.vaultPath);
+    }
+    
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({ tags }, null, 2)
+      }]
+    };
+  }
+
+  async getLinks({ path: filePath }) {
+    // Try Obsidian API first if available
+    if (this.obsidianAPI.isAvailable()) {
+      const apiResult = await this.obsidianAPI.getLinks(filePath, 'outgoing');
+      if (apiResult) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(apiResult, null, 2)
+          }]
+        };
+      }
+    }
+
+    // Fallback to file system
+    const fullPath = path.join(config.vaultPath, filePath);
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      
+      // Extract wiki links
+      const wikiLinks = [];
+      const wikiLinkRegex = /\[\[([^\]|#]+)(?:\|[^\]]+)?\]\]/g;
+      let match;
+      
+      while ((match = wikiLinkRegex.exec(content)) !== null) {
+        const linkPath = match[1].trim();
+        if (!wikiLinks.includes(linkPath)) {
+          wikiLinks.push(linkPath);
+        }
+      }
+      
+      // Extract markdown links
+      const mdLinks = [];
+      const mdLinkRegex = /\[([^\]]*)\]\(([^)]+)\)/g;
+      
+      while ((match = mdLinkRegex.exec(content)) !== null) {
+        const linkUrl = match[2].trim();
+        // Only include internal links (not http/https)
+        if (!linkUrl.startsWith('http://') && !linkUrl.startsWith('https://')) {
+          if (!mdLinks.includes(linkUrl)) {
+            mdLinks.push(linkUrl);
+          }
+        }
+      }
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            path: filePath,
+            outgoingLinks: [...wikiLinks, ...mdLinks]
+          }, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ error: `File not found: ${path}` }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async getBacklinks({ path: filePath }) {
+    // Try Obsidian API first if available
+    if (this.obsidianAPI.isAvailable()) {
+      const apiResult = await this.obsidianAPI.getLinks(filePath, 'backlinks');
+      if (apiResult) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(apiResult, null, 2)
+          }]
+        };
+      }
+    }
+
+    // Fallback to file system - search all files for links to this file
+    const backlinks = [];
+    const targetName = path.basename(filePath, '.md');
+    
+    const scanDir = async (dir, baseDir = '') => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        const relativePath = path.join(baseDir, entry.name);
+        
+        if (entry.isDirectory() && !this.shouldIgnore(entry.name)) {
+          await scanDir(fullPath, relativePath);
+        } else if (entry.isFile() && entry.name.endsWith('.md') && relativePath !== filePath) {
+          const content = await fs.readFile(fullPath, 'utf-8');
+          
+          // Check for wiki links
+          const wikiLinkRegex = new RegExp(`\\[\\[([^\\]|#]*${targetName}[^\\]|#]*)(?:\\|[^\\]]+)?\\]\\]`, 'g');
+          if (wikiLinkRegex.test(content)) {
+            backlinks.push(relativePath);
+            continue;
+          }
+          
+          // Check for markdown links
+          const mdLinkRegex = new RegExp(`\\[[^\\]]*\\]\\([^)]*${targetName}[^)]*\\)`, 'g');
+          if (mdLinkRegex.test(content)) {
+            backlinks.push(relativePath);
+          }
+        }
+      }
+    };
+    
+    await scanDir(config.vaultPath);
+    
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({ 
+          path: filePath,
+          backlinks 
+        }, null, 2)
+      }]
+    };
   }
 
   async run() {
