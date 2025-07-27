@@ -9,6 +9,7 @@ export class TagTaxonomyReader {
     this.autoTagRules = [];
     this.hierarchies = {};
     this.patterns = {};
+    this.loadError = null;
   }
 
   /**
@@ -48,6 +49,7 @@ export class TagTaxonomyReader {
       return false;
     } catch (error) {
       console.error('Error loading tag taxonomy:', error);
+      this.loadError = error;
       this.useDefaults();
       return false;
     }

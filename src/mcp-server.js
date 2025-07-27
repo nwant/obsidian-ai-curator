@@ -645,7 +645,20 @@ class SimpleVaultServer {
 
   async writeNote({ path: notePath, content }) {
     // Validate tags before writing
-    const tagValidation = await this.tagValidator.validateTags(content);
+    let tagValidation;
+    try {
+      tagValidation = await this.tagValidator.validateTags(content);
+    } catch (error) {
+      console.error('Tag validation error:', error);
+      // Continue without tag validation if it fails
+      tagValidation = { 
+        valid: true, 
+        tags: [], 
+        warnings: [], 
+        suggestions: [],
+        autoTagsAdded: []
+      };
+    }
     
     // Apply auto-tags if any were added
     let finalContent = content;
@@ -695,18 +708,31 @@ class SimpleVaultServer {
     }
     
     // Write the note
-    const fullPath = path.join(config.vaultPath, notePath);
-    const dir = path.dirname(fullPath);
-    
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(fullPath, finalContent, 'utf-8');
-    
-    return { 
-      content: [{ 
-        type: 'text', 
-        text: JSON.stringify(response, null, 2) 
-      }] 
-    };
+    try {
+      const fullPath = path.join(config.vaultPath, notePath);
+      const dir = path.dirname(fullPath);
+      
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(fullPath, finalContent, 'utf-8');
+      
+      return { 
+        content: [{ 
+          type: 'text', 
+          text: JSON.stringify(response, null, 2) 
+        }] 
+      };
+    } catch (error) {
+      console.error('Write note error:', error);
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            error: `Failed to write note: ${error.message}`,
+            path: notePath 
+          }, null, 2)
+        }]
+      };
+    }
   }
 
   async archiveNotes({ moves }) {

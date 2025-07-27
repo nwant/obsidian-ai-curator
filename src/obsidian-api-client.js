@@ -17,8 +17,10 @@ export class ObsidianAPIClient {
       
       if (response.ok) {
         const data = await response.json();
+        const wasAvailable = this.available;
         this.available = data.success && data.data?.status === 'ok';
-        if (this.available) {
+        // Only log when status changes
+        if (this.available && !wasAvailable) {
           console.error(`Obsidian API server available at ${this.apiUrl}`);
         }
       } else {
