@@ -14,6 +14,7 @@ import { DataviewRenderer } from './dataview/renderer.js';
 import { ObsidianAPIClient } from './obsidian-api-client.js';
 import { TagIntelligence } from './tools/tag-intelligence.js';
 import { TagValidator } from './tools/tag-validator.js';
+import { TagFormatter } from './tools/tag-formatter.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -575,7 +576,8 @@ class SimpleVaultServer {
     // Validate tags before writing
     const tagValidation = await this.tagValidator.validateTags(content);
     
-    let finalContent = content;
+    // Format content to ensure tags have # prefix in frontmatter
+    let finalContent = TagFormatter.formatContentTags(content);
     const response = {
       success: true,
       path: notePath,
