@@ -11,12 +11,17 @@
     "minNoteLength": 50,
     "maxFragmentLength": 500
   },
+  "dateFormat": "yyyy-MM-dd",
+  "dailyNotesPath": "Daily",
+  "dailyNoteDateFormat": "yyyy-MM-dd",
+  "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [#daily-note]\n---\n\n# {{title}}\n\n## Tasks\n- [ ] \n\n## Notes\n\n\n## Reflections\n\n",
   "researchContext": {
     "description": "Configure your AI research partner's behavior and context",
     "contextDocuments": {
       "workflow": "/path/to/workflow.md",
       "guidelines": "/path/to/guidelines.md",
-      "activeProjects": "/path/to/projects.md"
+      "activeProjects": "/path/to/projects.md",
+      "tagGuidelines": "docs/tag-usage-guidelines.md"
     },
     "systemCapabilities": {
       "atomicRecords": true,

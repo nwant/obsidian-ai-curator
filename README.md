@@ -39,11 +39,17 @@ cd obsidian-mcp-server
 npm install
 ```
 
-3. Configure your vault path:
+3. Configure your vault:
 ```bash
 cp config/config.example.json config/config.json
-# Edit config/config.json to set your vault path
+# Edit config/config.json to customize:
+# - Vault path
+# - Daily notes location and format
+# - Date formats
+# - Templates
 ```
+
+See [Configuration Guide](docs/configuration-guide.md) for all options.
 
 ## Configuration
 
@@ -88,6 +94,9 @@ Edit `config/config.json`:
 {
   "vaultPath": "/path/to/your/obsidian/vault",
   "ignorePatterns": [".obsidian", ".git", ".trash"],
+  "dateFormat": "yyyy-MM-dd",
+  "dailyNotesPath": "Daily",
+  "dailyNoteDateFormat": "yyyy-MM-dd",
   "researchContext": {
     "description": "Your custom AI research partner context",
     "contextDocuments": {
@@ -103,6 +112,8 @@ Edit `config/config.json`:
   }
 }
 ```
+
+See the [Configuration Guide](docs/configuration-guide.md) for all available options including daily note templates.
 
 #### Research Context Configuration
 
