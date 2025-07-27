@@ -12,6 +12,8 @@ import { AutoMetricsCollector } from './metrics/auto-collector.js';
 import { VaultCache } from './cache/vault-cache.js';
 import { DataviewRenderer } from './dataview/renderer.js';
 import { ObsidianAPIClient } from './obsidian-api-client.js';
+import { TagIntelligence } from './tools/tag-intelligence.js';
+import { TagValidator } from './tools/tag-validator.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,6 +46,8 @@ class SimpleVaultServer {
     this.cache = new VaultCache(config);
     this.dataviewRenderer = new DataviewRenderer(config, this.cache);
     this.obsidianAPI = new ObsidianAPIClient();
+    this.tagIntelligence = new TagIntelligence(config, this.cache, this.obsidianAPI);
+    this.tagValidator = new TagValidator(this.tagIntelligence);
     this.setupHandlers();
   }
 
@@ -333,6 +337,33 @@ class SimpleVaultServer {
             },
             required: ['path']
           }
+        },
+        {
+          name: 'analyze_tags',
+          description: 'Analyze all tags in the vault with statistics, hierarchy, and recommendations',
+          inputSchema: {
+            type: 'object',
+            properties: {}
+          }
+        },
+        {
+          name: 'suggest_tags',
+          description: 'Suggest existing tags based on content analysis',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              content: {
+                type: 'string',
+                description: 'The content to analyze for tag suggestions'
+              },
+              existingTags: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Tags already assigned (to avoid suggesting these)'
+              }
+            },
+            required: ['content']
+          }
         }
       ]
     }));
@@ -384,6 +415,10 @@ class SimpleVaultServer {
             return await this.getLinks(args);
           case 'get_backlinks':
             return await this.getBacklinks(args);
+          case 'analyze_tags':
+            return await this.analyzeTags(args);
+          case 'suggest_tags':
+            return await this.suggestTags(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -537,16 +572,43 @@ class SimpleVaultServer {
   }
 
   async writeNote({ path: notePath, content }) {
+    // Validate tags before writing
+    const tagValidation = await this.tagValidator.validateTags(content);
+    
+    let finalContent = content;
+    const response = {
+      success: true,
+      path: notePath,
+      tagValidation: {
+        warnings: tagValidation.warnings,
+        suggestions: tagValidation.suggestions,
+        validatedTags: tagValidation.tags
+      }
+    };
+    
+    // If there are tag warnings, include them in the response
+    if (tagValidation.warnings.length > 0) {
+      response.tagWarnings = tagValidation.warnings.map(w => 
+        `${w.severity.toUpperCase()}: ${w.message}${w.suggestion ? ` - ${w.suggestion}` : ''}`
+      );
+    }
+    
+    // If there are suggestions, include them
+    if (tagValidation.suggestions.length > 0) {
+      response.tagSuggestions = tagValidation.suggestions;
+    }
+    
+    // Write the note
     const fullPath = path.join(config.vaultPath, notePath);
     const dir = path.dirname(fullPath);
     
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(fullPath, content, 'utf-8');
+    await fs.writeFile(fullPath, finalContent, 'utf-8');
     
     return { 
       content: [{ 
         type: 'text', 
-        text: JSON.stringify({ success: true, path: notePath }, null, 2) 
+        text: JSON.stringify(response, null, 2) 
       }] 
     };
   }
@@ -1439,6 +1501,72 @@ class SimpleVaultServer {
         }, null, 2)
       }]
     };
+  }
+
+  async analyzeTags() {
+    const startTime = Date.now();
+    
+    try {
+      const analysis = await this.tagIntelligence.analyzeTags();
+      
+      // Track metrics
+      const duration = Date.now() - startTime;
+      await this.metricsCollector.trackOperation(
+        'analyze_tags',
+        {},
+        duration,
+        analysis.totalTags || 0,
+        true,
+        false
+      );
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(analysis, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ error: error.message }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async suggestTags({ content, existingTags = [] }) {
+    const startTime = Date.now();
+    
+    try {
+      const suggestions = await this.tagIntelligence.suggestTags(content, existingTags);
+      
+      // Track metrics
+      const duration = Date.now() - startTime;
+      await this.metricsCollector.trackOperation(
+        'suggest_tags',
+        { contentLength: content.length },
+        duration,
+        suggestions.length,
+        true,
+        false
+      );
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ suggestions }, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ error: error.message }, null, 2)
+        }]
+      };
+    }
   }
 
   async run() {
