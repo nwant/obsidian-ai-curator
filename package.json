@@ -23,6 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
+    "date-fns": "^4.1.0",
     "gray-matter": "^4.0.3",
     "simple-git": "^3.27.0",
     "zod": "^3.25.56"

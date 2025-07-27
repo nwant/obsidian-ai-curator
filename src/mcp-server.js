@@ -15,6 +15,8 @@ import { ObsidianAPIClient } from './obsidian-api-client.js';
 import { TagIntelligence } from './tools/tag-intelligence.js';
 import { TagValidator } from './tools/tag-validator.js';
 import { TagFormatter } from './tools/tag-formatter.js';
+import { DateManager } from './tools/date-manager.js';
+import { DailyNoteManager } from './tools/daily-note-manager.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,6 +51,7 @@ class SimpleVaultServer {
     this.obsidianAPI = new ObsidianAPIClient();
     this.tagIntelligence = new TagIntelligence(config, this.cache, this.obsidianAPI);
     this.tagValidator = new TagValidator(this.tagIntelligence);
+    this.dailyNoteManager = new DailyNoteManager(config, this.cache);
     this.setupHandlers();
   }
 
@@ -365,6 +368,68 @@ class SimpleVaultServer {
             },
             required: ['content']
           }
+        },
+        {
+          name: 'get_daily_note',
+          description: 'Get or create daily note for a specific date',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              date: {
+                type: 'string',
+                description: 'Date reference (today, yesterday, tomorrow, or yyyy-MM-dd)'
+              }
+            }
+          }
+        },
+        {
+          name: 'append_to_daily_note',
+          description: 'Append content to a daily note section',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              content: {
+                type: 'string',
+                description: 'Content to append'
+              },
+              date: {
+                type: 'string',
+                description: 'Date reference (default: today)'
+              },
+              section: {
+                type: 'string',
+                description: 'Section to append to (default: Notes)'
+              }
+            },
+            required: ['content']
+          }
+        },
+        {
+          name: 'add_daily_task',
+          description: 'Add a task to daily note',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              task: {
+                type: 'string',
+                description: 'Task description'
+              },
+              date: {
+                type: 'string',
+                description: 'Date reference (default: today)'
+              },
+              completed: {
+                type: 'boolean',
+                description: 'Whether task is completed'
+              },
+              priority: {
+                type: 'string',
+                enum: ['high', 'medium', 'low'],
+                description: 'Task priority'
+              }
+            },
+            required: ['task']
+          }
         }
       ]
     }));
@@ -420,6 +485,12 @@ class SimpleVaultServer {
             return await this.analyzeTags(args);
           case 'suggest_tags':
             return await this.suggestTags(args);
+          case 'get_daily_note':
+            return await this.getDailyNote(args);
+          case 'append_to_daily_note':
+            return await this.appendToDailyNote(args);
+          case 'add_daily_task':
+            return await this.addDailyTask(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -578,6 +649,14 @@ class SimpleVaultServer {
     
     // Format content to ensure tags have # prefix in frontmatter
     let finalContent = TagFormatter.formatContentTags(content);
+    
+    // Ensure proper timestamps
+    const isNewFile = !(await this.fileExists(notePath));
+    finalContent = DateManager.ensureTimestamps(finalContent, {
+      isNewFile,
+      dateFormat: this.config.dateFormat || 'yyyy-MM-dd',
+      includeTime: false
+    });
     const response = {
       success: true,
       path: notePath,
@@ -1566,6 +1645,102 @@ class SimpleVaultServer {
         content: [{
           type: 'text',
           text: JSON.stringify({ error: error.message }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async fileExists(filePath) {
+    try {
+      const fullPath = path.join(this.config.vaultPath, filePath);
+      await fs.access(fullPath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async getDailyNote({ date = 'today' }) {
+    try {
+      const result = await this.dailyNoteManager.findDailyNote(date);
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            success: true,
+            ...result
+          }, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message 
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async appendToDailyNote({ content, date = 'today', section = 'Notes' }) {
+    try {
+      const result = await this.dailyNoteManager.appendToDailyNote(content, {
+        date: date === 'today' ? new Date() : DateManager.parseDate(date),
+        section,
+        createIfMissing: true
+      });
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            success: true,
+            ...result
+          }, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message 
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async addDailyTask({ task, date = 'today', completed = false, priority = null }) {
+    try {
+      const result = await this.dailyNoteManager.addTaskToDailyNote(task, {
+        date: date === 'today' ? new Date() : DateManager.parseDate(date),
+        completed,
+        priority
+      });
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            success: true,
+            ...result
+          }, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message 
+          }, null, 2)
         }]
       };
     }

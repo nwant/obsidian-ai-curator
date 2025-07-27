@@ -8,6 +8,7 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 - **Vault Operations**: Scan, read, write, and archive notes with validation
 - **Intelligent Search**: Content search with Obsidian API optimization
 - **Tag Intelligence**: Smart tag management with similarity detection and suggestions
+- **Date Management**: Automatic timestamp handling and daily note operations
 - **Git Integration**: Version control with checkpoint/rollback capabilities
 - **Metadata Support**: Advanced frontmatter queries with operators
 - **Dataview Rendering**: Execute Dataview queries and see results
@@ -256,6 +257,24 @@ View performance metrics for search operations
 Execute search benchmark scenarios and track performance metrics
 - Parameters: `scenario` (scenario name or 'all' or 'list'), `compare` (boolean to compare with baseline)
 
+### `get_daily_note`
+Get or create daily note for a specific date
+- Parameters: `date` (optional - 'today', 'yesterday', 'tomorrow', or yyyy-MM-dd format)
+- Returns: daily note content, path, and metadata
+- Automatically creates from template if missing
+
+### `append_to_daily_note`
+Append content to a specific section of daily note
+- Parameters: `content` (required), `date` (optional), `section` (optional - default: 'Notes')
+- Adds timestamped entries to the specified section
+- Creates section if it doesn't exist
+
+### `add_daily_task`
+Add a task to the daily note's task section
+- Parameters: `task` (required), `date` (optional), `completed` (boolean), `priority` (high/medium/low)
+- Formats as proper checkbox task
+- Includes priority markers if specified
+
 ## Automatic Metrics Collection
 
 The MCP server now automatically collects performance metrics for all search operations. This feature runs in the background without affecting normal operations.
@@ -322,6 +341,13 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "Load context for my current project"
 - "Get recent files I've been working on"
 - "Show me notes linked to this topic"
+
+**Daily Notes:**
+- "Get today's daily note"
+- "Add to daily note: Had productive meeting with AI team"
+- "Add task: Review and merge pull requests"
+- "Show me yesterday's daily note"
+- "Add high priority task: Prepare presentation for tomorrow"
 
 **Performance Monitoring:**
 - "Show search performance metrics for the last 24 hours"
