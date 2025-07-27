@@ -1,17 +1,29 @@
-# Obsidian MCP Server
+# Obsidian AI Curator
 
-A Model Context Protocol (MCP) server that enables Claude Desktop and Claude Code to interact with your Obsidian vault. This server provides tools for reading, writing, searching, and managing notes programmatically.
+An AI-powered knowledge management system for Obsidian that enables Claude Desktop and Claude Code to intelligently interact with your vault. This project includes both an MCP server for vault operations and an Obsidian plugin that provides optimized API access and consolidation features.
 
 ## Features
 
-- **Vault Operations**: Scan, read, write, and archive notes
-- **Search**: Content search and metadata filtering with caching
+### Core Capabilities
+- **Vault Operations**: Scan, read, write, and archive notes with validation
+- **Intelligent Search**: Content search with Obsidian API optimization
+- **Tag Intelligence**: Smart tag management with similarity detection and suggestions
 - **Git Integration**: Version control with checkpoint/rollback capabilities
-- **Metadata Support**: Parse and query frontmatter fields
-- **Pattern Matching**: Find notes by various criteria
-- **Dataview Rendering**: Render Dataview queries to see actual data (NEW)
+- **Metadata Support**: Advanced frontmatter queries with operators
+- **Dataview Rendering**: Execute Dataview queries and see results
 - **Context Management**: Load focused context for specific work sessions
-- **Performance**: Intelligent caching for sub-50ms operations
+- **Performance**: Sub-50ms operations with intelligent caching
+
+### Tag Intelligence System (NEW)
+- **Tag Analysis**: Comprehensive statistics, hierarchy, and similarity detection
+- **Tag Suggestions**: AI-powered recommendations based on content
+- **Tag Validation**: Automatic validation to prevent duplicates and maintain consistency
+- **Convention Enforcement**: Ensures proper naming and hierarchy placement
+
+### Obsidian Plugin
+- **API Server**: Exposes Obsidian's native APIs on port 3001
+- **Consolidation UI**: Find and merge related notes
+- **Automatic Optimization**: MCP server uses Obsidian APIs when available
 
 ## Installation
 
@@ -51,14 +63,17 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 
 ### Claude Code Setup
 
-Add to your Claude Code configuration (`~/.claude/settings.json`):
+For Claude Code, create a `.mcp.json` file in your project root:
 
 ```json
 {
   "mcpServers": {
     "obsidian-vault": {
       "command": "node",
-      "args": ["/path/to/obsidian-mcp-server/src/mcp-server.js"]
+      "args": ["/path/to/obsidian-ai-curator/src/mcp-server.js"],
+      "env": {
+        "OBSIDIAN_VAULT_PATH": "/path/to/your/vault"
+      }
     }
   }
 }
@@ -201,6 +216,27 @@ Rollback to a previous commit
 ### `get_research_context`
 Get configured research context and guidelines from your config.json. Reads and returns the content of any configured context documents.
 
+### `get_tags`
+Get all tags in the vault or tags for a specific file
+- Parameters: `path` (optional - file path for specific file's tags)
+
+### `get_links`
+Get outgoing links from a specific file
+- Parameters: `path` (file path)
+
+### `get_backlinks`
+Get files that link to a specific file
+- Parameters: `path` (file path)
+
+### `analyze_tags`
+Comprehensive tag analysis with statistics and recommendations
+- Returns: tag frequency, hierarchy, similar tags, and improvement suggestions
+
+### `suggest_tags`
+Get AI-powered tag suggestions based on content
+- Parameters: `content` (text to analyze), `existingTags` (already assigned tags)
+- Returns: ranked suggestions with relevance scores
+
 ### `run_benchmark`
 Execute search benchmark scenarios and track performance metrics
 - Parameters: `scenario` (scenario name or 'all' or 'list'), `compare` (boolean to compare with baseline)
@@ -256,18 +292,59 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "Show me notes created in 2025 with more than 500 words"
 - "Find notes where the title matches 'Project.*2025' regex"
 
+**Tag Intelligence:**
+- "Analyze all tags in my vault"
+- "Find similar or duplicate tags"
+- "Suggest tags for this content: [content]"
+- "Show me tags that are rarely used"
+
 **Benchmark & Performance:**
 - "Run all benchmarks to test search performance"
 - "List available benchmark scenarios"
 - "Run the find_recent_files benchmark and compare with baseline"
 - "Show me the vault_scan_performance benchmark results"
 
+## Obsidian Plugin Installation
+
+1. Build the plugin:
+```bash
+cd obsidian-ai-curator-plugin
+npm install
+npm run build
+```
+
+2. Copy to your vault:
+```bash
+# Create plugin directory
+mkdir -p /path/to/vault/.obsidian/plugins/obsidian-ai-curator
+
+# Copy built files
+cp main.js manifest.json main.css /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
+```
+
+3. Enable the plugin in Obsidian settings
+
 ## Development
 
-Run the server directly:
+Run the MCP server:
 ```bash
 npm start
 ```
+
+Develop the plugin with hot reload:
+```bash
+./start-dev.sh
+```
+
+## Architecture
+
+```
+Claude Desktop/Code → MCP Server → Obsidian API Server (port 3001)
+                                ↗
+                    Direct file system (fallback)
+```
+
+The MCP server automatically detects and uses the Obsidian API server when available, providing optimized access to Obsidian's cached metadata, search index, and link resolution.
 
 ## License
 
