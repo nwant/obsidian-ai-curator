@@ -237,6 +237,21 @@ Get AI-powered tag suggestions based on content
 - Parameters: `content` (text to analyze), `existingTags` (already assigned tags)
 - Returns: ranked suggestions with relevance scores
 
+### `query_dataview`
+Execute Dataview queries directly without reading entire notes
+- Parameters: `query` (Dataview query string), `renderMode` (output format), `contextPath` (for relative queries)
+- Example: `TABLE status, created FROM "Records" WHERE type = "decision"`
+
+### `get_working_context`
+Load focused context for specific work sessions
+- Parameters: `scope` (project/topic/recent/linked), `identifier`, `maxNotes`, `depth`
+- Useful for loading project-specific or topic-focused information
+
+### `view_search_metrics`
+View performance metrics for search operations
+- Parameters: `timeWindow` (hours), `exportReport` (boolean)
+- Returns: aggregated metrics, performance trends, and usage patterns
+
 ### `run_benchmark`
 Execute search benchmark scenarios and track performance metrics
 - Parameters: `scenario` (scenario name or 'all' or 'list'), `compare` (boolean to compare with baseline)
@@ -297,6 +312,21 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "Find similar or duplicate tags"
 - "Suggest tags for this content: [content]"
 - "Show me tags that are rarely used"
+
+**Dataview Queries:**
+- "Run this Dataview query: TABLE file.name, status FROM #project WHERE status = 'active'"
+- "Show all tasks from my daily notes: TASK FROM 'Daily'"
+- "List all notes with incomplete todos"
+
+**Context Loading:**
+- "Load context for my current project"
+- "Get recent files I've been working on"
+- "Show me notes linked to this topic"
+
+**Performance Monitoring:**
+- "Show search performance metrics for the last 24 hours"
+- "Export a performance report to my vault"
+- "View usage patterns for MCP tools"
 
 **Benchmark & Performance:**
 - "Run all benchmarks to test search performance"
