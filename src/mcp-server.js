@@ -125,7 +125,7 @@ class SimpleVaultServer {
         },
         {
           name: 'write_note',
-          description: 'Write or update a note',
+          description: 'Write or update a note. For tag-only updates, use update_tags instead',
           inputSchema: {
             type: 'object',
             properties: {
@@ -471,7 +471,7 @@ class SimpleVaultServer {
         },
         {
           name: 'update_tags',
-          description: 'Update tags for a note (add, remove, or replace)',
+          description: 'Efficiently update tags for a note without rewriting the entire file. Use this for retagging, tag cleanup, or tag management tasks',
           inputSchema: {
             type: 'object',
             properties: {
