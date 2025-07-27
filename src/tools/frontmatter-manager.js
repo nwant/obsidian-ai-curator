@@ -194,7 +194,8 @@ export class FrontmatterManager {
       tag.startsWith('#') ? tag : `#${tag}`
     );
     
-    return await this.updateFrontmatter(notePath, { tags: formattedTags });
+    // Use replaceArrays option to ensure tags are replaced, not merged
+    return await this.updateFrontmatter(notePath, { tags: formattedTags }, { replaceArrays: true });
   }
 
   /**
