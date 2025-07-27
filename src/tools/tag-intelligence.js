@@ -1,12 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
+import { TagTaxonomyReader } from './tag-taxonomy-reader.js';
 
 export class TagIntelligence {
   constructor(config, cache, obsidianAPI) {
     this.config = config;
     this.cache = cache;
     this.obsidianAPI = obsidianAPI;
+    this.taxonomyReader = new TagTaxonomyReader(config);
+    this.taxonomyLoaded = false;
   }
 
   /**
@@ -222,11 +225,12 @@ export class TagIntelligence {
    */
   findSimilarTags(tags) {
     const similar = [];
+    const similarityThreshold = this.config.tagIntelligence?.thresholds?.similarity || 0.7;
     
     for (let i = 0; i < tags.length; i++) {
       for (let j = i + 1; j < tags.length; j++) {
         const similarity = this.calculateSimilarity(tags[i], tags[j]);
-        if (similarity > 0.7) { // 70% similarity threshold
+        if (similarity > similarityThreshold) {
           similar.push({
             tag1: tags[i],
             tag2: tags[j],
@@ -376,6 +380,15 @@ export class TagIntelligence {
    * Suggest tags for given content
    */
   async suggestTags(content, existingTags = []) {
+    // Ensure taxonomy is loaded
+    if (!this.taxonomyLoaded) {
+      await this.taxonomyReader.loadTaxonomy();
+      this.taxonomyLoaded = true;
+    }
+    
+    // Get taxonomy-based suggestions first
+    const taxonomySuggestions = await this.taxonomyReader.getSuggestedTags(content, existingTags);
+    
     // Get all tags in vault
     const analysis = await this.analyzeTags();
     const allTags = analysis.stats.map(s => s.tag);
@@ -383,26 +396,69 @@ export class TagIntelligence {
     // Extract keywords from content
     const keywords = this.extractKeywords(content);
     
-    // Score each tag based on relevance
-    const suggestions = [];
+    // Combine suggestions from both sources
+    const suggestionMap = new Map();
     
+    // Add taxonomy suggestions with high priority
+    taxonomySuggestions.forEach(tag => {
+      suggestionMap.set(tag, {
+        tag,
+        score: 0.9, // High score for taxonomy matches
+        source: 'taxonomy',
+        reason: 'Matches vault taxonomy rules'
+      });
+    });
+    
+    // Score existing tags based on relevance
     for (const tagStat of analysis.stats) {
       const tag = tagStat.tag;
       if (existingTags.includes(tag)) continue;
       
       const score = this.scoreTagRelevance(tag, keywords, content);
-      if (score > 0.3) { // 30% relevance threshold
-        suggestions.push({
+      
+      // Get configured threshold
+      const relevanceThreshold = this.config.tagIntelligence?.thresholds?.suggestionRelevance || 0.3;
+      
+      // If already suggested by taxonomy, boost the score
+      if (suggestionMap.has(tag)) {
+        const existing = suggestionMap.get(tag);
+        existing.score = Math.min(existing.score + score * 0.5, 1.0);
+        existing.count = tagStat.count;
+      } else if (score > relevanceThreshold) {
+        suggestionMap.set(tag, {
           tag,
           score,
           count: tagStat.count,
+          source: 'content',
           reason: this.getRelevanceReason(tag, keywords, score)
         });
       }
     }
     
+    // Validate all suggestions against taxonomy
+    const validatedSuggestions = [];
+    for (const suggestion of suggestionMap.values()) {
+      const validation = this.taxonomyReader.validateTag(suggestion.tag, { content, existingTags });
+      
+      if (validation.valid) {
+        validatedSuggestions.push(suggestion);
+      } else if (validation.suggestions.length > 0) {
+        // Replace with taxonomy-suggested alternatives
+        validation.suggestions.forEach(suggestedTag => {
+          if (!existingTags.includes(suggestedTag)) {
+            validatedSuggestions.push({
+              tag: suggestedTag,
+              score: suggestion.score * 0.8, // Slightly lower score for corrections
+              source: 'taxonomy-correction',
+              reason: `Better alternative to "${suggestion.tag}"`
+            });
+          }
+        });
+      }
+    }
+    
     // Sort by score and return top suggestions
-    return suggestions
+    return validatedSuggestions
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
   }

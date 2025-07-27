@@ -76,6 +76,31 @@ Common formats using date-fns notation:
 }
 ```
 
+### Tag Intelligence
+
+```json
+{
+  "tagIntelligence": {
+    "taxonomyDocument": "/Meta/Tag Taxonomy Index.md",
+    "autoTagging": true,
+    "enforceHierarchy": true,
+    "preventDuplicates": true,
+    "suggestFromTaxonomy": true,
+    "thresholds": {
+      "similarity": 0.7,
+      "suggestionRelevance": 0.3
+    }
+  }
+}
+```
+
+- **taxonomyDocument**: Path to your vault's tag taxonomy document
+- **autoTagging**: Automatically add tags based on content patterns
+- **enforceHierarchy**: Require tags to follow defined hierarchies
+- **preventDuplicates**: Prevent creation of similar tags
+- **suggestFromTaxonomy**: Base suggestions on taxonomy rules
+- **thresholds**: Fine-tune similarity and relevance thresholds
+
 ### Research Context
 
 ```json

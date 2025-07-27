@@ -1,19 +1,32 @@
 import matter from 'gray-matter';
+import { TagTaxonomyReader } from './tag-taxonomy-reader.js';
 
 export class TagValidator {
   constructor(tagIntelligence) {
     this.tagIntelligence = tagIntelligence;
+    this.taxonomyReader = new TagTaxonomyReader(tagIntelligence.config);
+    this.taxonomyLoaded = false;
   }
 
   /**
    * Validate tags before writing a note
    */
   async validateTags(content, proposedTags = []) {
+    // Ensure taxonomy is loaded
+    if (!this.taxonomyLoaded) {
+      await this.taxonomyReader.loadTaxonomy();
+      this.taxonomyLoaded = true;
+    }
+    
     // Parse content to extract any inline tags
     const contentTags = this.extractTagsFromContent(content);
     const allProposedTags = [...new Set([...proposedTags, ...contentTags])];
     
-    if (allProposedTags.length === 0) {
+    // Apply auto-tagging rules from taxonomy
+    const autoTags = await this.taxonomyReader.getSuggestedTags(content, allProposedTags);
+    const combinedTags = [...new Set([...allProposedTags, ...autoTags])];
+    
+    if (combinedTags.length === 0) {
       return { valid: true, tags: [], warnings: [] };
     }
     
@@ -24,8 +37,14 @@ export class TagValidator {
     const warnings = [];
     const suggestions = [];
     const validatedTags = [];
+    const autoTagsAdded = [];
     
-    for (const tag of allProposedTags) {
+    for (const tag of combinedTags) {
+      // Track auto-added tags
+      if (autoTags.includes(tag) && !allProposedTags.includes(tag)) {
+        autoTagsAdded.push(tag);
+      }
+      
       const validation = await this.validateSingleTag(tag, existingTags, analysis);
       
       if (validation.isNew) {
@@ -38,6 +57,15 @@ export class TagValidator {
       validatedTags.push(validation.recommendedTag || tag);
     }
     
+    // Add info about auto-tagged items
+    if (autoTagsAdded.length > 0) {
+      warnings.push({
+        type: 'auto-tags-added',
+        message: `Auto-tagged based on vault taxonomy: ${autoTagsAdded.join(', ')}`,
+        severity: 'info'
+      });
+    }
+    
     // Get content-based suggestions if we have content
     if (content && content.length > 50) {
       const contentSuggestions = await this.tagIntelligence.suggestTags(
@@ -48,17 +76,18 @@ export class TagValidator {
       if (contentSuggestions.length > 0) {
         suggestions.push({
           type: 'content-based',
-          message: 'Tags suggested based on content analysis',
+          message: 'Additional tags suggested based on content analysis',
           tags: contentSuggestions.slice(0, 5)
         });
       }
     }
     
     return {
-      valid: warnings.length === 0,
+      valid: warnings.filter(w => w.severity !== 'info').length === 0,
       tags: validatedTags,
       warnings,
-      suggestions
+      suggestions,
+      autoTagsAdded
     };
   }
 
@@ -106,6 +135,9 @@ export class TagValidator {
       };
     }
     
+    // Use taxonomy reader for validation
+    const taxonomyValidation = this.taxonomyReader.validateTag(cleanTag, { existingTags });
+    
     // Find similar tags
     const similarTags = this.findSimilarTags(cleanTag, existingTags);
     
@@ -132,6 +164,29 @@ export class TagValidator {
       }
     }
     
+    // Check taxonomy validation results
+    if (!taxonomyValidation.valid) {
+      const warning = taxonomyValidation.warnings[0];
+      const suggestion = taxonomyValidation.suggestions[0];
+      
+      return {
+        isNew: true,
+        valid: false,
+        recommendedTag: suggestion || cleanTag,
+        warning: {
+          type: 'taxonomy-violation',
+          message: warning,
+          suggestion: suggestion,
+          severity: 'medium'
+        },
+        suggestions: taxonomyValidation.suggestions.map(s => ({
+          tag: s,
+          reason: 'Matches vault taxonomy',
+          source: 'taxonomy'
+        }))
+      };
+    }
+    
     // Check naming conventions
     const conventionIssues = this.checkNamingConventions(cleanTag);
     if (conventionIssues.length > 0) {
@@ -149,9 +204,8 @@ export class TagValidator {
       };
     }
     
-    // Check if it should be in a hierarchy
-    const hierarchySuggestion = this.suggestHierarchy(cleanTag, analysis.hierarchy);
-    if (hierarchySuggestion) {
+    // Check if it should be in a hierarchy (from taxonomy)
+    if (taxonomyValidation.suggestions.length > 0) {
       return {
         isNew: true,
         valid: true,
@@ -159,10 +213,14 @@ export class TagValidator {
         warning: {
           type: 'hierarchy-suggestion',
           message: `New tag "${cleanTag}" might fit better in existing hierarchy`,
-          suggestion: hierarchySuggestion,
+          suggestion: taxonomyValidation.suggestions[0],
           severity: 'low'
         },
-        suggestions: []
+        suggestions: taxonomyValidation.suggestions.map(s => ({
+          tag: s,
+          reason: 'Better hierarchy placement',
+          source: 'taxonomy'
+        }))
       };
     }
     
@@ -186,12 +244,13 @@ export class TagValidator {
   findSimilarTags(tag, existingTags) {
     const similar = [];
     const cleanTag = tag.replace('#', '').toLowerCase();
+    const similarityThreshold = this.tagIntelligence.config.tagIntelligence?.thresholds?.similarity || 0.7;
     
     for (const existing of existingTags) {
       const cleanExisting = existing.replace('#', '').toLowerCase();
       const similarity = this.calculateSimilarity(cleanTag, cleanExisting);
       
-      if (similarity > 0.7 && similarity < 1.0) {
+      if (similarity > similarityThreshold && similarity < 1.0) {
         similar.push({
           tag: existing,
           similarity,

@@ -15,11 +15,13 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 - **Context Management**: Load focused context for specific work sessions
 - **Performance**: Sub-50ms operations with intelligent caching
 
-### Tag Intelligence System (NEW)
-- **Tag Analysis**: Comprehensive statistics, hierarchy, and similarity detection
-- **Tag Suggestions**: AI-powered recommendations based on content
-- **Tag Validation**: Automatic validation to prevent duplicates and maintain consistency
-- **Convention Enforcement**: Ensures proper naming and hierarchy placement
+### Tag Intelligence System (ENHANCED)
+- **Taxonomy-Aware**: Reads your vault's tag taxonomy document to understand your system
+- **Auto-Tagging**: Applies rules from your taxonomy automatically
+- **Hierarchy Enforcement**: Ensures tags follow established patterns
+- **Duplicate Prevention**: Detects and prevents similar tag variations
+- **Context-Aware Suggestions**: Based on both content and your vault's conventions
+- **Fully Configurable**: Control every aspect of tag behavior
 
 ### Obsidian Plugin
 - **API Server**: Exposes Obsidian's native APIs on port 3001

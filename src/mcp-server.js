@@ -647,8 +647,22 @@ class SimpleVaultServer {
     // Validate tags before writing
     const tagValidation = await this.tagValidator.validateTags(content);
     
+    // Apply auto-tags if any were added
+    let finalContent = content;
+    if (tagValidation.autoTagsAdded && tagValidation.autoTagsAdded.length > 0) {
+      // Parse content and add auto-tags to frontmatter
+      const parsed = matter(content);
+      const existingTags = parsed.data.tags || [];
+      const allTags = [...new Set([
+        ...(Array.isArray(existingTags) ? existingTags : [existingTags]),
+        ...tagValidation.autoTagsAdded
+      ])];
+      parsed.data.tags = allTags;
+      finalContent = matter.stringify(parsed.content, parsed.data);
+    }
+    
     // Format content to ensure tags have # prefix in frontmatter
-    let finalContent = TagFormatter.formatContentTags(content);
+    finalContent = TagFormatter.formatContentTags(finalContent);
     
     // Ensure proper timestamps
     const isNewFile = !(await this.fileExists(notePath));
@@ -663,7 +677,8 @@ class SimpleVaultServer {
       tagValidation: {
         warnings: tagValidation.warnings,
         suggestions: tagValidation.suggestions,
-        validatedTags: tagValidation.tags
+        validatedTags: tagValidation.tags,
+        autoTagsAdded: tagValidation.autoTagsAdded
       }
     };
     
