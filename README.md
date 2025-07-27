@@ -288,6 +288,27 @@ Add a task to the daily note's task section
 - Formats as proper checkbox task
 - Includes priority markers if specified
 
+### `get_frontmatter`
+Get frontmatter metadata for a note
+- Parameters: `path` (required - note path)
+- Returns: frontmatter fields, tags, and source (obsidian-api or file-system)
+- Uses Obsidian's cached metadata when available
+
+### `update_frontmatter`
+Update frontmatter fields for a note
+- Parameters: `path` (required), `updates` (object), `merge` (boolean - default: true)
+- Merges with existing frontmatter by default
+- Set `merge: false` to replace entirely
+- Preserves note body content
+
+### `update_tags`
+Efficiently update tags for a note
+- Parameters: `path` (required), `add` (array), `remove` (array), `replace` (array)
+- Use `add` to append new tags
+- Use `remove` to delete specific tags
+- Use `replace` to set all tags at once
+- Automatically adds # prefix to tags
+
 ## Automatic Metrics Collection
 
 The MCP server now automatically collects performance metrics for all search operations. This feature runs in the background without affecting normal operations.

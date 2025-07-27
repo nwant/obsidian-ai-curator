@@ -17,6 +17,7 @@ import { TagValidator } from './tools/tag-validator.js';
 import { TagFormatter } from './tools/tag-formatter.js';
 import { DateManager } from './tools/date-manager.js';
 import { DailyNoteManager } from './tools/daily-note-manager.js';
+import { FrontmatterManager } from './tools/frontmatter-manager.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -52,6 +53,7 @@ class SimpleVaultServer {
     this.tagIntelligence = new TagIntelligence(config, this.cache, this.obsidianAPI);
     this.tagValidator = new TagValidator(this.tagIntelligence);
     this.dailyNoteManager = new DailyNoteManager(config, this.cache);
+    this.frontmatterManager = new FrontmatterManager(config, this.obsidianAPI);
     this.setupHandlers();
   }
 
@@ -430,6 +432,71 @@ class SimpleVaultServer {
             },
             required: ['task']
           }
+        },
+        {
+          name: 'get_frontmatter',
+          description: 'Get frontmatter metadata for a note',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'Path to the note'
+              }
+            },
+            required: ['path']
+          }
+        },
+        {
+          name: 'update_frontmatter',
+          description: 'Update frontmatter fields for a note',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'Path to the note'
+              },
+              updates: {
+                type: 'object',
+                description: 'Frontmatter fields to update'
+              },
+              merge: {
+                type: 'boolean',
+                description: 'Merge with existing frontmatter (default: true)'
+              }
+            },
+            required: ['path', 'updates']
+          }
+        },
+        {
+          name: 'update_tags',
+          description: 'Update tags for a note (add, remove, or replace)',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: {
+                type: 'string',
+                description: 'Path to the note'
+              },
+              add: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Tags to add'
+              },
+              remove: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Tags to remove'
+              },
+              replace: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Replace all tags with these'
+              }
+            },
+            required: ['path']
+          }
         }
       ]
     }));
@@ -491,6 +558,12 @@ class SimpleVaultServer {
             return await this.appendToDailyNote(args);
           case 'add_daily_task':
             return await this.addDailyTask(args);
+          case 'get_frontmatter':
+            return await this.getFrontmatter(args);
+          case 'update_frontmatter':
+            return await this.updateFrontmatter(args);
+          case 'update_tags':
+            return await this.updateTags(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -1781,6 +1854,108 @@ class SimpleVaultServer {
           text: JSON.stringify({ 
             success: false,
             error: error.message 
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async getFrontmatter({ path: notePath }) {
+    try {
+      const result = await this.frontmatterManager.getFrontmatter(notePath);
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            path: notePath
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async updateFrontmatter({ path: notePath, updates, merge = true }) {
+    try {
+      const result = await this.frontmatterManager.updateFrontmatter(
+        notePath, 
+        updates, 
+        { merge }
+      );
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            path: notePath
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async updateTags({ path: notePath, add, remove, replace }) {
+    try {
+      let result;
+      
+      if (replace && replace.length > 0) {
+        // Replace all tags
+        result = await this.frontmatterManager.replaceTags(notePath, replace);
+      } else {
+        // Add and/or remove tags
+        if (add && add.length > 0) {
+          result = await this.frontmatterManager.addTags(notePath, add);
+        }
+        if (remove && remove.length > 0) {
+          result = await this.frontmatterManager.removeTags(notePath, remove);
+        }
+      }
+      
+      if (!result) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ 
+              success: false,
+              error: 'No tag operations specified',
+              path: notePath
+            }, null, 2)
+          }]
+        };
+      }
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            path: notePath
           }, null, 2)
         }]
       };
