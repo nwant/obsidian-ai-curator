@@ -6,10 +6,7 @@
 
 import path from 'path';
 import { promises as fs } from 'fs';
-import glob from 'glob';
-import { promisify } from 'util';
-
-const globAsync = promisify(glob);
+import { glob } from 'glob';
 
 export class FileOperations {
   constructor(config, obsidianAPI = null) {
@@ -184,7 +181,7 @@ export class FileOperations {
    */
   async findFilesWithLinks(targetPath) {
     const pattern = path.join(this.vaultPath, '**/*.md');
-    const files = await globAsync(pattern, {
+    const files = await glob(pattern, {
       ignore: this.config.ignorePatterns?.map(p => path.join(this.vaultPath, p))
     });
 
