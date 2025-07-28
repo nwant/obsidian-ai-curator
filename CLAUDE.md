@@ -31,6 +31,19 @@ You are working on the Obsidian AI Curator project, an AI-powered system that ac
 - Obsidian API server runs on port 3001 by default
 - Claude CLI must be installed and accessible in PATH for consolidation features
 
+## CRITICAL VAULT WRITE RULES
+- **NEVER write files directly to the vault path** (e.g., using Write tool on /Users/*/obsidian/*)
+- **ALWAYS use MCP server tools** for ALL vault operations:
+  - Use `write_note` for creating/updating notes
+  - Use `update_tags` or `update_frontmatter` for metadata changes
+  - Use `append_to_daily_note` for daily notes
+- **The MCP tools ensure**:
+  - Proper tag validation and intelligence
+  - Automatic date/timestamp management
+  - Link formatting to wikilinks
+  - Vault conventions are followed
+- **Direct writes bypass ALL safeguards** and violate the project's core purpose
+
 ## Obsidian Conventions
 
 ### Internal Links

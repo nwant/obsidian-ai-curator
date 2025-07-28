@@ -39,5 +39,10 @@
       "autonomousOperation": false
     },
     "customInstructions": "Additional instructions for your AI research partner"
+  },
+  "vaultWriteGuard": {
+    "enabled": true,
+    "logViolations": true,
+    "description": "Prevents direct writes to vault, ensuring MCP tools are used"
   }
 }
