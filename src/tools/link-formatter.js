@@ -1,10 +1,94 @@
 import path from 'path';
 
 export class LinkFormatter {
+  constructor(obsidianAPI = null) {
+    this.obsidianAPI = obsidianAPI;
+  }
   /**
    * Convert various link formats to Obsidian wikilinks
+   * Can use instance method for API support or static for basic formatting
    */
-  static formatLinks(content, currentNotePath = '') {
+  async formatLinks(content, currentNotePath = '') {
+    // If we have Obsidian API, use it for better link resolution
+    if (this.obsidianAPI && this.obsidianAPI.isAvailable()) {
+      return await this.formatLinksWithAPI(content, currentNotePath);
+    }
+    // Otherwise use static method
+    return LinkFormatter.formatLinksStatic(content, currentNotePath);
+  }
+
+  /**
+   * Format links using Obsidian API for proper resolution
+   */
+  async formatLinksWithAPI(content, currentNotePath) {
+    // Convert markdown links with paths to wikilinks
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const replacements = [];
+    
+    let match;
+    while ((match = linkRegex.exec(content)) !== null) {
+      const [fullMatch, linkText, linkPath] = match;
+      
+      // Skip external URLs
+      if (linkPath.startsWith('http://') || linkPath.startsWith('https://')) {
+        continue;
+      }
+      
+      // Try to resolve the link
+      try {
+        const resolved = await this.obsidianAPI.request('/api/resolve-link', {
+          linkpath: linkPath.replace(/\.md$/, ''),
+          sourcePath: currentNotePath
+        });
+        
+        if (resolved && resolved.success && resolved.data) {
+          const target = resolved.data.resolved 
+            ? resolved.data.basename 
+            : path.basename(linkPath, '.md');
+          
+          const formatted = await this.obsidianAPI.request('/api/format-link', {
+            target,
+            alias: linkText !== target ? linkText : null,
+            sourcePath: currentNotePath
+          });
+          
+          if (formatted && formatted.success) {
+            replacements.push({
+              start: match.index,
+              end: match.index + fullMatch.length,
+              replacement: formatted.data.formatted
+            });
+          }
+        }
+      } catch (error) {
+        // Fallback to basic formatting
+        const noteName = path.basename(linkPath, '.md');
+        const replacement = linkText !== noteName 
+          ? `[[${noteName}|${linkText}]]` 
+          : `[[${noteName}]]`;
+        
+        replacements.push({
+          start: match.index,
+          end: match.index + fullMatch.length,
+          replacement
+        });
+      }
+    }
+    
+    // Apply replacements in reverse order to maintain positions
+    let result = content;
+    for (let i = replacements.length - 1; i >= 0; i--) {
+      const { start, end, replacement } = replacements[i];
+      result = result.substring(0, start) + replacement + result.substring(end);
+    }
+    
+    return result;
+  }
+
+  /**
+   * Static method for basic link formatting without API
+   */
+  static formatLinksStatic(content, currentNotePath = '') {
     // Pattern to match various link formats
     // 1. Full paths: [text](/full/path/to/note.md)
     // 2. Relative paths: [text](../path/to/note.md)

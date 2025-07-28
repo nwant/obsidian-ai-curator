@@ -55,6 +55,7 @@ class SimpleVaultServer {
     this.tagValidator = new TagValidator(this.tagIntelligence);
     this.dailyNoteManager = new DailyNoteManager(config, this.cache);
     this.frontmatterManager = new FrontmatterManager(config, this.obsidianAPI);
+    this.linkFormatter = new LinkFormatter(this.obsidianAPI);
     this.setupHandlers();
   }
 
@@ -752,7 +753,7 @@ class SimpleVaultServer {
     finalContent = TagFormatter.formatContentTags(finalContent);
     
     // Format links to use Obsidian wikilink format
-    finalContent = LinkFormatter.formatLinks(finalContent, notePath);
+    finalContent = await this.linkFormatter.formatLinks(finalContent, notePath);
     
     // Ensure proper timestamps
     const isNewFile = !(await this.fileExists(notePath));

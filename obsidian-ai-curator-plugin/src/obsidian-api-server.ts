@@ -133,6 +133,14 @@ export class ObsidianAPIServer {
           await this.handleVaultInfo(res);
           break;
 
+        case '/api/format-link':
+          await this.handleFormatLink(url.searchParams, res);
+          break;
+
+        case '/api/resolve-link':
+          await this.handleResolveLink(url.searchParams, res);
+          break;
+
         default:
           this.sendResponse(res, 404, { 
             success: false, 
@@ -443,5 +451,134 @@ export class ObsidianAPIServer {
 `;
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(html);
+  }
+
+  private async handleFormatLink(params: URLSearchParams, res: ServerResponse) {
+    const target = params.get('target');
+    const alias = params.get('alias');
+    const sourcePath = params.get('sourcePath');
+
+    if (!target) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing target parameter' 
+      });
+      return;
+    }
+
+    try {
+      // Use Obsidian's link formatting
+      let formattedLink: string;
+      
+      if (alias && alias !== target) {
+        formattedLink = `[[${target}|${alias}]]`;
+      } else {
+        formattedLink = `[[${target}]]`;
+      }
+
+      // Validate the link can be resolved if sourcePath provided
+      let resolvedFile = null;
+      if (sourcePath) {
+        resolvedFile = this.app.metadataCache.getFirstLinkpathDest(target, sourcePath);
+      }
+
+      this.sendResponse(res, 200, { 
+        success: true, 
+        data: {
+          formatted: formattedLink,
+          target,
+          alias: alias || null,
+          resolved: resolvedFile ? resolvedFile.path : null,
+          exists: !!resolvedFile
+        }
+      });
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to format link' 
+      });
+    }
+  }
+
+  private async handleResolveLink(params: URLSearchParams, res: ServerResponse) {
+    const linkpath = params.get('linkpath');
+    const sourcePath = params.get('sourcePath');
+
+    if (!linkpath || !sourcePath) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing linkpath or sourcePath parameter' 
+      });
+      return;
+    }
+
+    try {
+      // Use Obsidian's link resolution
+      const resolvedFile = this.app.metadataCache.getFirstLinkpathDest(linkpath, sourcePath);
+      
+      if (resolvedFile) {
+        const metadata = this.app.metadataCache.getFileCache(resolvedFile);
+        
+        this.sendResponse(res, 200, { 
+          success: true, 
+          data: {
+            resolved: true,
+            path: resolvedFile.path,
+            basename: resolvedFile.basename,
+            extension: resolvedFile.extension,
+            frontmatter: metadata?.frontmatter || {},
+            tags: metadata?.tags?.map(t => t.tag) || []
+          }
+        });
+      } else {
+        // Link couldn't be resolved
+        this.sendResponse(res, 200, { 
+          success: true, 
+          data: {
+            resolved: false,
+            path: null,
+            suggestion: this.findSimilarFiles(linkpath)
+          }
+        });
+      }
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to resolve link' 
+      });
+    }
+  }
+
+  private findSimilarFiles(query: string): string[] {
+    const files = this.app.vault.getMarkdownFiles();
+    const queryLower = query.toLowerCase();
+    const suggestions: Array<{file: TFile, score: number}> = [];
+
+    for (const file of files) {
+      const nameLower = file.basename.toLowerCase();
+      let score = 0;
+
+      // Exact match
+      if (nameLower === queryLower) {
+        score = 1.0;
+      }
+      // Contains query
+      else if (nameLower.includes(queryLower)) {
+        score = 0.7;
+      }
+      // Query contains name
+      else if (queryLower.includes(nameLower)) {
+        score = 0.5;
+      }
+
+      if (score > 0) {
+        suggestions.push({ file, score });
+      }
+    }
+
+    return suggestions
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map(s => s.file.basename);
   }
 }
