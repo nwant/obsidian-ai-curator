@@ -30,3 +30,20 @@ You are working on the Obsidian AI Curator project, an AI-powered system that ac
 - The vault path is configured in `config/config.json`
 - Obsidian API server runs on port 3001 by default
 - Claude CLI must be installed and accessible in PATH for consolidation features
+
+## Obsidian Conventions
+
+### Internal Links
+- **ALWAYS use wikilink format**: `[[Note Name]]` for internal links
+- **DO NOT use markdown links with paths**: `[text](path/to/note.md)`
+- **For aliases**: Use `[[Note Name|Display Text]]`
+- **Examples**:
+  - ✅ Correct: `[[AI Project Index]]`
+  - ✅ Correct: `[[Meeting Notes 2024-01-15|Yesterday's Meeting]]`
+  - ❌ Wrong: `[AI Project Index](Projects/AI Project Index.md)`
+  - ❌ Wrong: `/Projects/AI Project Index.md`
+
+### Tags
+- Always include `#` prefix in frontmatter tags
+- Use hierarchical tags when appropriate: `#type/project-index`
+- Follow vault's tag taxonomy

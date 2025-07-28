@@ -15,6 +15,7 @@ import { ObsidianAPIClient } from './obsidian-api-client.js';
 import { TagIntelligence } from './tools/tag-intelligence.js';
 import { TagValidator } from './tools/tag-validator.js';
 import { TagFormatter } from './tools/tag-formatter.js';
+import { LinkFormatter } from './tools/link-formatter.js';
 import { DateManager } from './tools/date-manager.js';
 import { DailyNoteManager } from './tools/daily-note-manager.js';
 import { FrontmatterManager } from './tools/frontmatter-manager.js';
@@ -750,6 +751,9 @@ class SimpleVaultServer {
     // Format content to ensure tags have # prefix in frontmatter
     finalContent = TagFormatter.formatContentTags(finalContent);
     
+    // Format links to use Obsidian wikilink format
+    finalContent = LinkFormatter.formatLinks(finalContent, notePath);
+    
     // Ensure proper timestamps
     const isNewFile = !(await this.fileExists(notePath));
     finalContent = DateManager.ensureTimestamps(finalContent, {
@@ -757,6 +761,9 @@ class SimpleVaultServer {
       dateFormat: this.config.dateFormat || 'yyyy-MM-dd',
       includeTime: false
     });
+    // Validate links were formatted correctly
+    const linkValidation = LinkFormatter.validateLinks(finalContent);
+    
     const response = {
       success: true,
       path: notePath,
@@ -765,6 +772,10 @@ class SimpleVaultServer {
         suggestions: tagValidation.suggestions,
         validatedTags: tagValidation.tags,
         autoTagsAdded: tagValidation.autoTagsAdded
+      },
+      linkFormatting: {
+        valid: linkValidation.valid,
+        corrections: linkValidation.issues?.length || 0
       }
     };
     

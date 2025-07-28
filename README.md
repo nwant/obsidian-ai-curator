@@ -9,6 +9,7 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 - **Intelligent Search**: Content search with Obsidian API optimization
 - **Tag Intelligence**: Smart tag management with similarity detection and suggestions
 - **Date Management**: Automatic timestamp handling and daily note operations
+- **Link Formatting**: Automatically converts links to Obsidian wikilink format
 - **Git Integration**: Version control with checkpoint/rollback capabilities
 - **Metadata Support**: Advanced frontmatter queries with operators
 - **Dataview Rendering**: Execute Dataview queries and see results
