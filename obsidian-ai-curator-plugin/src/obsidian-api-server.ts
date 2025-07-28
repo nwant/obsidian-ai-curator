@@ -141,6 +141,14 @@ export class ObsidianAPIServer {
           await this.handleResolveLink(url.searchParams, res);
           break;
 
+        case '/api/rename-file':
+          await this.handleRenameFile(url.searchParams, res);
+          break;
+
+        case '/api/move-file':
+          await this.handleMoveFile(url.searchParams, res);
+          break;
+
         default:
           this.sendResponse(res, 404, { 
             success: false, 
@@ -580,5 +588,112 @@ export class ObsidianAPIServer {
       .sort((a, b) => b.score - a.score)
       .slice(0, 5)
       .map(s => s.file.basename);
+  }
+
+  private async handleRenameFile(params: URLSearchParams, res: ServerResponse) {
+    const oldPath = params.get('oldPath');
+    const newPath = params.get('newPath');
+
+    if (!oldPath || !newPath) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing oldPath or newPath parameter' 
+      });
+      return;
+    }
+
+    try {
+      // Get the file
+      const file = this.app.vault.getAbstractFileByPath(oldPath);
+      
+      if (!file || !(file instanceof TFile)) {
+        this.sendResponse(res, 404, { 
+          success: false, 
+          error: 'File not found' 
+        });
+        return;
+      }
+
+      // Perform the rename - Obsidian will automatically update all links
+      await this.app.fileManager.renameFile(file, newPath);
+
+      // Get updated file info
+      const updatedFile = this.app.vault.getAbstractFileByPath(newPath);
+      
+      this.sendResponse(res, 200, { 
+        success: true, 
+        data: {
+          oldPath: oldPath,
+          newPath: newPath,
+          linksUpdated: true, // Obsidian handles this automatically
+          file: updatedFile ? {
+            path: updatedFile.path,
+            name: updatedFile.name
+          } : null
+        }
+      });
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to rename file' 
+      });
+    }
+  }
+
+  private async handleMoveFile(params: URLSearchParams, res: ServerResponse) {
+    const sourcePath = params.get('sourcePath');
+    const targetPath = params.get('targetPath');
+
+    if (!sourcePath || !targetPath) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing sourcePath or targetPath parameter' 
+      });
+      return;
+    }
+
+    try {
+      // Get the file
+      const file = this.app.vault.getAbstractFileByPath(sourcePath);
+      
+      if (!file || !(file instanceof TFile)) {
+        this.sendResponse(res, 404, { 
+          success: false, 
+          error: 'File not found' 
+        });
+        return;
+      }
+
+      // Check if target directory exists, create if needed
+      const targetDir = targetPath.substring(0, targetPath.lastIndexOf('/'));
+      if (targetDir && !this.app.vault.getAbstractFileByPath(targetDir)) {
+        await this.app.vault.createFolder(targetDir);
+      }
+
+      // Perform the move - Obsidian will automatically update all links
+      await this.app.fileManager.renameFile(file, targetPath);
+
+      // Get updated file info
+      const movedFile = this.app.vault.getAbstractFileByPath(targetPath);
+      
+      this.sendResponse(res, 200, { 
+        success: true, 
+        data: {
+          sourcePath: sourcePath,
+          targetPath: targetPath,
+          linksUpdated: true, // Obsidian handles this automatically
+          file: movedFile ? {
+            path: movedFile.path,
+            name: movedFile.name,
+            parent: movedFile.parent?.path
+          } : null
+        }
+      });
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to move file' 
+      });
+    }
   }
 }

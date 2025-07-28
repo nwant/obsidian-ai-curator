@@ -19,6 +19,7 @@ import { LinkFormatter } from './tools/link-formatter.js';
 import { DateManager } from './tools/date-manager.js';
 import { DailyNoteManager } from './tools/daily-note-manager.js';
 import { FrontmatterManager } from './tools/frontmatter-manager.js';
+import { FileOperations } from './tools/file-operations.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -56,6 +57,7 @@ class SimpleVaultServer {
     this.dailyNoteManager = new DailyNoteManager(config, this.cache);
     this.frontmatterManager = new FrontmatterManager(config, this.obsidianAPI);
     this.linkFormatter = new LinkFormatter(this.obsidianAPI);
+    this.fileOperations = new FileOperations(config, this.obsidianAPI);
     this.setupHandlers();
   }
 
@@ -499,6 +501,42 @@ class SimpleVaultServer {
             },
             required: ['path']
           }
+        },
+        {
+          name: 'rename_file',
+          description: 'Rename a file and automatically update all links throughout the vault. Uses Obsidian API when available for guaranteed link preservation',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              oldPath: {
+                type: 'string',
+                description: 'Current file path (e.g., "Notes/Old Name.md")'
+              },
+              newPath: {
+                type: 'string',
+                description: 'New file path (e.g., "Notes/New Name.md")'
+              }
+            },
+            required: ['oldPath', 'newPath']
+          }
+        },
+        {
+          name: 'move_file',
+          description: 'Move a file to a new location and automatically update all links throughout the vault. Uses Obsidian API when available for guaranteed link preservation',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              sourcePath: {
+                type: 'string',
+                description: 'Current file path (e.g., "Notes/My Note.md")'
+              },
+              targetPath: {
+                type: 'string',
+                description: 'Target file path including filename (e.g., "Archive/My Note.md")'
+              }
+            },
+            required: ['sourcePath', 'targetPath']
+          }
         }
       ]
     }));
@@ -566,6 +604,10 @@ class SimpleVaultServer {
             return await this.updateFrontmatter(args);
           case 'update_tags':
             return await this.updateTags(args);
+          case 'rename_file':
+            return await this.renameFile(args);
+          case 'move_file':
+            return await this.moveFile(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -1968,6 +2010,56 @@ class SimpleVaultServer {
             success: false,
             error: error.message,
             path: notePath
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async renameFile({ oldPath, newPath }) {
+    try {
+      const result = await this.fileOperations.renameFile(oldPath, newPath);
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            oldPath,
+            newPath
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async moveFile({ sourcePath, targetPath }) {
+    try {
+      const result = await this.fileOperations.moveFile(sourcePath, targetPath);
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            sourcePath,
+            targetPath
           }, null, 2)
         }]
       };

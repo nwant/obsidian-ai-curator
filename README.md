@@ -6,6 +6,7 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 
 ### Core Capabilities
 - **Vault Operations**: Scan, read, write, and archive notes with validation
+- **File Operations**: Rename and move files with automatic link updates
 - **Intelligent Search**: Content search with Obsidian API optimization
 - **Tag Intelligence**: Smart tag management with similarity detection and suggestions
 - **Date Management**: Automatic timestamp handling and daily note operations
@@ -318,6 +319,22 @@ Efficiently update tags for a note
 - Use `replace` to set all tags at once
 - Automatically adds # prefix to tags
 
+### `rename_file`
+Rename a file and automatically update all links throughout the vault
+- Parameters: `oldPath` (required), `newPath` (required)
+- Uses Obsidian API when available for guaranteed link preservation
+- Falls back to manual link updates if API unavailable
+- Prevents overwriting existing files
+- Returns: success status, paths, link update info
+
+### `move_file`
+Move a file to a new location and automatically update all links
+- Parameters: `sourcePath` (required), `targetPath` (required)
+- Uses Obsidian API when available for guaranteed link preservation
+- Creates target directories automatically
+- Updates all wikilinks and markdown links
+- Returns: success status, paths, link update info
+
 ## Automatic Metrics Collection
 
 The MCP server now automatically collects performance metrics for all search operations. This feature runs in the background without affecting normal operations.
@@ -402,6 +419,12 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "List available benchmark scenarios"
 - "Run the find_recent_files benchmark and compare with baseline"
 - "Show me the vault_scan_performance benchmark results"
+
+**File Operations:**
+- "Rename 'Notes/Old Project.md' to 'Notes/Current Project.md'"
+- "Move 'Ideas/Random Thought.md' to 'Archive/2024/Random Thought.md'"
+- "Rename the daily note from yesterday to include 'Important'"
+- "Move all completed project notes to the archive folder"
 
 ## Obsidian Plugin Installation
 

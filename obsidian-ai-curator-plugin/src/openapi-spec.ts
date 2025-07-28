@@ -370,6 +370,169 @@ export const openApiSpec = {
           }
         }
       }
+    },
+    '/api/rename-file': {
+      get: {
+        summary: 'Rename File',
+        description: 'Rename a file and automatically update all links throughout the vault',
+        parameters: [
+          {
+            name: 'oldPath',
+            in: 'query',
+            required: true,
+            description: 'Current file path',
+            schema: { type: 'string' },
+            example: 'Notes/Old Name.md'
+          },
+          {
+            name: 'newPath',
+            in: 'query',
+            required: true,
+            description: 'New file path',
+            schema: { type: 'string' },
+            example: 'Notes/New Name.md'
+          }
+        ],
+        responses: {
+          '200': {
+            description: 'File renamed successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        oldPath: { type: 'string' },
+                        newPath: { type: 'string' },
+                        linksUpdated: { 
+                          type: 'boolean',
+                          description: 'Always true - Obsidian automatically updates all links'
+                        },
+                        file: {
+                          type: 'object',
+                          properties: {
+                            path: { type: 'string' },
+                            name: { type: 'string' }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          '400': {
+            description: 'Bad request - missing parameters',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ErrorResponse' }
+              }
+            }
+          },
+          '404': {
+            description: 'File not found',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ErrorResponse' }
+              }
+            }
+          },
+          '500': {
+            description: 'Failed to rename file',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ErrorResponse' }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/api/move-file': {
+      get: {
+        summary: 'Move File',
+        description: 'Move a file to a new location and automatically update all links throughout the vault',
+        parameters: [
+          {
+            name: 'sourcePath',
+            in: 'query',
+            required: true,
+            description: 'Current file path',
+            schema: { type: 'string' },
+            example: 'Notes/My Note.md'
+          },
+          {
+            name: 'targetPath',
+            in: 'query',
+            required: true,
+            description: 'Target file path (including filename)',
+            schema: { type: 'string' },
+            example: 'Archive/My Note.md'
+          }
+        ],
+        responses: {
+          '200': {
+            description: 'File moved successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        sourcePath: { type: 'string' },
+                        targetPath: { type: 'string' },
+                        linksUpdated: { 
+                          type: 'boolean',
+                          description: 'Always true - Obsidian automatically updates all links'
+                        },
+                        file: {
+                          type: 'object',
+                          properties: {
+                            path: { type: 'string' },
+                            name: { type: 'string' },
+                            parent: { type: 'string' }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          '400': {
+            description: 'Bad request - missing parameters',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ErrorResponse' }
+              }
+            }
+          },
+          '404': {
+            description: 'File not found',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ErrorResponse' }
+              }
+            }
+          },
+          '500': {
+            description: 'Failed to move file',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ErrorResponse' }
+              }
+            }
+          }
+        }
+      }
     }
   },
   components: {
