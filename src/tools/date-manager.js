@@ -66,8 +66,8 @@ export class DateManager {
       const parsed = matter(content);
       const now = new Date();
       
-      // Set created date if missing (for new files)
-      if (isNewFile && !parsed.data.created) {
+      // Set created date for new files (always override to ensure correct date)
+      if (isNewFile) {
         parsed.data.created = includeTime 
           ? now.toISOString() 
           : format(now, dateFormat);
