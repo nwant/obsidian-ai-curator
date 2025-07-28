@@ -9,7 +9,7 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 - **Intelligent Search**: Content search with Obsidian API optimization
 - **Tag Intelligence**: Smart tag management with similarity detection and suggestions
 - **Date Management**: Automatic timestamp handling and daily note operations
-- **Link Formatting**: Automatically converts links to Obsidian wikilink format
+- **Link Formatting**: Automatically converts links to Obsidian wikilink format with API-powered resolution
 - **Git Integration**: Version control with checkpoint/rollback capabilities
 - **Metadata Support**: Advanced frontmatter queries with operators
 - **Dataview Rendering**: Execute Dataview queries and see results
@@ -24,8 +24,16 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 - **Context-Aware Suggestions**: Based on both content and your vault's conventions
 - **Fully Configurable**: Control every aspect of tag behavior
 
+### Link Intelligence
+- **Automatic Wikilink Conversion**: Converts markdown links and paths to `[[Note Name]]` format
+- **Obsidian API Resolution**: Uses native link resolution when plugin is running
+- **Alias Support**: Properly formats `[[Note|Display Text]]` syntax
+- **Link Validation**: Checks if linked files exist and suggests alternatives
+
 ### Obsidian Plugin
 - **API Server**: Exposes Obsidian's native APIs on port 3001
+- **Link Resolution**: Provides proper link formatting and resolution endpoints
+- **Metadata Cache**: Fast access to frontmatter and tags via Obsidian's cache
 - **Consolidation UI**: Find and merge related notes
 - **Automatic Optimization**: MCP server uses Obsidian APIs when available
 
@@ -436,6 +444,13 @@ Claude Desktop/Code → MCP Server → Obsidian API Server (port 3001)
 ```
 
 The MCP server automatically detects and uses the Obsidian API server when available, providing optimized access to Obsidian's cached metadata, search index, and link resolution.
+
+## Important Notes
+
+- **Claude Desktop/Code Restart**: After installing or updating, completely quit and restart Claude Desktop/Code to load new tools
+- **Plugin Rebuild**: Run `npm run build` in the plugin directory after making TypeScript changes
+- **Tag Intelligence**: Requires a tag taxonomy document in your vault for full functionality
+- **Link Formatting**: Automatically converts all internal links to Obsidian's `[[wikilink]]` format
 
 ## License
 
