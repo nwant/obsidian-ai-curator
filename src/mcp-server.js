@@ -48,6 +48,7 @@ class SimpleVaultServer {
       { name: 'obsidian-vault-simple', version: '2.0.0' },
       { capabilities: { tools: {} } }
     );
+    this.config = config;
     this.metricsCollector = new AutoMetricsCollector(config);
     this.cache = new VaultCache(config);
     this.dataviewRenderer = new DataviewRenderer(config, this.cache);

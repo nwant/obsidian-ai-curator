@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { ObsidianAPIClient } from './src/obsidian-api-client.js';
+import { ObsidianAPIClient } from '../src/obsidian-api-client.js';
 
 async function testAPIIntegration() {
   console.log('Testing Obsidian API integration...\n');
