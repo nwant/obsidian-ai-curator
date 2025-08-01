@@ -2,29 +2,39 @@ import matter from 'gray-matter';
 
 export class TagFormatter {
   /**
-   * Ensures all tags in frontmatter have the # prefix
+   * Ensures all tags in frontmatter DON'T have the # prefix (Obsidian convention)
    */
   static formatContentTags(content) {
     try {
-      const parsed = matter(content);
+      // First, let's fix any existing tags with # in the raw content before parsing
+      // This handles the case where tags with # are treated as nulls by YAML parser
+      const fixedContent = content.replace(/^(\s*tags:\s*\n(?:\s*-\s*.+\n)*)/m, (match) => {
+        // Replace # prefix in each tag line within the tags section
+        return match.replace(/^(\s*-\s*)#(.+)$/gm, '$1$2');
+      });
       
-      // If there are tags in frontmatter, ensure they have # prefix
+      const parsed = matter(fixedContent);
+      
+      // If there are tags in frontmatter, ensure they DON'T have # prefix
       if (parsed.data.tags) {
         if (Array.isArray(parsed.data.tags)) {
-          parsed.data.tags = parsed.data.tags.map(tag => {
-            if (typeof tag === 'string' && tag.trim()) {
-              // Ensure the tag starts with # and is properly formatted
-              const formattedTag = tag.startsWith('#') ? tag : `#${tag}`;
-              // No need to quote - gray-matter will handle this
-              return formattedTag;
-            }
-            return tag;
-          });
+          parsed.data.tags = parsed.data.tags
+            .filter(tag => tag !== null && tag !== undefined) // Remove null values
+            .map(tag => {
+              if (typeof tag === 'string' && tag.trim()) {
+                // Remove # prefix if present (Obsidian frontmatter convention)
+                const trimmedTag = tag.trim();
+                const formattedTag = trimmedTag.startsWith('#') ? trimmedTag.substring(1) : trimmedTag;
+                return formattedTag;
+              }
+              return tag;
+            })
+            .filter(tag => tag); // Remove any empty strings
         } else if (typeof parsed.data.tags === 'string') {
           // Single tag as string
           const tag = parsed.data.tags.trim();
           if (tag) {
-            parsed.data.tags = tag.startsWith('#') ? tag : `#${tag}`;
+            parsed.data.tags = tag.startsWith('#') ? tag.substring(1) : tag;
           }
         }
       }

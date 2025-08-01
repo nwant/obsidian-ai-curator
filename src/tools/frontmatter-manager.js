@@ -151,9 +151,9 @@ export class FrontmatterManager {
     const existingTags = current.frontmatter.tags || [];
     const existingTagsArray = Array.isArray(existingTags) ? existingTags : [existingTags];
     
-    // Ensure tags have # prefix
+    // Ensure tags DON'T have # prefix (Obsidian frontmatter convention)
     const formattedTags = tagsToAdd.map(tag => 
-      tag.startsWith('#') ? tag : `#${tag}`
+      tag.startsWith('#') ? tag.substring(1) : tag
     );
     
     // Merge with existing, avoiding duplicates
@@ -172,9 +172,9 @@ export class FrontmatterManager {
     const existingTags = current.frontmatter.tags || [];
     const existingTagsArray = Array.isArray(existingTags) ? existingTags : [existingTags];
     
-    // Ensure tags have # prefix for comparison
+    // Ensure tags DON'T have # prefix for comparison (Obsidian frontmatter convention)
     const formattedTagsToRemove = tagsToRemove.map(tag => 
-      tag.startsWith('#') ? tag : `#${tag}`
+      tag.startsWith('#') ? tag.substring(1) : tag
     );
     
     // Filter out tags to remove
@@ -189,9 +189,9 @@ export class FrontmatterManager {
    * Replace all tags for a note
    */
   async replaceTags(notePath, newTags) {
-    // Ensure tags have # prefix
+    // Ensure tags DON'T have # prefix (Obsidian frontmatter convention)
     const formattedTags = newTags.map(tag => 
-      tag.startsWith('#') ? tag : `#${tag}`
+      tag.startsWith('#') ? tag.substring(1) : tag
     );
     
     // Use replaceArrays option to ensure tags are replaced, not merged

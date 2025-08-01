@@ -1,5 +1,25 @@
 # Tag Usage Guidelines for AI Assistant
 
+## ⚠️ Critical: Frontmatter Tag Format
+
+**NEVER use hashtags (#) in frontmatter tags!**
+
+```yaml
+# ❌ WRONG - Becomes null in YAML
+---
+tags:
+  - #project/active
+---
+
+# ✅ CORRECT - Obsidian convention
+---
+tags:
+  - project/active
+---
+```
+
+Only use hashtags for inline tags: `#project/active`
+
 ## Core Principles
 
 1. **Check Before Creating**: Always use existing tags when possible

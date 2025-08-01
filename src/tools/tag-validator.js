@@ -82,9 +82,14 @@ export class TagValidator {
       }
     }
     
+    // Ensure tags are returned without hashtags for frontmatter
+    const cleanValidatedTags = validatedTags.map(tag => 
+      tag.startsWith('#') ? tag.substring(1) : tag
+    );
+    
     return {
       valid: warnings.filter(w => w.severity !== 'info').length === 0,
-      tags: validatedTags,
+      tags: cleanValidatedTags,
       warnings,
       suggestions,
       autoTagsAdded
@@ -97,14 +102,16 @@ export class TagValidator {
   extractTagsFromContent(content) {
     const tags = new Set();
     
-    // Extract from frontmatter
+    // Extract from frontmatter (without hashtags - Obsidian convention)
     try {
       const { data } = matter(content);
       if (data.tags) {
         const fmTags = Array.isArray(data.tags) ? data.tags : [data.tags];
         fmTags.forEach(tag => {
           if (typeof tag === 'string') {
-            tags.add(tag.startsWith('#') ? tag : `#${tag}`);
+            // Store frontmatter tags without hashtag prefix
+            const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+            tags.add(cleanTag);
           }
         });
       }
@@ -112,10 +119,13 @@ export class TagValidator {
       // Content might not have valid frontmatter
     }
     
-    // Extract inline tags
+    // Extract inline tags (these keep hashtags)
     const tagRegex = /#[a-zA-Z0-9_\-\/]+/g;
     const matches = content.match(tagRegex) || [];
-    matches.forEach(tag => tags.add(tag));
+    matches.forEach(tag => {
+      // Remove hashtag for consistency in validation
+      tags.add(tag.substring(1));
+    });
     
     return Array.from(tags);
   }
@@ -124,10 +134,12 @@ export class TagValidator {
    * Validate a single tag
    */
   async validateSingleTag(tag, existingTags, analysis) {
-    const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
+    // Work with tags without hashtags for consistency
+    const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+    const existingCleanTags = existingTags.map(t => t.startsWith('#') ? t.substring(1) : t);
     
     // Check if tag exists
-    if (existingTags.includes(cleanTag)) {
+    if (existingCleanTags.includes(cleanTag)) {
       return {
         isNew: false,
         valid: true,
@@ -151,8 +163,8 @@ export class TagValidator {
           recommendedTag: bestMatch.tag,
           warning: {
             type: 'similar-exists',
-            message: `New tag "${cleanTag}" is very similar to existing "${bestMatch.tag}" (${Math.round(bestMatch.similarity * 100)}% match)`,
-            suggestion: `Use "${bestMatch.tag}" instead`,
+            message: `New tag "#${cleanTag}" is very similar to existing "#${bestMatch.tag}" (${Math.round(bestMatch.similarity * 100)}% match)`,
+            suggestion: `Use "#${bestMatch.tag}" instead`,
             severity: 'high'
           },
           suggestions: [{
@@ -212,7 +224,7 @@ export class TagValidator {
         recommendedTag: cleanTag,
         warning: {
           type: 'hierarchy-suggestion',
-          message: `New tag "${cleanTag}" might fit better in existing hierarchy`,
+          message: `New tag "#${cleanTag}" might fit better in existing hierarchy`,
           suggestion: taxonomyValidation.suggestions[0],
           severity: 'low'
         },
@@ -231,7 +243,7 @@ export class TagValidator {
       recommendedTag: cleanTag,
       warning: {
         type: 'new-tag',
-        message: `Creating new tag "${cleanTag}"`,
+        message: `Creating new tag "#${cleanTag}"`,
         severity: 'info'
       },
       suggestions: []
@@ -252,7 +264,7 @@ export class TagValidator {
       
       if (similarity > similarityThreshold && similarity < 1.0) {
         similar.push({
-          tag: existing,
+          tag: cleanExisting,  // Return without hashtag
           similarity,
           type: this.getSimilarityType(cleanTag, cleanExisting)
         });
@@ -311,7 +323,7 @@ export class TagValidator {
     if (cleanTag !== cleanTag.toLowerCase()) {
       issues.push({
         issue: 'Contains uppercase letters',
-        suggestion: tag.toLowerCase()
+        suggestion: cleanTag.toLowerCase()
       });
     }
     
@@ -319,7 +331,7 @@ export class TagValidator {
     if (cleanTag.includes('_')) {
       issues.push({
         issue: 'Uses underscores instead of hyphens',
-        suggestion: tag.replace(/_/g, '-')
+        suggestion: cleanTag.replace(/_/g, '-')
       });
     }
     
@@ -327,7 +339,7 @@ export class TagValidator {
     if (cleanTag.includes(' ')) {
       issues.push({
         issue: 'Contains spaces',
-        suggestion: tag.replace(/ /g, '-')
+        suggestion: cleanTag.replace(/ /g, '-')
       });
     }
     

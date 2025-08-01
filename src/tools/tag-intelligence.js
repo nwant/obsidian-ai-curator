@@ -45,17 +45,20 @@ export class TagIntelligence {
     
     // Process each tag
     Object.entries(apiTags).forEach(([tag, count]) => {
+      // Remove hashtag if present (Obsidian API might include it)
+      const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+      
       // Basic stats
-      tagStats.set(tag, {
-        tag,
+      tagStats.set(cleanTag, {
+        tag: cleanTag,
         count,
-        isRoot: !tag.includes('/'),
-        level: tag.split('/').length - 1,
-        parent: this.getParentTag(tag)
+        isRoot: !cleanTag.includes('/'),
+        level: cleanTag.split('/').length - 1,
+        parent: this.getParentTag(cleanTag)
       });
       
       // Build hierarchy
-      this.addToHierarchy(tagHierarchy, tag);
+      this.addToHierarchy(tagHierarchy, cleanTag);
     });
     
     return {
@@ -146,22 +149,24 @@ export class TagIntelligence {
   extractTags(content, frontmatter) {
     const tags = new Set();
     
-    // Extract from frontmatter
+    // Extract from frontmatter (without hashtags - Obsidian convention)
     if (frontmatter.tags) {
       const fmTags = Array.isArray(frontmatter.tags) 
         ? frontmatter.tags 
         : [frontmatter.tags];
       fmTags.forEach(tag => {
         if (typeof tag === 'string') {
-          tags.add(tag.startsWith('#') ? tag : `#${tag}`);
+          // Remove hashtag if present and add without it
+          const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+          tags.add(cleanTag);
         }
       });
     }
     
-    // Extract from content
+    // Extract from content (inline tags - remove hashtag for consistency)
     const tagRegex = /#[a-zA-Z0-9_\-\/]+/g;
     const matches = content.match(tagRegex) || [];
-    matches.forEach(tag => tags.add(tag));
+    matches.forEach(tag => tags.add(tag.substring(1))); // Remove # prefix
     
     return Array.from(tags);
   }

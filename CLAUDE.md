@@ -57,6 +57,32 @@ You are working on the Obsidian AI Curator project, an AI-powered system that ac
   - ❌ Wrong: `/Projects/AI Project Index.md`
 
 ### Tags
-- Always include `#` prefix in frontmatter tags
-- Use hierarchical tags when appropriate: `#type/project-index`
+- **NEVER include `#` prefix in frontmatter tags** (Obsidian convention)
+- **ONLY use `#` for inline tags** in the note body
+- Use hierarchical tags when appropriate: `type/project-index` (in frontmatter)
 - Follow vault's tag taxonomy
+- **Critical**: Hashtags in frontmatter YAML are treated as comments and become `null`
+
+#### ✅ Correct Tag Usage
+```yaml
+---
+tags:
+  - project/active
+  - type/meeting
+  - status/draft
+---
+
+# Meeting Notes
+
+This is about the #project/active work.
+Related tags: #type/meeting #important
+```
+
+#### ❌ Wrong Tag Usage (Causes Data Loss)
+```yaml
+---
+tags:
+  - #project/active    # Becomes null!
+  - #type/meeting      # Becomes null!
+---
+```

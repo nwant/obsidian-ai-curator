@@ -475,6 +475,34 @@ The MCP server automatically detects and uses the Obsidian API server when avail
 - **Tag Intelligence**: Requires a tag taxonomy document in your vault for full functionality
 - **Link Formatting**: Automatically converts all internal links to Obsidian's `[[wikilink]]` format
 
+### ⚠️ Critical: Tag Formatting Convention
+
+**NEVER use hashtags (#) in frontmatter tags!** This is an Obsidian convention and YAML limitation.
+
+```yaml
+# ❌ WRONG - These become null!
+---
+tags:
+  - #project/active
+  - #important
+---
+
+# ✅ CORRECT - Obsidian convention
+---
+tags:
+  - project/active
+  - important
+---
+```
+
+**Why this matters:**
+- YAML treats `#` as a comment marker
+- Unquoted `#tag` in frontmatter becomes `null` 
+- Obsidian expects frontmatter tags without hashtags
+- Only use `#` for inline tags in the note body
+
+See [LLM_INSTRUCTIONS.md](LLM_INSTRUCTIONS.md) for complete tag usage guidelines.
+
 ## License
 
 MIT

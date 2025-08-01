@@ -762,10 +762,33 @@ class SimpleVaultServer {
   }
 
   async writeNote({ path: notePath, content }) {
+    // CRITICAL: Clean hashtags from tags BEFORE any parsing occurs
+    // This must happen before gray-matter touches the content
+    // Otherwise #tags become null and we lose the tag data
+    
+    // Method 1: Clean tags in frontmatter only (more precise)
+    let finalContent = content.replace(
+      /^---\s*\n([\s\S]*?)\n---/,
+      (match, frontmatter) => {
+        const cleanedFrontmatter = frontmatter
+          // Clean tags in array format
+          .replace(/^(\s*-\s*)["']?#(.+?)["']?\s*$/gm, '$1$2')
+          // Clean tags that might be in flow format
+          .replace(/tags:\s*\[(.*?)\]/g, (m, tagList) => {
+            const cleaned = tagList.replace(/#/g, '');
+            return `tags: [${cleaned}]`;
+          });
+        return `---\n${cleanedFrontmatter}\n---`;
+      }
+    );
+    
+    // Method 2: Additional safety - clean any remaining hashtags in tag lines
+    finalContent = finalContent.replace(/^(\s*-\s*)#(.+)$/gm, '$1$2');
+    
     // Validate tags before writing
     let tagValidation;
     try {
-      tagValidation = await this.tagValidator.validateTags(content);
+      tagValidation = await this.tagValidator.validateTags(finalContent);
     } catch (error) {
       console.error('Tag validation error:', error);
       // Continue without tag validation if it fails
@@ -779,20 +802,24 @@ class SimpleVaultServer {
     }
     
     // Apply auto-tags if any were added
-    let finalContent = content;
     if (tagValidation.autoTagsAdded && tagValidation.autoTagsAdded.length > 0) {
       // Parse content and add auto-tags to frontmatter
-      const parsed = matter(content);
+      const parsed = matter(finalContent);
       const existingTags = parsed.data.tags || [];
-      const allTags = [...new Set([
-        ...(Array.isArray(existingTags) ? existingTags : [existingTags]),
-        ...tagValidation.autoTagsAdded
-      ])];
+      
+      // Strip hashtags from both existing and auto-added tags
+      const stripHashtag = tag => tag.startsWith('#') ? tag.substring(1) : tag;
+      const existingTagsClean = Array.isArray(existingTags) 
+        ? existingTags.map(tag => typeof tag === 'string' ? stripHashtag(tag) : tag).filter(Boolean)
+        : [stripHashtag(existingTags)];
+      const autoTagsClean = tagValidation.autoTagsAdded.map(stripHashtag);
+      
+      const allTags = [...new Set([...existingTagsClean, ...autoTagsClean])];
       parsed.data.tags = allTags;
       finalContent = matter.stringify(parsed.content, parsed.data);
     }
     
-    // Format content to ensure tags have # prefix in frontmatter
+    // Format content to ensure tags DON'T have # prefix in frontmatter
     finalContent = TagFormatter.formatContentTags(finalContent);
     
     // Format links to use Obsidian wikilink format
@@ -805,6 +832,40 @@ class SimpleVaultServer {
       dateFormat: this.config.dateFormat || 'yyyy-MM-dd',
       includeTime: false
     });
+    
+    // FINAL STEP: Absolute final cleanup to ensure no hashtags in frontmatter tags
+    // This is our last defense against any hashtags that might have been added
+    // Parse the content one final time
+    try {
+      const parsed = matter(finalContent);
+      let modified = false;
+      
+      // Check if tags exist and have any hashtags
+      if (parsed.data.tags) {
+        if (Array.isArray(parsed.data.tags)) {
+          const cleanedTags = parsed.data.tags
+            .filter(tag => tag !== null && tag !== undefined && tag !== '')
+            .map(tag => {
+              if (typeof tag === 'string' && tag.startsWith('#')) {
+                modified = true;
+                return tag.substring(1);
+              }
+              return tag;
+            })
+            .filter(tag => tag && tag.trim());
+          
+          if (modified || cleanedTags.length !== parsed.data.tags.length) {
+            parsed.data.tags = cleanedTags;
+            finalContent = matter.stringify(parsed.content, parsed.data);
+          }
+        } else if (typeof parsed.data.tags === 'string' && parsed.data.tags.startsWith('#')) {
+          parsed.data.tags = parsed.data.tags.substring(1);
+          finalContent = matter.stringify(parsed.content, parsed.data);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to do final tag cleanup:', e);
+    }
     // Validate links were formatted correctly
     const linkValidation = LinkFormatter.validateLinks(finalContent);
     
