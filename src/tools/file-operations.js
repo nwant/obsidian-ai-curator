@@ -25,15 +25,25 @@ export class FileOperations {
 
     // Check if file exists
     const fullOldPath = path.join(this.vaultPath, oldPath);
-    const fileExists = await this.fileExists(fullOldPath);
-    if (!fileExists) {
-      throw new Error(`File not found: ${oldPath}`);
-    }
-
-    // Prevent overwriting existing files
+    const sourceExists = await this.fileExists(fullOldPath);
+    
+    // Check if target already exists
     const fullNewPath = path.join(this.vaultPath, newPath);
     const targetExists = await this.fileExists(fullNewPath);
-    if (targetExists) {
+    
+    // Handle various scenarios
+    if (!sourceExists && targetExists) {
+      // File might have already been renamed
+      return {
+        success: false,
+        error: `Source file not found at '${oldPath}'. A file already exists at the target location '${newPath}'. The file may have already been renamed.`,
+        oldPath,
+        newPath,
+        suggestion: 'The rename operation may have already been completed.'
+      };
+    } else if (!sourceExists) {
+      throw new Error(`Source file not found: ${oldPath}`);
+    } else if (targetExists) {
       throw new Error(`Target file already exists: ${newPath}`);
     }
 
@@ -56,15 +66,25 @@ export class FileOperations {
 
     // Check if source exists
     const fullSourcePath = path.join(this.vaultPath, sourcePath);
-    const fileExists = await this.fileExists(fullSourcePath);
-    if (!fileExists) {
-      throw new Error(`File not found: ${sourcePath}`);
-    }
-
-    // Prevent overwriting
+    const sourceExists = await this.fileExists(fullSourcePath);
+    
+    // Check if target already exists
     const fullTargetPath = path.join(this.vaultPath, targetPath);
     const targetExists = await this.fileExists(fullTargetPath);
-    if (targetExists) {
+    
+    // Handle various scenarios
+    if (!sourceExists && targetExists) {
+      // File might have already been moved
+      return {
+        success: false,
+        error: `Source file not found at '${sourcePath}'. A file already exists at the target location '${targetPath}'. The file may have already been moved.`,
+        sourcePath,
+        targetPath,
+        suggestion: 'The move operation may have already been completed.'
+      };
+    } else if (!sourceExists) {
+      throw new Error(`Source file not found: ${sourcePath}`);
+    } else if (targetExists) {
       throw new Error(`Target file already exists: ${targetPath}`);
     }
 

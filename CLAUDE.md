@@ -30,6 +30,7 @@ You are working on the Obsidian AI Curator project, an AI-powered system that ac
 - The vault path is configured in `config/config.json`
 - Obsidian API server runs on port 3001 by default
 - Claude CLI must be installed and accessible in PATH for consolidation features
+- **Date Format**: Always use `yyyy-MM-dd` format for date fields (e.g., `2025-08-01`)
 
 ## CRITICAL VAULT WRITE RULES
 - **NEVER write files directly to the vault path** (e.g., using Write tool on /Users/*/obsidian/*)

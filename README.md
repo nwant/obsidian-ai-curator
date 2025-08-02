@@ -335,6 +335,15 @@ Move a file to a new location and automatically update all links
 - Updates all wikilinks and markdown links
 - Returns: success status, paths, link update info
 
+### `rename_tag`
+Rename a tag globally across the entire vault
+- Parameters: `oldTag` (required), `newTag` (required), `preview` (optional), `includeInline` (optional), `includeFrontmatter` (optional)
+- Renames tags in both frontmatter and inline content
+- Preview mode shows what would change without applying
+- Uses Obsidian API when available for better performance
+- Handles hierarchical tags (e.g., `project/old` → `project/new`)
+- Returns: files modified, changes per file, method used
+
 ## Automatic Metrics Collection
 
 The MCP server now automatically collects performance metrics for all search operations. This feature runs in the background without affecting normal operations.
@@ -391,6 +400,8 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "Find similar or duplicate tags"
 - "Suggest tags for this content: [content]"
 - "Show me tags that are rarely used"
+- "Rename tag 'old-project' to 'new-project' globally"
+- "Preview what would change if I rename tag 'typo' to 'correct'"
 
 **Dataview Queries:**
 - "Run this Dataview query: TABLE file.name, status FROM #project WHERE status = 'active'"

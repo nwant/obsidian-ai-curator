@@ -78,13 +78,18 @@ export class DateManager {
         ? now.toISOString() 
         : format(now, dateFormat);
       
-      // Validate and fix existing dates
-      if (parsed.data.created) {
-        const createdDate = this.parseDate(parsed.data.created);
-        if (createdDate) {
-          parsed.data.created = includeTime 
-            ? createdDate.toISOString() 
-            : format(createdDate, dateFormat);
+      // Validate and fix ALL date fields to ensure consistent format
+      const dateFields = ['created', 'date', 'published', 'updated'];
+      
+      for (const field of dateFields) {
+        if (parsed.data[field]) {
+          const parsedDate = this.parseDate(parsed.data[field]);
+          if (parsedDate) {
+            // Always reformat to the configured format
+            parsed.data[field] = includeTime 
+              ? parsedDate.toISOString() 
+              : format(parsedDate, dateFormat);
+          }
         }
       }
       

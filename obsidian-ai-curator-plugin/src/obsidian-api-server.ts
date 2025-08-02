@@ -149,6 +149,14 @@ export class ObsidianAPIServer {
           await this.handleMoveFile(url.searchParams, res);
           break;
 
+        case '/api/rename-tag':
+          await this.handleRenameTag(url.searchParams, res);
+          break;
+
+        case '/api/find-tag':
+          await this.handleFindTag(url.searchParams, res);
+          break;
+
         default:
           this.sendResponse(res, 404, { 
             success: false, 
@@ -693,6 +701,162 @@ export class ObsidianAPIServer {
       this.sendResponse(res, 500, { 
         success: false, 
         error: error instanceof Error ? error.message : 'Failed to move file' 
+      });
+    }
+  }
+
+  private async handleRenameTag(params: URLSearchParams, res: ServerResponse) {
+    const oldTag = params.get('oldTag');
+    const newTag = params.get('newTag');
+    const includeInline = params.get('includeInline') !== 'false';
+    const includeFrontmatter = params.get('includeFrontmatter') !== 'false';
+
+    if (!oldTag || !newTag) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing oldTag or newTag parameter' 
+      });
+      return;
+    }
+
+    try {
+      // Normalize tags (remove # for comparison)
+      const oldTagClean = oldTag.startsWith('#') ? oldTag.substring(1) : oldTag;
+      const newTagClean = newTag.startsWith('#') ? newTag.substring(1) : newTag;
+
+      const files = this.app.vault.getMarkdownFiles();
+      let filesModified = 0;
+      const changes: any[] = [];
+
+      for (const file of files) {
+        let content = await this.app.vault.read(file);
+        let modified = false;
+        let frontmatterChanges = 0;
+        let inlineChanges = 0;
+
+        // Process frontmatter
+        if (includeFrontmatter) {
+          const metadata = this.app.metadataCache.getFileCache(file);
+          if (metadata?.frontmatter?.tags) {
+            const tags = metadata.frontmatter.tags;
+            if (Array.isArray(tags) && tags.includes(oldTagClean)) {
+              // Update frontmatter
+              content = content.replace(
+                /^---\s*\n([\s\S]*?)\n---/,
+                (match, frontmatter) => {
+                  const updatedFrontmatter = frontmatter.replace(
+                    new RegExp(`^(\\s*-\\s*)${this.escapeRegex(oldTagClean)}\\s*$`, 'gm'),
+                    `$1${newTagClean}`
+                  );
+                  frontmatterChanges = (frontmatter.match(new RegExp(`^\\s*-\\s*${this.escapeRegex(oldTagClean)}\\s*$`, 'gm')) || []).length;
+                  modified = frontmatterChanges > 0;
+                  return `---\n${updatedFrontmatter}\n---`;
+                }
+              );
+            }
+          }
+        }
+
+        // Process inline tags
+        if (includeInline) {
+          const inlineTagRegex = new RegExp(`#${this.escapeRegex(oldTagClean)}(?![a-zA-Z0-9_/-])`, 'g');
+          const matches = content.match(inlineTagRegex);
+          inlineChanges = matches ? matches.length : 0;
+
+          if (inlineChanges > 0) {
+            content = content.replace(inlineTagRegex, `#${newTagClean}`);
+            modified = true;
+          }
+        }
+
+        // Save changes
+        if (modified) {
+          await this.app.vault.modify(file, content);
+          filesModified++;
+          changes.push({
+            file: file.path,
+            frontmatterTags: frontmatterChanges,
+            inlineTags: inlineChanges,
+            totalChanges: frontmatterChanges + inlineChanges
+          });
+        }
+      }
+
+      this.sendResponse(res, 200, { 
+        success: true, 
+        data: {
+          oldTag: oldTagClean,
+          newTag: newTagClean,
+          filesModified,
+          changes,
+          method: 'obsidian-api'
+        }
+      });
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to rename tag' 
+      });
+    }
+  }
+
+  private escapeRegex(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private async handleFindTag(params: URLSearchParams, res: ServerResponse) {
+    const tag = params.get('tag');
+
+    if (!tag) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing tag parameter' 
+      });
+      return;
+    }
+
+    try {
+      // Normalize tag (remove # for comparison)
+      const tagClean = tag.startsWith('#') ? tag.substring(1) : tag;
+      const files = this.app.vault.getMarkdownFiles();
+      const filesWithTag: string[] = [];
+
+      for (const file of files) {
+        let hasTag = false;
+
+        // Check frontmatter tags
+        const metadata = this.app.metadataCache.getFileCache(file);
+        if (metadata?.frontmatter?.tags) {
+          const tags = metadata.frontmatter.tags;
+          if (Array.isArray(tags)) {
+            hasTag = tags.includes(tagClean);
+          } else if (typeof tags === 'string') {
+            hasTag = tags === tagClean;
+          }
+        }
+
+        // Check inline tags if not found in frontmatter
+        if (!hasTag && metadata?.tags) {
+          hasTag = metadata.tags.some(t => t.tag === `#${tagClean}`);
+        }
+
+        if (hasTag) {
+          filesWithTag.push(file.path);
+        }
+      }
+
+      this.sendResponse(res, 200, { 
+        success: true, 
+        data: {
+          tag: tagClean,
+          files: filesWithTag,
+          count: filesWithTag.length
+        }
+      });
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to find tag' 
       });
     }
   }

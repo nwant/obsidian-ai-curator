@@ -1,5 +1,27 @@
 # LLM Instructions for Obsidian AI Curator
 
+## Critical: Date Formatting Rules
+
+### Always Use Vault's Date Format
+The vault is configured to use `yyyy-MM-dd` format for all date fields.
+
+```yaml
+---
+created: 2025-08-01    # ✅ Correct format
+modified: 2025-08-01   # ✅ Correct format
+---
+```
+
+**NOT**:
+```yaml
+---
+created: 08/01/2025    # ❌ Wrong - will be auto-corrected
+modified: 8/1/2025     # ❌ Wrong - will be auto-corrected
+---
+```
+
+The MCP server will automatically reformat dates, but using the correct format from the start ensures consistency.
+
 ## Critical: Tag Formatting Rules
 
 ### ❌ NEVER Do This (Causes Data Loss)

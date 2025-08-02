@@ -20,6 +20,7 @@ import { DateManager } from './tools/date-manager.js';
 import { DailyNoteManager } from './tools/daily-note-manager.js';
 import { FrontmatterManager } from './tools/frontmatter-manager.js';
 import { FileOperations } from './tools/file-operations.js';
+import { TagRenamer } from './tools/tag-renamer.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -59,6 +60,7 @@ class SimpleVaultServer {
     this.frontmatterManager = new FrontmatterManager(config, this.obsidianAPI);
     this.linkFormatter = new LinkFormatter(this.obsidianAPI);
     this.fileOperations = new FileOperations(config, this.obsidianAPI);
+    this.tagRenamer = new TagRenamer(config, this.obsidianAPI);
     this.setupHandlers();
   }
 
@@ -538,6 +540,36 @@ class SimpleVaultServer {
             },
             required: ['sourcePath', 'targetPath']
           }
+        },
+        {
+          name: 'rename_tag',
+          description: 'Rename a tag globally across the entire vault. Handles both frontmatter and inline tags. Uses Obsidian API when available for better performance.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              oldTag: {
+                type: 'string',
+                description: 'The tag to rename (with or without #, e.g., "old-tag" or "#old-tag")'
+              },
+              newTag: {
+                type: 'string',
+                description: 'The new tag name (with or without #, e.g., "new-tag" or "#new-tag")'
+              },
+              preview: {
+                type: 'boolean',
+                description: 'If true, only preview changes without applying them (default: false)'
+              },
+              includeInline: {
+                type: 'boolean',
+                description: 'Rename inline tags in content (default: true)'
+              },
+              includeFrontmatter: {
+                type: 'boolean',
+                description: 'Rename tags in frontmatter (default: true)'
+              }
+            },
+            required: ['oldTag', 'newTag']
+          }
         }
       ]
     }));
@@ -609,6 +641,8 @@ class SimpleVaultServer {
             return await this.renameFile(args);
           case 'move_file':
             return await this.moveFile(args);
+          case 'rename_tag':
+            return await this.renameTag(args);
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -2122,6 +2156,35 @@ class SimpleVaultServer {
             error: error.message,
             sourcePath,
             targetPath
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async renameTag({ oldTag, newTag, preview = false, includeInline = true, includeFrontmatter = true }) {
+    try {
+      const result = await this.tagRenamer.renameTag(oldTag, newTag, {
+        preview,
+        includeInline,
+        includeFrontmatter
+      });
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            oldTag,
+            newTag
           }, null, 2)
         }]
       };
