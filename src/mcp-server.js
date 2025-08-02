@@ -22,6 +22,7 @@ import { FrontmatterManager } from './tools/frontmatter-manager.js';
 import { FileOperations } from './tools/file-operations.js';
 import { TagRenamer } from './tools/tag-renamer.js';
 import { FrontmatterValidator } from './tools/frontmatter-validator.js';
+import { ProjectInitializer } from './tools/project-init.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -62,6 +63,7 @@ class SimpleVaultServer {
     this.linkFormatter = new LinkFormatter(this.obsidianAPI);
     this.fileOperations = new FileOperations(config, this.obsidianAPI);
     this.tagRenamer = new TagRenamer(config, this.obsidianAPI);
+    this.projectInitializer = new ProjectInitializer(config);
     this.setupHandlers();
   }
 
@@ -571,6 +573,54 @@ class SimpleVaultServer {
             },
             required: ['oldTag', 'newTag']
           }
+        },
+        {
+          name: 'init_project',
+          description: 'Initialize a new project with standardized structure in the Obsidian vault',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              projectName: {
+                type: 'string',
+                description: 'Name of the project (e.g., "Email Automation")'
+              },
+              projectType: {
+                type: 'string',
+                enum: ['ai-agent', 'integration', 'automation', 'other'],
+                description: 'Type of project (default: "other")'
+              },
+              description: {
+                type: 'string',
+                description: 'Brief description of the project'
+              },
+              stakeholders: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'List of stakeholders in format "Name (Role)"'
+              },
+              targetDate: {
+                type: 'string',
+                description: 'Target completion date in yyyy-MM-dd format'
+              },
+              phase: {
+                type: 'string',
+                description: 'Initial project phase (default: "planning")'
+              },
+              template: {
+                type: 'string',
+                description: 'Project template to use (default: "default"). Use list_project_templates to see available templates'
+              }
+            },
+            required: ['projectName', 'description']
+          }
+        },
+        {
+          name: 'list_project_templates',
+          description: 'List available project templates and their descriptions',
+          inputSchema: {
+            type: 'object',
+            properties: {}
+          }
         }
       ]
     }));
@@ -644,6 +694,10 @@ class SimpleVaultServer {
             return await this.moveFile(args);
           case 'rename_tag':
             return await this.renameTag(args);
+          case 'init_project':
+            return await this.initProject(args);
+          case 'list_project_templates':
+            return await this.listProjectTemplates();
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -2224,6 +2278,84 @@ class SimpleVaultServer {
             oldTag,
             newTag
           }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async initProject(params) {
+    try {
+      const result = await this.projectInitializer.initProject(params);
+      
+      // If successful and git checkpoint is enabled, create one
+      if (result.success && this.config.gitCheckpoints !== false) {
+        try {
+          const gitResult = await this.gitCheckpoint({
+            message: `Initialize project: ${params.projectName}`
+          });
+          result.gitCheckpoint = gitResult.success;
+        } catch (gitError) {
+          // Don't fail the project init if git checkpoint fails
+          console.error('Git checkpoint failed:', gitError);
+          result.gitCheckpoint = false;
+        }
+      }
+      
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ 
+            success: false,
+            error: error.message,
+            params
+          }, null, 2)
+        }]
+      };
+    }
+  }
+
+  async listProjectTemplates() {
+    try {
+      const result = await this.projectInitializer.listTemplates();
+      
+      // Format the output nicely
+      let output = "# Available Project Templates\n\n";
+      
+      for (const template of result.templates) {
+        output += `## ${template.name} (${template.key})\n`;
+        output += `${template.description}\n`;
+        output += `- Directories: ${template.directories}\n`;
+        output += `- Files: ${template.files}\n\n`;
+      }
+      
+      output += "\n## Available Project Types\n";
+      output += result.projectTypes.map(type => `- ${type}`).join('\n');
+      
+      output += "\n\n## Available Phases\n";
+      output += result.phases.map(phase => `- ${phase}`).join('\n');
+      
+      output += "\n\n## Usage\n";
+      output += "Use the 'template' parameter when calling init_project:\n";
+      output += "```\ninit_project({\n  projectName: \"My Project\",\n  description: \"...\",\n  template: \"minimal\"  // or \"default\", \"research\"\n})\n```";
+      
+      return {
+        content: [{
+          type: 'text',
+          text: output
+        }]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: 'text',
+          text: `Error listing templates: ${error.message}`
         }]
       };
     }

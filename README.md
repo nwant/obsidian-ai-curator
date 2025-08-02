@@ -7,8 +7,10 @@ An AI-powered knowledge management system for Obsidian that enables Claude Deskt
 ### Core Capabilities
 - **Vault Operations**: Scan, read, write, and archive notes with validation
 - **File Operations**: Rename and move files with automatic link updates
+- **Project Management**: Initialize projects with customizable templates and structure
 - **Intelligent Search**: Content search with Obsidian API optimization
 - **Tag Intelligence**: Smart tag management with similarity detection and suggestions
+- **Tag Renaming**: Global tag rename across entire vault with preview mode
 - **Date Management**: Automatic timestamp handling and daily note operations
 - **Link Formatting**: Automatically converts links to Obsidian wikilink format with API-powered resolution
 - **Git Integration**: Version control with checkpoint/rollback capabilities
@@ -62,6 +64,42 @@ cp config/config.example.json config/config.json
 ```
 
 See [Configuration Guide](docs/configuration-guide.md) for all options.
+
+## Project Templates
+
+The `init_project` tool uses customizable templates to create standardized project structures. 
+
+### Built-in Templates
+- **default**: Full project structure with CLAUDE.md, instructions, and implementation tracking
+- **minimal**: Lightweight structure for quick projects
+- **research**: Academic research project with literature and data organization
+
+### Customizing Templates
+Templates are defined in `config/project-templates.json`. You can:
+- Add new templates with custom directory structures
+- Define your own file templates with variables
+- Create project types specific to your workflow
+- Set validation rules for project names and dates
+
+See [Project Templates Documentation](docs/PROJECT_TEMPLATES.md) for detailed customization guide.
+
+### Example Usage
+```javascript
+// Initialize with default template
+init_project({
+  projectName: "My New Project",
+  description: "Project description",
+  stakeholders: ["Alice (PM)", "Bob (Dev)"],
+  targetDate: "2025-12-31"
+})
+
+// Use a different template
+init_project({
+  projectName: "Quick Research",
+  description: "Research into AI patterns",
+  template: "research"
+})
+```
 
 ## Configuration
 
@@ -386,6 +424,12 @@ Once configured in Claude Desktop or Claude Code, you can use natural language t
 - "Find all notes with status 'active' in frontmatter"
 - "Search for notes mentioning 'project planning'"
 - "Create a git checkpoint before making changes"
+
+**Project Management:**
+- "Initialize a new project called 'Email Automation' using the default template"
+- "List available project templates"
+- "Create a research project with minimal structure"
+- "Set up a new AI agent project with stakeholders John and Jane"
 
 **Advanced Metadata Queries:**
 - "Find all notes missing a description field"
