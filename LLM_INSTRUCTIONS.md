@@ -22,6 +22,60 @@ modified: 8/1/2025     # ❌ Wrong - will be auto-corrected
 
 The MCP server will automatically reformat dates, but using the correct format from the start ensures consistency.
 
+## Critical: Frontmatter Compatibility Rules
+
+### Obsidian Frontmatter Limitations
+Obsidian's UI and APIs have limited support for complex data structures in frontmatter.
+
+#### ❌ AVOID Complex Nested Structures
+```yaml
+---
+# This won't work properly in Obsidian:
+compatible-prompts:
+  - version: 4
+    compatibility: full
+    notes: "Extracted from Agent Prompt Specification v4"
+  - version: 3
+    compatibility: partial
+    notes: "Missing urgency-first structure"
+---
+```
+
+#### ✅ Use Simple Structures
+```yaml
+---
+# Simple values work well:
+version: 4
+compatibility: full
+prompt-notes: "Extracted from Agent Prompt Specification v4"
+
+# Or use simple arrays:
+compatible-versions: [3, 4, 5]
+---
+```
+
+#### ✅ Alternative: Use Tables in Note Body
+For complex data, use markdown tables in the note body instead:
+
+```markdown
+## Compatible Prompts
+
+| Version | Compatibility | Notes |
+|---------|---------------|-------|
+| 4 | full | Extracted from Agent Prompt Specification v4 |
+| 3 | partial | Missing urgency-first structure |
+```
+
+### What Works in Obsidian Frontmatter
+- ✅ Simple key-value pairs (string, number, boolean)
+- ✅ Arrays of simple values (strings, numbers)
+- ✅ Basic date/time values
+- ❌ Arrays of objects
+- ❌ Deeply nested objects
+- ❌ Complex data structures
+
+The MCP server will automatically detect and move incompatible structures to the note body as tables.
+
 ## Critical: Tag Formatting Rules
 
 ### ❌ NEVER Do This (Causes Data Loss)

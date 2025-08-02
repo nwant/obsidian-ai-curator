@@ -21,6 +21,7 @@ import { DailyNoteManager } from './tools/daily-note-manager.js';
 import { FrontmatterManager } from './tools/frontmatter-manager.js';
 import { FileOperations } from './tools/file-operations.js';
 import { TagRenamer } from './tools/tag-renamer.js';
+import { FrontmatterValidator } from './tools/frontmatter-validator.js';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -928,6 +929,43 @@ class SimpleVaultServer {
     // If there are suggestions, include them
     if (tagValidation.suggestions.length > 0) {
       response.tagSuggestions = tagValidation.suggestions;
+    }
+    
+    // Validate frontmatter for Obsidian compatibility
+    const frontmatterValidation = FrontmatterValidator.validateForObsidian(finalContent);
+    
+    if (!frontmatterValidation.valid || frontmatterValidation.warnings.length > 0) {
+      // Check if we should auto-clean
+      const shouldAutoClean = frontmatterValidation.issues.some(
+        issue => issue.issue.includes('Array of objects')
+      );
+      
+      if (shouldAutoClean) {
+        // Auto-clean incompatible structures
+        const cleaned = FrontmatterValidator.cleanForObsidian(finalContent);
+        if (cleaned.cleaned) {
+          finalContent = cleaned.content;
+          response.frontmatterCleaned = true;
+          response.frontmatterMovedToBody = Object.keys(cleaned.movedData);
+        }
+      }
+      
+      // Add validation results to response
+      if (frontmatterValidation.issues.length > 0) {
+        response.frontmatterIssues = frontmatterValidation.issues.map(
+          issue => `${issue.severity}: ${issue.path} - ${issue.issue}`
+        );
+      }
+      
+      if (frontmatterValidation.warnings.length > 0) {
+        response.frontmatterWarnings = frontmatterValidation.warnings.map(
+          warning => `${warning.severity}: ${warning.path} - ${warning.issue}`
+        );
+      }
+      
+      if (frontmatterValidation.suggestions.length > 0) {
+        response.frontmatterSuggestions = frontmatterValidation.suggestions;
+      }
     }
     
     // Write the note

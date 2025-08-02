@@ -87,3 +87,14 @@ tags:
   - #type/meeting      # Becomes null!
 ---
 ```
+
+## Critical Instructions Import
+**IMPORTANT**: Always follow the formatting rules in `/Users/nathan/projects/obsidian-ai-curator/LLM_INSTRUCTIONS.md` when working with this vault. Key rules:
+
+1. **Dates**: Always use `yyyy-MM-dd` format
+2. **Tags**: Never use `#` in frontmatter
+3. **Frontmatter**: Only simple structures (no arrays of objects)
+4. **Links**: Always use `[[wikilinks]]` format
+5. **Writes**: Always use MCP tools, never direct file writes
+
+For complete instructions, always reference: `LLM_INSTRUCTIONS.md`
