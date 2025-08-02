@@ -167,7 +167,7 @@ analyze_tags()
 
 // Fix typo in tags
 rename_tag({
-  oldTag: "programing",
+  oldTag: "programming-old",
   newTag: "programming",
   preview: true  // Preview first
 })

@@ -1,4 +1,4 @@
-# LLM Instructions for Obsidian AI Curator
+# Formatting Rules for Obsidian AI Curator
 
 ## Critical: Date Formatting Rules
 

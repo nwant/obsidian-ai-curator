@@ -14,11 +14,11 @@
   "dateFormat": "yyyy-MM-dd",
   "dailyNotesPath": "Daily",
   "dailyNoteDateFormat": "yyyy-MM-dd",
-  "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [#daily-note]\n---\n\n# {{title}}\n\n## Tasks\n- [ ] \n\n## Notes\n\n\n## Reflections\n\n",
+  "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [daily-note]\n---\n\n# {{title}}\n\n## Tasks\n- [ ] \n\n## Notes\n\n\n## Reflections\n\n",
   "tagIntelligence": {
-    "taxonomyDocument": "/Meta/Tag Taxonomy Index.md",
+    "taxonomyDocument": "Meta/Tags.md",
     "autoTagging": true,
-    "enforceHierarchy": true,
+    "enforceHierarchy": false,
     "preventDuplicates": true,
     "suggestFromTaxonomy": true,
     "thresholds": {
@@ -32,7 +32,7 @@
       "workflow": "/path/to/workflow.md",
       "guidelines": "/path/to/guidelines.md",
       "activeProjects": "/path/to/projects.md",
-      "tagGuidelines": "docs/tag-usage-guidelines.md"
+      "tagGuidelines": "/path/to/tag-guidelines.md"
     },
     "systemCapabilities": {
       "atomicRecords": true,

@@ -1,6 +1,6 @@
 # Obsidian AI Curator Project Instructions
 
-You are working on the Obsidian AI Curator project, an AI-powered system that actively manages and consolidates notes in an Obsidian vault.
+This document provides context for AI assistants and developers working on the Obsidian AI Curator project - an AI-powered system that actively manages and consolidates notes in an Obsidian vault.
 
 ## Project Vision
 This project enables AI to be a true research partner and knowledge curator:
@@ -86,10 +86,11 @@ graph TB
 - Track research progress
 - Build knowledge systematically
 
-## Important Notes
-- The vault path is configured in `config/config.json`
-- Obsidian API server runs on port 3001 by default
-- Claude CLI must be installed and accessible in PATH for consolidation features
+## Technical Requirements
+- Node.js 18+ required
+- Vault path configured in `config/config.json` (user-specific, gitignored)
+- Obsidian plugin API server runs on port 3001 (when enabled)
+- Claude CLI required for AI consolidation features (optional)
 
 ## CRITICAL VAULT WRITE RULES
 - **NEVER write files directly to the vault path** (e.g., using Write tool on /Users/*/obsidian/*)
@@ -145,6 +146,8 @@ Related tags: #type/meeting #important
 - Follow the TypeScript/ES module conventions
 - Update documentation when adding features
 - Use the TodoWrite tool to track complex tasks
+- **Keep all examples and configurations generic** (no personal paths or data)
+- **Use `nwant` for all GitHub repository references**
 
 ### As a User
 - Let the AI understand your research patterns
@@ -157,3 +160,43 @@ Related tags: #type/meeting #important
 - Look for opportunities to consolidate related content
 - Respect the user's existing structure and conventions
 - Always use MCP tools, never direct file operations
+
+## Privacy and Configuration Guidelines
+
+### Repository Standards
+1. **All configuration examples must be generic**:
+   - Use `/path/to/your/vault` or `/Users/you/Documents/MyVault`
+   - Never include actual personal vault paths
+   - Use placeholder values for all examples
+
+2. **Personal configurations are gitignored**:
+   - `config/config.json` - User's actual configuration
+   - `config/project-templates.json` - Custom templates
+   - All files in `data/` except examples
+   - Archive folders and personal notes
+
+3. **Repository references use `nwant`**:
+   - Clone URLs: `https://github.com/nwant/obsidian-ai-curator.git`
+   - Issue tracker: `https://github.com/nwant/obsidian-ai-curator/issues`
+   - Author attribution: `nwant`
+
+### Configuration Best Practices
+- Start with minimal config: just `vaultPath`
+- Copy example files for customization:
+  - `config.minimal.json` → `config.json`
+  - `project-templates.default.json` → `project-templates.json`
+- All personal customizations stay local and private
+
+### When Contributing
+- Never commit personal vault paths or data
+- Test with generic example configurations
+- Ensure all documentation uses placeholder values
+- Keep repository URLs pointing to `nwant`
+
+## Common Pitfalls to Avoid
+
+1. **Direct file writes**: Always use MCP tools, never Write/Edit tools on vault paths
+2. **Hardcoded paths**: All examples must use generic placeholders
+3. **Personal information**: No real vault paths, usernames (except `nwant`), or personal data
+4. **Tag formatting**: Remember - no hashtags in frontmatter YAML
+5. **Breaking changes**: Test thoroughly with both plugin enabled and disabled

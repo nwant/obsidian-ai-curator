@@ -2,15 +2,27 @@
 
 Complete reference for configuring Obsidian AI Curator.
 
-## Configuration File
+## Quick Start Configuration
 
-Create your configuration by copying the example:
+For most users, this minimal configuration is all you need:
+
+```json
+{
+  "vaultPath": "/Users/you/Documents/MyObsidianVault"
+}
+```
+
+That's it! The system will use sensible defaults for everything else.
+
+## Advanced Configuration
+
+If you want to customize behavior, you can copy the full example:
 
 ```bash
 cp config/config.example.json config/config.json
 ```
 
-## Basic Configuration
+## All Configuration Options
 
 ```json
 {
@@ -176,6 +188,19 @@ Working with Obsidian vault - remember:
 - Always use MCP tools
 ```
 
+## Vault Write Guard
+
+Ensure all writes go through MCP tools:
+
+```json
+{
+  "vaultWriteGuard": {
+    "enabled": true,
+    "logViolations": true
+  }
+}
+```
+
 ## Complete Example
 
 ```json
@@ -186,12 +211,16 @@ Working with Obsidian vault - remember:
   
   "dailyNotesPath": "Daily Notes",
   "dailyNoteDateFormat": "yyyy-MM-dd",
-  "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [daily]\n---\n\n# {{title}}\n\n## Agenda\n\n## Notes\n\n## Tasks\n- [ ] ",
+  "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [daily]\n---\n\n# {{title}}\n\n## Tasks\n- [ ] ",
   
   "tagIntelligence": {
     "taxonomyDocument": "Meta/Tags.md",
     "autoTagging": true,
-    "enforceHierarchy": false
+    "enforceHierarchy": false,
+    "thresholds": {
+      "similarity": 0.7,
+      "suggestionRelevance": 0.3
+    }
   },
   
   "gitCheckpoints": true,
@@ -201,6 +230,11 @@ Working with Obsidian vault - remember:
     "contextDocuments": {
       "workflow": "Meta/Workflow.md"
     }
+  },
+  
+  "vaultWriteGuard": {
+    "enabled": true,
+    "logViolations": true
   }
 }
 ```

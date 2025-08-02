@@ -26,7 +26,7 @@ ln -s "$(pwd)" /path/to/vault/.obsidian/plugins/obsidian-ai-curator
 mkdir -p /path/to/vault/.obsidian/plugins/obsidian-ai-curator
 
 # Copy plugin files
-cp main.js manifest.json styles.css /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
+cp main.js manifest.json main.css /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
 ```
 
 #### Option 3: Using the Install Script

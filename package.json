@@ -19,7 +19,7 @@
     "claude",
     "knowledge-management"
   ],
-  "author": "",
+  "author": "nwant",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

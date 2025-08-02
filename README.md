@@ -2,6 +2,17 @@
 
 AI-powered tools for Obsidian that enable Claude Desktop and Claude Code to intelligently manage your knowledge vault through the Model Context Protocol (MCP).
 
+## What You'll Get
+
+After setup, you can ask Claude to:
+- 🔍 "Search my vault for notes about machine learning"
+- 📝 "Create a new project note with proper formatting"
+- 🏷️ "Show me all notes tagged with #active that need review"
+- 📁 "Organize my meeting notes from last week"
+- 🔄 "Create a git checkpoint before making changes"
+
+Claude will have direct access to read, write, and organize your Obsidian vault while following your formatting rules.
+
 ## What It Does
 
 - **Smart Search & Read**: Find and read notes with content search, metadata queries, and Dataview support
@@ -31,7 +42,10 @@ cp config/config.example.json config/config.json
 
 ### 3. Add to Claude Desktop
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Edit your Claude Desktop config:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -44,14 +58,20 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
-### 4. (Optional) Install Obsidian Plugin
+### 4. Restart Claude Desktop
+
+Completely quit and restart Claude Desktop to load the MCP server.
+
+### 5. (Optional) Install Obsidian Plugin
 
 For enhanced performance, install the companion plugin:
 
 ```bash
 cd obsidian-ai-curator-plugin
 npm install && npm run build
-# Copy to: YourVault/.obsidian/plugins/obsidian-ai-curator/
+# Copy built files to your vault:
+mkdir -p /path/to/YourVault/.obsidian/plugins/obsidian-ai-curator
+cp main.js manifest.json main.css /path/to/YourVault/.obsidian/plugins/obsidian-ai-curator/
 ```
 
 See [Quick Start Guide](docs/QUICK_START.md) for detailed setup instructions.
@@ -59,53 +79,44 @@ See [Quick Start Guide](docs/QUICK_START.md) for detailed setup instructions.
 ## Key Features
 
 ### 🔍 Intelligent Search
-```javascript
-// Find notes by content
-search_content({ query: "project planning" })
 
-// Query by metadata  
-find_by_metadata({ 
-  frontmatter: { status: "active", priority: { "$gte": 3 } }
-})
+Ask Claude to search your vault:
+- "Find all notes about project planning"
+- "Show me active projects with high priority"
+- "Search for notes tagged with #project created this year"
 
-// Execute Dataview queries
-query_dataview({ 
-  query: "TABLE status FROM #project WHERE date >= date(2024-01-01)" 
-})
-```
+Claude will use these MCP tools automatically:
+- `search_content` - Full text search
+- `find_by_metadata` - Search by frontmatter fields
+- `query_dataview` - Execute Dataview queries
 
 ### 📝 Smart Writing
-```javascript
-// Create notes with automatic formatting
-write_note({
-  path: "Projects/New Idea.md",
-  content: "# New Idea\n\nLink to [[Existing Note]] automatically formatted!"
-})
 
-// Update tags intelligently
-update_tags({
-  path: "Notes/Meeting.md",
-  add: ["status/active", "type/meeting"]
-})
-```
+Ask Claude to create and manage notes:
+- "Create a new project note called 'AI Assistant'"
+- "Add tags #active and #high-priority to my meeting notes"
+- "Update the status of Project X to completed"
+
+Features:
+- Automatic link formatting (`[[wikilinks]]`)
+- Tag validation and hierarchy
+- Consistent frontmatter structure
 
 ### 🗂️ Project Templates
-```javascript
-// Initialize projects with templates
-init_project({
-  projectName: "AI Assistant",
-  description: "Building a helpful AI",
-  template: "default"
-})
 
-// Create custom templates in config/project-templates.json
-```
+Ask Claude to set up project structures:
+- "Create a new project for mobile app development"
+- "Set up a research project about machine learning"
+- "Initialize a project with custom template"
+
+Create your own templates in `config/project-templates.json`
 
 See [Examples](docs/EXAMPLES.md) for more use cases.
 
 ## Documentation
 
 - [Quick Start Guide](docs/QUICK_START.md) - Get running in 5 minutes
+- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
 - [Configuration Guide](docs/CONFIGURATION.md) - All configuration options
 - [MCP Tools Reference](docs/MCP_TOOLS.md) - Complete tool API documentation  
 - [Examples](docs/EXAMPLES.md) - Common use cases and workflows
@@ -136,6 +147,22 @@ The MCP server can work standalone or use the Obsidian plugin for enhanced perfo
 - Obsidian (for vault)
 - Claude Desktop or Claude Code
 - Git (optional, for version control features)
+
+## Common Issues
+
+**"Claude doesn't see the MCP tools"**
+- Did you restart Claude completely after editing the config?
+- Is the path to `mcp-server.js` absolute in your Claude config?
+
+**"Permission denied" errors**
+- Check that your vault path in `config.json` is correct
+- Ensure you have read/write permissions to your vault
+
+**"Cannot find module" errors**
+- Run `npm install` in the project directory
+- Make sure you're using Node.js 18 or higher
+
+See [Troubleshooting Guide](docs/QUICK_START.md#troubleshooting) for more help.
 
 ## Contributing
 

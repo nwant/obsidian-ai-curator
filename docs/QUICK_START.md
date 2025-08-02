@@ -13,31 +13,37 @@ Get up and running with Obsidian AI Curator in 5 minutes.
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/nathanielyoon/obsidian-ai-curator.git
+git clone https://github.com/nwant/obsidian-ai-curator.git
 cd obsidian-ai-curator
 npm install
 ```
 
 ### 2. Configure Your Vault
 
+Create a minimal config file:
+
 ```bash
-cp config/config.example.json config/config.json
+cp config/config.minimal.json config/config.json
 ```
 
-Edit `config/config.json`:
+Edit `config/config.json` - you only need one setting to start:
 
 ```json
 {
-  "vaultPath": "/Users/you/Documents/MyVault",
-  "dateFormat": "yyyy-MM-dd"
+  "vaultPath": "/Users/you/Documents/MyVault"
 }
 ```
+
+**Important**: Use the absolute path to your Obsidian vault folder.
 
 ### 3. Connect to Claude
 
 #### For Claude Desktop
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Edit your Claude Desktop config:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -69,15 +75,32 @@ Create `.mcp.json` in your project:
 
 Completely quit and restart Claude Desktop/Code to load the MCP server.
 
-## First Commands
+## Verify Installation
 
-Try these commands in Claude to verify everything works:
+1. **Check MCP Connection**: In Claude, type:
+   ```
+   What MCP tools do you have access to?
+   ```
+   
+   You should see tools like `vault_scan`, `write_note`, `search_content`, etc.
 
-```
-"Scan my vault and show recent notes"
-"Search for notes about [your topic]"
-"Create a new note called Test Note with some content"
-```
+2. **Test Basic Commands**:
+   ```
+   Scan my vault and show me the 5 most recent notes
+   ```
+   
+   ```
+   Search for any notes containing "project"
+   ```
+   
+   ```
+   Create a test note at Test/Hello.md with content "Hello from Claude!"
+   ```
+
+3. **If Commands Don't Work**:
+   - Make sure you restarted Claude completely
+   - Check that your vault path in config.json is correct
+   - Verify the MCP server path in claude_desktop_config.json is absolute
 
 ## Optional: Install Obsidian Plugin
 
