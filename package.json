@@ -8,8 +8,6 @@
     "start": "node src/mcp-server.js",
     "dev": "node --watch src/mcp-server.js",
     "test": "node --test",
-    "start:all": "./start.sh",
-    "dev:all": "./start-dev.sh",
     "build:plugin": "cd obsidian-ai-curator-plugin && npm run build"
   },
   "keywords": [

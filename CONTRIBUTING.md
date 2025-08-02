@@ -20,7 +20,7 @@ We welcome contributions! This guide will help you get started.
 
 1. Link to your test vault:
    ```bash
-   cp config/config.example.json config/config.json
+   cp config/config.minimal.json config/config.json
    # Edit config.json with your test vault path
    ```
 

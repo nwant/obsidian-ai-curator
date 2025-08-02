@@ -6,32 +6,19 @@ This guide explains how to use and customize project templates for the `init_pro
 
 ### Using Built-in Templates
 
-```javascript
-// Use default template
-init_project({
-  projectName: "My New Project",
-  description: "Building an AI assistant",
-  stakeholders: ["Alice (PM)", "Bob (Dev)"],
-  targetDate: "2025-12-31"
-})
+Ask Claude to create projects:
 
-// Use minimal template
-init_project({
-  projectName: "Quick Project",
-  description: "A simple project",
-  template: "minimal"
-})
+**Default template** (comprehensive structure):
+- "Create a new project called 'My AI Assistant' for building a helpful AI"
 
-// Use research template
-init_project({
-  projectName: "AI Research",
-  description: "Research into AI patterns",
-  template: "research"
-})
+**Minimal template** (just essentials):
+- "Set up a minimal project called 'Quick Experiment'"
 
-// List available templates
-list_project_templates()
-```
+**Research template** (academic structure):
+- "Initialize a research project about machine learning patterns"
+
+**See available templates**:
+- "What project templates are available?"
 
 ### Built-in Templates
 
@@ -385,13 +372,12 @@ cat config/project-templates.json | jq .
 ```
 
 ### Template Not Found
-```javascript
-// List all available templates
-list_project_templates()
 
-// Check exact template key
-// Keys are case-sensitive
-```
+Ask Claude:
+- "List all available project templates"
+- "What templates can I use for projects?"
+
+Note: Template keys are case-sensitive.
 
 ### Variables Not Replaced
 - Check variable name matches exactly

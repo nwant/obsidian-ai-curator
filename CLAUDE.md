@@ -148,6 +148,9 @@ Related tags: #type/meeting #important
 - Use the TodoWrite tool to track complex tasks
 - **Keep all examples and configurations generic** (no personal paths or data)
 - **Use `nwant` for all GitHub repository references**
+- **Write documentation from fresh developer perspective** - assume no prior knowledge
+- **Use natural language examples** over code snippets when showing user interactions
+- **Verify all setup instructions actually work** with fresh installs
 
 ### As a User
 - Let the AI understand your research patterns
@@ -193,10 +196,54 @@ Related tags: #type/meeting #important
 - Ensure all documentation uses placeholder values
 - Keep repository URLs pointing to `nwant`
 
+## Documentation Standards
+
+### Writing Guidelines
+1. **Clarity over completeness**: Be concise and direct
+2. **Natural language examples**: Show how users actually interact with Claude
+   - ✅ "Search for notes about machine learning"
+   - ❌ `search_content({query: "machine learning"})`
+3. **Step-by-step verification**: Include validation steps in setup guides
+4. **Fresh developer perspective**: Assume no prior knowledge
+5. **Remove redundancy**: Eliminate duplicate information across files
+
+### Structure Principles
+- **README**: Quick overview and minimal setup only
+- **Quick Start**: Detailed setup with verification
+- **Reference docs**: Comprehensive tool/config documentation
+- **Examples**: Real-world use cases and workflows
+- **Troubleshooting**: Problem/solution format
+
+### Technical Accuracy
+- **Test all paths**: Ensure file paths and commands actually exist
+- **Absolute paths required**: MCP server needs absolute paths, not relative
+- **Platform-specific**: Include macOS/Windows/Linux variations
+- **Escape characters**: JSON strings need proper escaping (Windows paths: `\\\\`)
+- **Validate scripts exist**: Don't reference npm scripts that don't exist
+- **Check copy commands**: Ensure file copy instructions copy the right files
+
+### Common Documentation Fixes Applied
+- Converted JavaScript tool examples to natural language
+- Simplified configuration with minimal vs advanced paths
+- Added verification steps to setup process
+- Removed redundant sections and complex diagrams from README
+- Fixed Windows JSON path escaping issues
+- Eliminated \"Ask Claude\"/\"Tell Claude\" inconsistency
+- Removed reference to non-existent install scripts
+- Standardized all GitHub references to use `nwant` username
+
 ## Common Pitfalls to Avoid
 
+### Technical Issues
 1. **Direct file writes**: Always use MCP tools, never Write/Edit tools on vault paths
-2. **Hardcoded paths**: All examples must use generic placeholders
-3. **Personal information**: No real vault paths, usernames (except `nwant`), or personal data
+2. **Relative paths in MCP config**: Must use absolute paths to mcp-server.js
+3. **Missing restart instructions**: Users must restart Claude completely
 4. **Tag formatting**: Remember - no hashtags in frontmatter YAML
 5. **Breaking changes**: Test thoroughly with both plugin enabled and disabled
+
+### Documentation Issues
+6. **JavaScript examples for user interactions**: Users speak to Claude in natural language
+7. **Redundant sections**: Don't repeat the same information in multiple places
+8. **Missing verification**: Always include "how to test it works" steps
+9. **Hardcoded paths**: All examples must use generic placeholders
+10. **Personal information**: No real vault paths, usernames (except `nwant`), or personal data

@@ -29,10 +29,6 @@ mkdir -p /path/to/vault/.obsidian/plugins/obsidian-ai-curator
 cp main.js manifest.json main.css /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
 ```
 
-#### Option 3: Using the Install Script
-```bash
-npm run install-plugin -- /path/to/vault
-```
 
 ### 3. Enable the Plugin
 
@@ -166,8 +162,8 @@ npm run dev
 # Production build
 npm run build
 
-# Run tests
-npm test
+# Build from root directory
+npm run build:plugin
 ```
 
 ### Contributing

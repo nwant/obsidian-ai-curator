@@ -58,18 +58,19 @@ Edit your Claude Desktop config:
 
 #### For Claude Code
 
-Create `.mcp.json` in your project:
-
+Create `.mcp.json` in your project directory:
 ```json
 {
   "mcpServers": {
     "obsidian-vault": {
       "command": "node",
-      "args": ["./obsidian-ai-curator/src/mcp-server.js"]
+      "args": ["/absolute/path/to/obsidian-ai-curator/src/mcp-server.js"]
     }
   }
 }
 ```
+
+**Note**: Must use absolute path, not relative.
 
 ### 4. Restart Claude
 
@@ -115,7 +116,8 @@ For better performance and native API access:
 
 2. Copy to your vault:
    ```bash
-   cp -r . /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
+   mkdir -p /path/to/vault/.obsidian/plugins/obsidian-ai-curator
+   cp main.js manifest.json styles.css /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
    ```
 
 3. Enable in Obsidian Settings → Community Plugins
@@ -123,9 +125,9 @@ For better performance and native API access:
 ## Troubleshooting
 
 ### "Tool not found" errors
-- Ensure you restarted Claude completely (quit and reopen)
-- Check the MCP server path is correct
-- Verify Node.js is in your PATH
+- Restart Claude completely (quit and reopen)
+- Verify the MCP server path is absolute, not relative
+- Check Node.js is installed: `node --version`
 
 ### Permission errors
 - Ensure the vault path exists and is readable
@@ -135,23 +137,13 @@ For better performance and native API access:
 - Ensure the plugin is enabled in Obsidian
 - Check the console for errors (Ctrl/Cmd + Shift + I)
 
-## Quick Reference Prompt
+## Important Formatting Rules
 
-When starting a Claude Desktop session, you can use this template:
-
-```
-I'm working with my Obsidian vault using the Obsidian AI Curator MCP server. 
-
-Please ensure you:
-1. Use the MCP server tools for ALL vault operations (never direct file writes)
-2. Follow these critical formatting rules:
-   - Dates: yyyy-MM-dd format only
-   - Tags: no hashtags in frontmatter
-   - Frontmatter: simple structures only (no arrays of objects)
-   - Links: [[wikilink]] format only
-
-[Your specific request here]
-```
+Claude will automatically follow these Obsidian conventions:
+- Dates: `yyyy-MM-dd` format
+- Tags: No `#` in frontmatter
+- Links: `[[wikilink]]` format
+- All operations use MCP tools (no direct file writes)
 
 ## Next Steps
 

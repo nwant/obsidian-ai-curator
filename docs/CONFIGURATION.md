@@ -16,11 +16,13 @@ That's it! The system will use sensible defaults for everything else.
 
 ## Advanced Configuration
 
-If you want to customize behavior, you can copy the full example:
+For advanced users who want to customize behavior:
 
 ```bash
 cp config/config.example.json config/config.json
 ```
+
+This includes additional options like tag intelligence, research context, and thresholds.
 
 ## All Configuration Options
 
@@ -35,11 +37,13 @@ cp config/config.example.json config/config.json
 ### Required Settings
 
 - `vaultPath`: Absolute path to your Obsidian vault
+  - Example: `/Users/you/Documents/MyVault` (macOS/Linux)
+  - Example: `C:\\Users\\you\\Documents\\MyVault` (Windows - note double backslashes)
 
 ### Optional Settings
 
 - `dateFormat`: Format for dates (default: "yyyy-MM-dd")
-- `ignorePatterns`: Folders/files to exclude from operations
+- `ignorePatterns`: Folders/files to exclude from operations (default: [".obsidian", ".git", ".trash"])
 
 ## Daily Notes
 
@@ -101,10 +105,12 @@ Enable version control features:
   "gitCheckpoints": true,
   "gitAuthor": {
     "name": "Your Name",
-    "email": "you@example.com"
+    "email": "your.email@example.com"
   }
 }
 ```
+
+**Note:** Git author info is optional. If not provided, it uses your system's git configuration.
 
 ## Research Context
 
@@ -126,7 +132,7 @@ Configure AI research partner context:
 ### Context Documents
 
 - Can be relative to vault or absolute paths
-- Documents are loaded when using `get_research_context()`
+- Documents are loaded when using the research context tool
 - Provide workflow guidelines and conventions
 
 ## Project Templates
@@ -160,33 +166,8 @@ Configure caching and performance:
 
 ### Project Mode (Recommended)
 1. Create a new project in Claude Desktop for your vault
-2. Add these files to the project:
-   - Project instructions: `CLAUDE.md`
-   - Formatting rules: `docs/FORMATTING_RULES.md`
-3. Claude will automatically reference these files when working in that project
-
-### Custom Prompt Template
-Save this as your standard vault interaction prompt:
-```
-I need help with my Obsidian vault. Please:
-1. Follow formatting rules (yyyy-MM-dd dates, no # in frontmatter tags)
-2. Use MCP tools for all vault operations
-3. Use [[wikilink]] format for links
-4. Never write files directly to the vault path
-
-[Your actual request here]
-```
-
-### Quick Reference
-Include in prompts when needed:
-```
-Working with Obsidian vault - remember:
-- Date format: yyyy-MM-dd
-- Tags: no # in frontmatter
-- Frontmatter: simple structures only
-- Links: use [[wikilinks]]
-- Always use MCP tools
-```
+2. Add your vault's `CLAUDE.md` file to the project (if you have one)
+3. Claude will automatically follow Obsidian formatting conventions
 
 ## Vault Write Guard
 
@@ -205,7 +186,7 @@ Ensure all writes go through MCP tools:
 
 ```json
 {
-  "vaultPath": "/Users/me/Documents/ObsidianVault",
+  "vaultPath": "/path/to/your/vault",
   "dateFormat": "yyyy-MM-dd",
   "ignorePatterns": [".obsidian", ".git", ".trash", "_archived"],
   
