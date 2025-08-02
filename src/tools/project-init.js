@@ -9,21 +9,33 @@ export class ProjectInitializer {
   constructor(config) {
     this.config = config;
     this.vaultPath = config.vaultPath;
-    this.templatesPath = path.join(__dirname, '../../config/project-templates.json');
+    // Try custom templates first, fallback to default
+    this.customTemplatesPath = path.join(__dirname, '../../config/project-templates.json');
+    this.defaultTemplatesPath = path.join(__dirname, '../../config/project-templates.default.json');
     this.templates = null;
   }
 
   /**
    * Load project templates configuration
+   * Tries custom templates first, falls back to default templates
    */
   async loadTemplates() {
     if (!this.templates) {
       try {
-        const content = await fs.readFile(this.templatesPath, 'utf-8');
-        this.templates = JSON.parse(content);
+        // Try custom templates first
+        try {
+          const content = await fs.readFile(this.customTemplatesPath, 'utf-8');
+          this.templates = JSON.parse(content);
+          console.error('Loaded custom project templates');
+        } catch (customError) {
+          // Fall back to default templates
+          const content = await fs.readFile(this.defaultTemplatesPath, 'utf-8');
+          this.templates = JSON.parse(content);
+          console.error('Loaded default project templates');
+        }
       } catch (error) {
         console.error('Failed to load project templates:', error);
-        throw new Error('Failed to load project templates configuration');
+        throw new Error('Failed to load project templates configuration. Make sure project-templates.default.json exists.');
       }
     }
     return this.templates;

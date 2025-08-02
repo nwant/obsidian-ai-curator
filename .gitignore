@@ -11,6 +11,7 @@ consolidation-queue.json
 
 # Configuration files with personal paths
 config/config.json
+config/project-templates.json
 .mcp.json
 
 # Archive folders (may contain personal notes)
@@ -24,4 +25,6 @@ _archived/
 
 # Keep example files
 !config/config.example.json
+!config/project-templates.example.json
+!config/project-templates.default.json
 !data/ground-truth.example.json

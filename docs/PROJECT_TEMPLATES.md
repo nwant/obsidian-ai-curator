@@ -4,6 +4,8 @@
 
 The Obsidian AI Curator's `init_project` tool uses a configurable template system that allows you to customize project structures for your specific needs. Templates are defined in `config/project-templates.json`.
 
+> **Note**: For creating your own custom templates that won't be tracked by git, see [Custom Project Templates Configuration](CUSTOM_PROJECT_TEMPLATES.md). This guide covers modifying the default templates.
+
 ## Quick Start
 
 ### Using Templates

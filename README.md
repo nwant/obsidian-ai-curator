@@ -75,13 +75,26 @@ The `init_project` tool uses customizable templates to create standardized proje
 - **research**: Academic research project with literature and data organization
 
 ### Customizing Templates
-Templates are defined in `config/project-templates.json`. You can:
-- Add new templates with custom directory structures
-- Define your own file templates with variables
-- Create project types specific to your workflow
-- Set validation rules for project names and dates
 
-See [Project Templates Documentation](docs/PROJECT_TEMPLATES.md) for detailed customization guide.
+You have two options for customizing templates:
+
+1. **Personal Templates** (Recommended): Create `config/project-templates.json` for your custom templates. This file is gitignored and won't affect the repository.
+   ```bash
+   cp config/project-templates.example.json config/project-templates.json
+   # Edit config/project-templates.json with your templates
+   ```
+
+2. **Default Templates**: Modify `config/project-templates.default.json` (tracked in git, affects all users).
+
+Templates support:
+- Custom directory structures
+- File templates with variables
+- Project types specific to your workflow
+- Validation rules for project names and dates
+
+See documentation:
+- [Custom Project Templates](docs/CUSTOM_PROJECT_TEMPLATES.md) - Create your own templates
+- [Project Templates Guide](docs/PROJECT_TEMPLATES.md) - Modify default templates
 
 ### Example Usage
 ```javascript

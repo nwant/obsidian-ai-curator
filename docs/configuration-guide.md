@@ -182,9 +182,29 @@ The system validates all date-related operations:
 - Handles timezone correctly
 - Prevents invalid date entries
 
+## Project Templates
+
+The `init_project` tool uses a configurable template system:
+
+### Default Templates
+The system includes default templates in `config/project-templates.default.json`:
+- **default**: Full project structure with dynamic and static documentation
+- **minimal**: Lightweight structure for quick projects  
+- **research**: Academic research project structure
+
+### Custom Templates
+Create your own templates without affecting the repository:
+
+1. Copy the example: `cp config/project-templates.example.json config/project-templates.json`
+2. Edit `config/project-templates.json` with your custom templates
+3. Your custom file is gitignored and takes precedence over defaults
+
+See [Custom Project Templates](CUSTOM_PROJECT_TEMPLATES.md) for detailed configuration.
+
 ## Tips
 
 1. **Match Obsidian Settings**: Set `dailyNoteDateFormat` to match your Obsidian daily notes plugin format
 2. **Template Design**: Create templates that match your workflow
 3. **Path Separators**: Use forward slashes (/) even on Windows
+4. **Custom Project Templates**: Create project templates specific to your workflow needs
 4. **Relative Paths**: All vault paths are relative to `vaultPath`
