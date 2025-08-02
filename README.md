@@ -1,6 +1,14 @@
 # Obsidian AI Curator
 
-AI-powered tools for Obsidian that enable Claude Desktop and Claude Code to intelligently manage your knowledge vault through the Model Context Protocol (MCP).
+[![Obsidian Plugin](https://img.shields.io/badge/Obsidian-Plugin-7c3aed)](https://obsidian.md)
+[![Claude AI](https://img.shields.io/badge/Claude-AI-blue)](https://claude.ai)
+[![MCP Server](https://img.shields.io/badge/MCP-Server-green)](https://modelcontextprotocol.io)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> **The knowledge fragmentation problem**: Your insights are scattered across hundreds of notes. 
+> **The solution**: AI-powered consolidation that actively merges related fragments into coherent knowledge.
+> **How it works**: Claude AI analyzes your Obsidian vault via MCP and intelligently combines scattered thoughts.
 
 ## What It Does
 
@@ -94,6 +102,13 @@ See [Examples](docs/EXAMPLES.md) for detailed use cases.
 - [Obsidian Plugin Guide](docs/OBSIDIAN_PLUGIN.md) - Plugin features and setup
 - [Formatting Rules](docs/FORMATTING_RULES.md) - Important Obsidian formatting guidelines
 
+
+## Project Structure
+
+This repository contains:
+- **MCP Server** (`src/`) - Core functionality for Claude integration
+- **Obsidian Plugin** (`obsidian-ai-curator-plugin/`) - Enhanced API performance
+- **Documentation** (`docs/`) - Comprehensive guides
 
 ## Requirements
 

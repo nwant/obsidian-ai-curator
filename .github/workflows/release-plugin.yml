@@ -1,0 +1,69 @@
+name: Release Obsidian Plugin
+
+on:
+  push:
+    tags:
+      - "plugin-*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          
+      - name: Install dependencies
+        run: |
+          cd obsidian-ai-curator-plugin
+          npm install
+          
+      - name: Build plugin
+        run: |
+          cd obsidian-ai-curator-plugin
+          npm run build
+          
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload main.js
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./obsidian-ai-curator-plugin/main.js
+          asset_name: main.js
+          asset_content_type: application/javascript
+          
+      - name: Upload manifest.json
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./obsidian-ai-curator-plugin/manifest.json
+          asset_name: manifest.json
+          asset_content_type: application/json
+          
+      - name: Upload styles.css (if exists)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./obsidian-ai-curator-plugin/main.css
+          asset_name: styles.css
+          asset_content_type: text/css
+        continue-on-error: true

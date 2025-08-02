@@ -6,6 +6,7 @@
   "description": "AI-powered knowledge consolidation for Obsidian. Works with Claude Desktop via API server.",
   "author": "nwant",
   "authorUrl": "https://github.com/nwant",
+  "repo": "nwant/obsidian-ai-curator",
   "fundingUrl": "",
   "isDesktopOnly": true
 }
