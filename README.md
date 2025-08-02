@@ -17,7 +17,7 @@ AI-powered tools for Obsidian that enable Claude Desktop and Claude Code to inte
 ### 1. Install MCP Server
 
 ```bash
-git clone https://github.com/yourusername/obsidian-ai-curator.git
+git clone https://github.com/nwant/obsidian-ai-curator.git
 cd obsidian-ai-curator
 npm install
 ```
@@ -115,9 +115,17 @@ See [Examples](docs/EXAMPLES.md) for more use cases.
 
 ## Architecture
 
-```
-Claude Desktop/Code → MCP Server → Your Obsidian Vault
-                                 ↗ Obsidian Plugin API (optional)
+```mermaid
+graph LR
+    A[Claude Desktop/Code] --> B[MCP Server]
+    B --> C[Your Obsidian Vault]
+    D[Obsidian Plugin API] --> C
+    B -.->|optional| D
+    
+    style A fill:#e1bee7,stroke:#4a148c,stroke-width:2px,color:#000
+    style B fill:#c5cae9,stroke:#1a237e,stroke-width:2px,color:#000
+    style C fill:#c8e6c9,stroke:#1b5e20,stroke-width:2px,color:#000
+    style D fill:#fff9c4,stroke:#f57f17,stroke-width:2px,stroke-dasharray: 5 5,color:#000
 ```
 
 The MCP server can work standalone or use the Obsidian plugin for enhanced performance and native API access.
@@ -131,7 +139,7 @@ The MCP server can work standalone or use the Obsidian plugin for enhanced perfo
 
 ## Contributing
 
-Contributions welcome! Please read our contributing guidelines before submitting PRs.
+Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting PRs.
 
 ## License
 

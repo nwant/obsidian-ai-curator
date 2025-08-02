@@ -144,6 +144,38 @@ Configure caching and performance:
 }
 ```
 
+## Claude Desktop Integration
+
+### Project Mode (Recommended)
+1. Create a new project in Claude Desktop for your vault
+2. Add these files to the project:
+   - Project instructions: `CLAUDE.md`
+   - Formatting rules: `docs/FORMATTING_RULES.md`
+3. Claude will automatically reference these files when working in that project
+
+### Custom Prompt Template
+Save this as your standard vault interaction prompt:
+```
+I need help with my Obsidian vault. Please:
+1. Follow formatting rules (yyyy-MM-dd dates, no # in frontmatter tags)
+2. Use MCP tools for all vault operations
+3. Use [[wikilink]] format for links
+4. Never write files directly to the vault path
+
+[Your actual request here]
+```
+
+### Quick Reference
+Include in prompts when needed:
+```
+Working with Obsidian vault - remember:
+- Date format: yyyy-MM-dd
+- Tags: no # in frontmatter
+- Frontmatter: simple structures only
+- Links: use [[wikilinks]]
+- Always use MCP tools
+```
+
 ## Complete Example
 
 ```json

@@ -2,16 +2,56 @@
 
 You are working on the Obsidian AI Curator project, an AI-powered system that actively manages and consolidates notes in an Obsidian vault.
 
-## Project Context
-- This is a plugin for Obsidian that works with Claude Desktop/Code via MCP
-- The system works like "Tetris for knowledge" - consolidating scattered fragments into clean, well-structured notes
-- Uses MCP (Model Context Protocol) for vault operations
+## Project Vision
+This project enables AI to be a true research partner and knowledge curator:
+- **Active Curation**: AI proactively finds, consolidates, and organizes scattered knowledge
+- **"Tetris for Knowledge"**: Like pieces falling into place, fragments combine into coherent notes
+- **Research Partnership**: AI understands your research context and actively helps build knowledge
+
+## How It Works
+
+```mermaid
+graph TB
+    subgraph "Claude Desktop/Code"
+        AI[AI Assistant]
+    end
+    
+    subgraph "MCP Server"
+        Tools[Tool Suite]
+        Cache[Vault Cache]
+        API[API Client]
+    end
+    
+    subgraph "Obsidian"
+        Plugin[AI Curator Plugin]
+        Vault[Your Notes]
+    end
+    
+    AI -->|MCP Protocol| Tools
+    Tools --> Cache
+    Tools --> API
+    API -.->|HTTP| Plugin
+    API -->|File System| Vault
+    Plugin -->|Native API| Vault
+    
+    style AI fill:#e1bee7,stroke:#4a148c,stroke-width:2px,color:#000
+    style Tools fill:#c5cae9,stroke:#1a237e,stroke-width:2px,color:#000
+    style Vault fill:#c8e6c9,stroke:#1b5e20,stroke-width:2px,color:#000
+    style Plugin fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    style Cache fill:#e0e0e0,stroke:#424242,stroke-width:2px,color:#000
+    style API fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px,color:#000
+```
+
+1. **MCP Server** provides tools for searching, reading, and writing notes
+2. **Obsidian Plugin** adds native API access for better performance and accuracy
+3. **AI Integration** enables Claude to understand vault structure and suggest improvements
+4. **Git Integration** tracks changes and enables safe experimentation
 
 ## Key Components
-1. **Obsidian Plugin**: Provides API server (port 3001) and consolidation UI
-2. **MCP Server**: Provides tools for vault operations
-3. **Obsidian API Client**: Automatically uses Obsidian APIs when available
-4. **Claude Integration**: Handles AI interactions with smart model selection (Opus 4 → Sonnet 4)
+1. **MCP Server** (`src/mcp-server.js`): Core tool interface for vault operations
+2. **Obsidian Plugin** (`obsidian-ai-curator-plugin/`): API server and consolidation UI
+3. **Tool Suite** (`src/tools/`): Specialized tools for search, write, tags, projects, etc.
+4. **Obsidian API Client**: Auto-detects and uses plugin when available
 
 ## Development Guidelines
 - Prefer TypeScript for plugin code
@@ -20,17 +60,36 @@ You are working on the Obsidian AI Curator project, an AI-powered system that ac
 - Maintain clean separation between Obsidian plugin and server components
 - Ensure console output goes to stderr for MCP compatibility
 
-## Current Focus Areas
-- CLAUDE.md file support (like Claude Code)
-- Smart model switching based on usage
-- Real-time note consolidation
-- Git integration for version control
+## Core Capabilities
+
+### 1. Intelligent Search & Discovery
+- Find related notes across your vault
+- Identify knowledge gaps and overlaps
+- Suggest connections between ideas
+- Execute complex metadata queries
+
+### 2. Active Consolidation
+- Detect scattered information on same topics
+- Suggest note merges and reorganization
+- Maintain proper links and references
+- Archive consolidated fragments
+
+### 3. Smart Organization
+- Auto-tag based on content
+- Maintain tag hierarchies
+- Suggest better file organization
+- Create project structures from templates
+
+### 4. Research Partnership
+- Understand your research context
+- Proactively suggest next steps
+- Track research progress
+- Build knowledge systematically
 
 ## Important Notes
 - The vault path is configured in `config/config.json`
 - Obsidian API server runs on port 3001 by default
 - Claude CLI must be installed and accessible in PATH for consolidation features
-- **Date Format**: Always use `yyyy-MM-dd` format for date fields (e.g., `2025-08-01`)
 
 ## CRITICAL VAULT WRITE RULES
 - **NEVER write files directly to the vault path** (e.g., using Write tool on /Users/*/obsidian/*)
@@ -64,7 +123,7 @@ You are working on the Obsidian AI Curator project, an AI-powered system that ac
 - Follow vault's tag taxonomy
 - **Critical**: Hashtags in frontmatter YAML are treated as comments and become `null`
 
-#### ✅ Correct Tag Usage
+#### Example Usage
 ```yaml
 ---
 tags:
@@ -79,22 +138,22 @@ This is about the #project/active work.
 Related tags: #type/meeting #important
 ```
 
-#### ❌ Wrong Tag Usage (Causes Data Loss)
-```yaml
----
-tags:
-  - #project/active    # Becomes null!
-  - #type/meeting      # Becomes null!
----
-```
+## Working with the AI Curator
 
-## Critical Instructions Import
-**IMPORTANT**: Always follow the formatting rules in `/Users/nathan/projects/obsidian-ai-curator/LLM_INSTRUCTIONS.md` when working with this vault. Key rules:
+### As a Developer
+- Run tests before committing changes
+- Follow the TypeScript/ES module conventions
+- Update documentation when adding features
+- Use the TodoWrite tool to track complex tasks
 
-1. **Dates**: Always use `yyyy-MM-dd` format
-2. **Tags**: Never use `#` in frontmatter
-3. **Frontmatter**: Only simple structures (no arrays of objects)
-4. **Links**: Always use `[[wikilinks]]` format
-5. **Writes**: Always use MCP tools, never direct file writes
+### As a User
+- Let the AI understand your research patterns
+- Be specific about consolidation preferences
+- Review AI suggestions before applying
+- Use git checkpoints for major changes
 
-For complete instructions, always reference: `LLM_INSTRUCTIONS.md`
+### As an AI Assistant
+- Proactively suggest improvements to vault organization
+- Look for opportunities to consolidate related content
+- Respect the user's existing structure and conventions
+- Always use MCP tools, never direct file operations

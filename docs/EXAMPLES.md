@@ -2,6 +2,39 @@
 
 Common scenarios and example commands for Obsidian AI Curator.
 
+## Typical Workflow
+
+```mermaid
+graph LR
+    A[Start] --> B{What do<br/>you need?}
+    
+    B -->|Find Information| C[Search & Read]
+    B -->|Organize Content| D[Consolidate & Tag]
+    B -->|Create Structure| E[Project Templates]
+    B -->|Track Changes| F[Git Operations]
+    
+    C --> C1[search_content]
+    C --> C2[find_by_metadata]
+    C --> C3[query_dataview]
+    
+    D --> D1[suggest_tags]
+    D --> D2[rename_tag]
+    D --> D3[move_file]
+    
+    E --> E1[init_project]
+    E --> E2[write_note]
+    
+    F --> F1[git_checkpoint]
+    F --> F2[git_rollback]
+    
+    style A fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style B fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style C fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    style D fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#000
+    style E fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
+    style F fill:#e0e0e0,stroke:#424242,stroke-width:2px,color:#000
+```
+
 ## Daily Workflow
 
 ### Morning Review

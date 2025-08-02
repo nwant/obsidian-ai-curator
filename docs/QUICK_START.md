@@ -13,7 +13,7 @@ Get up and running with Obsidian AI Curator in 5 minutes.
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/yourusername/obsidian-ai-curator.git
+git clone https://github.com/nathanielyoon/obsidian-ai-curator.git
 cd obsidian-ai-curator
 npm install
 ```
@@ -111,6 +111,24 @@ For better performance and native API access:
 ### Plugin not working
 - Ensure the plugin is enabled in Obsidian
 - Check the console for errors (Ctrl/Cmd + Shift + I)
+
+## Quick Reference Prompt
+
+When starting a Claude Desktop session, you can use this template:
+
+```
+I'm working with my Obsidian vault using the Obsidian AI Curator MCP server. 
+
+Please ensure you:
+1. Use the MCP server tools for ALL vault operations (never direct file writes)
+2. Follow these critical formatting rules:
+   - Dates: yyyy-MM-dd format only
+   - Tags: no hashtags in frontmatter
+   - Frontmatter: simple structures only (no arrays of objects)
+   - Links: [[wikilink]] format only
+
+[Your specific request here]
+```
 
 ## Next Steps
 

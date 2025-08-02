@@ -58,6 +58,24 @@ With plugin enabled:
 
 Access via Command Palette: "AI Curator: Show Consolidation View"
 
+```mermaid
+graph LR
+    A[Scattered Notes] --> B[AI Analysis]
+    B --> C{Consolidation<br/>Suggestions}
+    C --> D[Review UI]
+    D -->|Approve| E[Merged Note]
+    D -->|Reject| F[Keep Separate]
+    E --> G[Archive Originals]
+    
+    style A fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+    style B fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    style C fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style D fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#000
+    style E fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    style F fill:#fafafa,stroke:#616161,stroke-width:2px,color:#000
+    style G fill:#eceff1,stroke:#455a64,stroke-width:2px,color:#000
+```
+
 Features:
 - Find related notes for consolidation
 - Preview merge results
@@ -94,8 +112,25 @@ Plugin settings available in Obsidian:
 
 ## How It Works
 
-```
-MCP Server → HTTP Request → Obsidian Plugin API → Vault Operations
+```mermaid
+sequenceDiagram
+    participant MCP as MCP Server
+    participant API as API Client
+    participant Plugin as Obsidian Plugin
+    participant Vault as Vault Files
+    
+    MCP->>API: Check if plugin available
+    API->>Plugin: GET /api/health
+    alt Plugin Available
+        Plugin-->>API: 200 OK
+        API-->>MCP: Use plugin API
+        MCP->>Plugin: API requests
+        Plugin->>Vault: Native operations
+    else Plugin Not Available
+        Plugin-->>API: Connection failed
+        API-->>MCP: Use file system
+        MCP->>Vault: Direct file access
+    end
 ```
 
 The MCP server automatically detects and uses the plugin API when available, falling back to direct file system access if not.
@@ -132,6 +167,27 @@ npm test
 3. Make changes and test thoroughly
 4. Submit a pull request
 
+## Claude CLI Integration
+
+The plugin includes Claude CLI integration for AI-powered note consolidation:
+
+### Using Claude CLI
+1. **Ensure Claude Code is installed**:
+   ```bash
+   claude --version
+   ```
+
+2. **Use consolidation features**:
+   - Command Palette: "AI Curator: Find notes to consolidate"
+   - Reviews vault and suggests consolidations
+   - No API key required - uses your Claude subscription
+
+### Claude CLI Benefits
+- ✅ No API key required
+- ✅ Uses your Claude subscription
+- ✅ Full access to MCP tools
+- ✅ Streaming progress updates
+
 ## FAQ
 
 **Q: Is the plugin required?**
@@ -145,3 +201,6 @@ A: Yes, in plugin settings. Update your MCP server config to match.
 
 **Q: Is it safe?**
 A: The plugin only exposes read/write operations on your vault, not system access.
+
+**Q: Claude CLI not working?**
+A: Check that `claude` is in your PATH or set the full path in plugin settings.
