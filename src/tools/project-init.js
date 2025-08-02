@@ -31,6 +31,13 @@ export class ProjectInitializer {
 
   /**
    * Initialize a new project with configurable template
+   * 
+   * Creates project structure with evergreen Claude Desktop instructions.
+   * 
+   * Design principle:
+   * - CLAUDE.md: Contains ALL dynamic content (dates, status, stakeholders)
+   * - PROJECT_INSTRUCTIONS.md: Contains ONLY static workflows
+   * - This enables Claude Desktop instructions that never need updating
    */
   async initProject(params) {
     const {
@@ -127,6 +134,9 @@ export class ProjectInitializer {
         filesCreated.push(filePath);
       }
 
+      // Generate evergreen Claude Desktop instructions
+      const claudeDesktopInstructions = `# ${projectName}\n\n${description}\n\nCurrent state: Projects/${projectName}/CLAUDE.md\n\nRule: MCP tools only.`;
+
       return {
         success: true,
         projectPath: projectPath,
@@ -135,7 +145,8 @@ export class ProjectInitializer {
         templateName: selectedTemplate.name,
         nextSteps: this.getNextSteps(template, projectName),
         message: `Successfully initialized project: ${projectName} using ${selectedTemplate.name}`,
-        projectSlug: projectSlug
+        projectSlug: projectSlug,
+        claudeDesktopInstructions: claudeDesktopInstructions
       };
 
     } catch (error) {

@@ -101,6 +101,24 @@ init_project({
 })
 ```
 
+### Evergreen Claude Desktop Instructions
+The `init_project` tool generates evergreen instructions that never need updating:
+
+- **CLAUDE.md**: Contains ALL dynamic content (dates, stakeholders, status)
+- **PROJECT_INSTRUCTIONS.md**: Contains ONLY static workflows
+- **Claude Desktop Instructions**: Simple pointer to current state
+
+Example generated instructions:
+```
+# My New Project
+
+Building an AI assistant for customer support
+
+Current state: Projects/My New Project/CLAUDE.md
+
+Rule: MCP tools only.
+```
+
 ## Configuration
 
 ### Claude Desktop Setup
