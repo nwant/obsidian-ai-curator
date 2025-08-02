@@ -179,7 +179,10 @@ Define your project templates:
 
 ### File Content Templates
 
-Define the content for each file:
+You can define file templates in two ways:
+
+#### Method 1: Inline Content
+Embed the template content directly in the JSON:
 
 ```json
 "fileTemplates": {
@@ -188,6 +191,58 @@ Define the content for each file:
   },
   "python-starter": {
     "content": "#!/usr/bin/env python3\n\"\"\"\n{{projectName}}\n{{description}}\n\nCreated: {{currentDate}}\n\"\"\"\n\nclass {{projectName|capitalize}}:\n    pass\n"
+  }
+}
+```
+
+#### Method 2: File Reference
+Reference a template file in your vault:
+
+```json
+"fileTemplates": {
+  "my-readme": {
+    "file": "Templates/Project README.md"
+  },
+  "my-meeting-template": {
+    "file": "/absolute/path/to/template.md"
+  },
+  "api-docs": {
+    "file": "Meta/Templates/API Documentation.md"
+  }
+}
+```
+
+**File Reference Notes**:
+- Paths are relative to your vault root unless they start with `/`
+- The referenced file can use all the same variables ({{projectName}}, etc.)
+- Easier to maintain large templates in separate files
+- Can use your existing Obsidian templates
+
+#### Choosing Between Methods
+
+**Use Inline Content when**:
+- Templates are small and simple
+- You want everything in one configuration file
+- Templates are specific to project initialization
+
+**Use File References when**:
+- Templates are large or complex
+- You want to edit templates in Obsidian with syntax highlighting
+- You already have template files in your vault
+- You want to share templates between different tools
+- You need version control for template files separately
+
+#### Mixed Approach Example
+
+You can mix both methods in the same configuration:
+
+```json
+"fileTemplates": {
+  "readme": {
+    "content": "# {{projectName}}\n\n{{description}}"  // Simple, inline
+  },
+  "complex-template": {
+    "file": "Templates/Complex Project Template.md"    // Complex, external
   }
 }
 ```
@@ -267,8 +322,20 @@ Available variables for use in templates:
       "content": "---\ncreated: {{currentDate}}\nproject-type: api-microservice\ntags:\n  - project/{{projectSlug}}\n  - api/rest\n  - phase/{{phase}}\n---\n# {{projectName}} - API Context\n\n## Service Overview\n{{description}}\n\n## Current Status\n- **Phase**: {{phase}}\n- **Started**: {{currentDate}}\n- **Target**: {{targetDate}}\n- **Port**: 3000\n- **Version**: 0.1.0\n\n## Team\n{{stakeholderList}}\n\n## Endpoints\n- [ ] GET /health - Health check\n- [ ] GET /api/v1/resource - List resources\n- [ ] POST /api/v1/resource - Create resource\n\n## Architecture Decisions\n- Framework: Express.js\n- Database: [TBD]\n- Authentication: [TBD]\n\n## Environment Variables\n- `PORT` - Server port (default: 3000)\n- `NODE_ENV` - Environment (development/production)\n- `DATABASE_URL` - Database connection string\n"
     },
     
+    "api-readme": {
+      "file": "Templates/API README.md"
+    },
+    
     "api-index": {
       "content": "const express = require('express');\nconst app = express();\nconst PORT = process.env.PORT || 3000;\n\n// Middleware\napp.use(express.json());\n\n// Health check\napp.get('/health', (req, res) => {\n  res.json({ \n    status: 'healthy',\n    service: '{{projectSlug}}',\n    version: '0.1.0'\n  });\n});\n\n// Start server\napp.listen(PORT, () => {\n  console.log(`{{projectName}} running on port ${PORT}`);\n});\n"
+    },
+    
+    "api-docs": {
+      "file": "Meta/Templates/API Documentation Template.md"
+    },
+    
+    "api-env": {
+      "content": "PORT=3000\nNODE_ENV=development\nDATABASE_URL=\nAPI_KEY=\n"
     }
   }
 }

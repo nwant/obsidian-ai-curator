@@ -133,7 +133,7 @@ export class ProjectInitializer {
       // Create files from template
       for (const fileConfig of selectedTemplate.files || []) {
         const filePath = this.processTemplate(fileConfig.path, templateVars);
-        const fileContent = this.generateFileContent(fileConfig.template, templateVars);
+        const fileContent = await this.generateFileContent(fileConfig.template, templateVars);
         
         const fullFilePath = path.join(fullProjectPath, filePath);
         const fileDir = path.dirname(fullFilePath);
@@ -177,25 +177,35 @@ export class ProjectInitializer {
   processTemplate(templateString, variables) {
     let processed = templateString;
     
-    // Replace variables with optional defaults
-    processed = processed.replace(/\{\{(\w+)(?:\|([^}]+))?\}\}/g, (match, varName, defaultValue) => {
-      return variables[varName] !== undefined ? variables[varName] : (defaultValue || match);
-    });
-    
-    // Handle filters (e.g., {{variable|capitalize}})
-    processed = processed.replace(/\{\{(\w+)\|(\w+)\}\}/g, (match, varName, filter) => {
-      let value = variables[varName] || '';
+    // Single regex to handle variables, defaults, and filters
+    processed = processed.replace(/\{\{(\w+)(?:\|([^}]+))?\}\}/g, (match, varName, modifier) => {
+      let value = variables[varName];
       
-      switch (filter) {
-        case 'capitalize':
-          return value.charAt(0).toUpperCase() + value.slice(1);
-        case 'uppercase':
-          return value.toUpperCase();
-        case 'lowercase':
-          return value.toLowerCase();
-        default:
-          return value;
+      // If variable doesn't exist
+      if (value === undefined) {
+        // Check if modifier is a default value (doesn't match filter names)
+        if (modifier && !['capitalize', 'uppercase', 'lowercase'].includes(modifier)) {
+          return modifier; // Use as default value
+        }
+        return match; // Return original if no default
       }
+      
+      // If modifier is a filter
+      if (modifier) {
+        switch (modifier) {
+          case 'capitalize':
+            return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+          case 'uppercase':
+            return String(value).toUpperCase();
+          case 'lowercase':
+            return String(value).toLowerCase();
+          default:
+            // Not a filter, treat as default value (but we have a value, so ignore)
+            return String(value);
+        }
+      }
+      
+      return String(value);
     });
     
     return processed;
@@ -203,15 +213,37 @@ export class ProjectInitializer {
 
   /**
    * Generate file content from template
+   * Supports both inline content and file references
    */
-  generateFileContent(templateName, variables) {
+  async generateFileContent(templateName, variables) {
     const template = this.templates.fileTemplates[templateName];
     
     if (!template) {
       throw new Error(`File template "${templateName}" not found`);
     }
     
-    return this.processTemplate(template.content, variables);
+    let content;
+    
+    // Check if template uses file reference
+    if (template.file) {
+      // Handle file reference - can be absolute or relative to vault
+      const filePath = path.isAbsolute(template.file) 
+        ? template.file 
+        : path.join(this.vaultPath, template.file);
+      
+      try {
+        content = await fs.readFile(filePath, 'utf-8');
+      } catch (error) {
+        throw new Error(`Failed to read template file "${template.file}": ${error.message}`);
+      }
+    } else if (template.content) {
+      // Use inline content
+      content = template.content;
+    } else {
+      throw new Error(`File template "${templateName}" must have either 'content' or 'file' property`);
+    }
+    
+    return this.processTemplate(content, variables);
   }
 
   /**
