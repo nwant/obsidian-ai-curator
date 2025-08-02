@@ -14,7 +14,13 @@ npm run build
 
 ### 2. Install in Obsidian
 
-#### Manual Installation
+#### Option 1: Development Setup (Recommended)
+```bash
+# Create symbolic link for development
+ln -s "$(pwd)" /path/to/vault/.obsidian/plugins/obsidian-ai-curator
+```
+
+#### Option 2: Manual Installation
 ```bash
 # Create plugin directory
 mkdir -p /path/to/vault/.obsidian/plugins/obsidian-ai-curator
@@ -23,7 +29,7 @@ mkdir -p /path/to/vault/.obsidian/plugins/obsidian-ai-curator
 cp main.js manifest.json styles.css /path/to/vault/.obsidian/plugins/obsidian-ai-curator/
 ```
 
-#### Using the Install Script
+#### Option 3: Using the Install Script
 ```bash
 npm run install-plugin -- /path/to/vault
 ```
@@ -144,6 +150,10 @@ The plugin exposes these endpoints:
 - `POST /api/rename` - Rename file with link updates
 - `POST /api/move` - Move file with link updates
 - `GET /api/search` - Search using Obsidian's index
+- `GET /api/tags` - All tags from metadata cache
+- `GET /api/links` - Outgoing links from any note
+- `GET /api/backlinks` - Incoming links to any note
+- `GET /api/swagger` - API documentation
 
 ## Development
 
