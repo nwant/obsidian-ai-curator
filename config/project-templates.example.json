@@ -1,59 +1,59 @@
 {
   "version": "1.0",
-  "description": "Project initialization templates for Obsidian AI Curator",
+  "description": "Default project templates for Obsidian AI Curator",
   
   "projectTypes": {
-    "ai-agent": {
-      "name": "AI Agent",
-      "description": "AI-powered agent or assistant"
+    "general": {
+      "name": "General",
+      "description": "General purpose project"
     },
-    "integration": {
-      "name": "Integration",
-      "description": "System integration project"
-    },
-    "automation": {
-      "name": "Automation",
-      "description": "Process automation project"
+    "software": {
+      "name": "Software Development",
+      "description": "Software development project"
     },
     "research": {
       "name": "Research",
-      "description": "Research and analysis project"
+      "description": "Research or study project"
+    },
+    "documentation": {
+      "name": "Documentation",
+      "description": "Documentation project"
     },
     "other": {
       "name": "Other",
-      "description": "General project type"
+      "description": "Other project type"
     }
   },
   
   "phases": {
     "planning": {
       "name": "Planning",
-      "description": "Requirements gathering and design"
+      "description": "Initial planning and design"
     },
-    "development": {
-      "name": "Development", 
-      "description": "Active implementation"
+    "active": {
+      "name": "Active", 
+      "description": "Active development or work"
     },
-    "testing": {
-      "name": "Testing",
-      "description": "Quality assurance"
+    "review": {
+      "name": "Review",
+      "description": "Review and refinement"
     },
-    "deployment": {
-      "name": "Deployment",
-      "description": "Release preparation"
+    "completed": {
+      "name": "Completed",
+      "description": "Project completed"
     },
-    "maintenance": {
-      "name": "Maintenance",
-      "description": "Ongoing support"
+    "archived": {
+      "name": "Archived",
+      "description": "Project archived"
     }
   },
   
   "validation": {
     "projectName": {
-      "pattern": "^[a-zA-Z0-9\\s-]+$",
-      "minLength": 3,
-      "maxLength": 100,
-      "errorMessage": "Project name can only contain letters, numbers, spaces, and hyphens"
+      "pattern": "^[a-zA-Z0-9\\s\\-_.]+$",
+      "minLength": 1,
+      "maxLength": 200,
+      "errorMessage": "Project name can only contain letters, numbers, spaces, hyphens, underscores, and periods"
     },
     "dateFormat": {
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
@@ -63,142 +63,95 @@
   
   "templates": {
     "default": {
-      "name": "Default Project Template",
-      "description": "Standard project structure for Obsidian AI Curator",
+      "name": "Standard Project",
+      "description": "A standard project structure with basic documentation",
       
       "directories": [
-        "Architecture",
-        "Requirements", 
-        "Implementation",
-        "Meetings",
-        "Resources"
-      ],
-      
-      "files": [
-        {
-          "path": "CLAUDE.md",
-          "template": "claude-context"
-        },
-        {
-          "path": "PROJECT_INSTRUCTIONS.md",
-          "template": "project-instructions"
-        },
-        {
-          "path": "{{projectName}} - INDEX.md",
-          "template": "project-index"
-        },
-        {
-          "path": "Implementation/{{projectName}} - Implementation Log.md",
-          "template": "implementation-log"
-        }
-      ],
-      
-      "variables": {
-        "projectName": "{{projectName}}",
-        "projectSlug": "{{projectSlug}}",
-        "projectType": "{{projectType}}",
-        "description": "{{description}}",
-        "phase": "{{phase}}",
-        "currentDate": "{{currentDate}}",
-        "targetDate": "{{targetDate|TBD}}",
-        "stakeholders": "{{stakeholders}}",
-        "stakeholderList": "{{stakeholderList|[Add stakeholders]}}"
-      }
-    },
-    
-    "minimal": {
-      "name": "Minimal Project Template",
-      "description": "Lightweight project structure",
-      
-      "directories": [
-        "Notes",
-        "Resources"
+        "Documentation",
+        "Resources", 
+        "Archive"
       ],
       
       "files": [
         {
           "path": "README.md",
-          "template": "minimal-readme"
+          "template": "standard-readme"
         },
         {
-          "path": "Notes/{{currentDate}} - Project Start.md",
-          "template": "minimal-start-note"
+          "path": "Documentation/Notes.md",
+          "template": "standard-notes"
         }
       ]
     },
     
-    "research": {
-      "name": "Research Project Template",
-      "description": "Structure for research projects",
+    "minimal": {
+      "name": "Minimal Project",
+      "description": "A minimal project structure",
+      
+      "directories": [],
+      
+      "files": [
+        {
+          "path": "README.md",
+          "template": "minimal-readme"
+        }
+      ]
+    },
+    
+    "structured": {
+      "name": "Structured Project",
+      "description": "A more structured project with categories",
       
       "directories": [
-        "Literature",
-        "Data",
-        "Analysis",
-        "Findings",
-        "Meetings"
+        "Planning",
+        "Research",
+        "Development",
+        "Documentation",
+        "Meetings",
+        "Resources",
+        "Archive"
       ],
       
       "files": [
         {
-          "path": "{{projectName}} - Research Plan.md",
-          "template": "research-plan"
+          "path": "README.md",
+          "template": "structured-readme"
         },
         {
-          "path": "{{projectName}} - Bibliography.md",
-          "template": "research-bibliography"
+          "path": "Planning/Project Plan.md",
+          "template": "project-plan"
         },
         {
-          "path": "Literature/Literature Review.md",
-          "template": "literature-review"
-        },
-        {
-          "path": "Findings/Initial Findings.md",
-          "template": "research-findings"
+          "path": "Documentation/Overview.md",
+          "template": "documentation-overview"
         }
       ]
     }
   },
   
   "fileTemplates": {
-    "claude-context": {
-      "content": "---\ncreated: {{currentDate}}\nmodified: {{currentDate}}\nproject-phase: {{phase}}\ntags:\n  - project/{{projectSlug}}\n  - phase/{{phase}}\n---\n# {{projectName}} - Claude Context\n\n## Project Overview\n{{description}}\n\n## Current Status\n- **Phase**: {{phase}}\n- **Started**: {{currentDate}}\n- **Target**: {{targetDate}}\n- **Last Updated**: {{currentDate}}\n\n## Key Stakeholders\n{{stakeholderList}}\n\n## Key Objectives\n1. [Define during planning]\n2. [Add as identified]\n\n## Architecture Decisions\n- [Document key technical decisions]\n\n## Recent Decisions\n- [Add decisions as made with dates]\n\n## Open Questions\n- [Track unresolved questions]\n- [Add blockers and dependencies]\n\n## Key Files\n- [[{{projectName}} - INDEX]] - Main project index\n- [[{{projectName}} - Implementation Log]] - Daily progress\n- [[PROJECT_INSTRUCTIONS]] - Workflow guide\n\n## Working Notes\n[Session-specific notes and context]\n\n## Context for Claude\nWhen working on this project:\n1. Always use MCP tools for vault operations\n2. Update this file with key decisions and progress\n3. Maintain cross-linking between project notes\n4. Use consistent tagging: #project/{{projectSlug}}\n5. This file contains ALL dynamic project state\n"
-    },
-    
-    "project-instructions": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/instructions\n---\n# {{projectName}} - Project Instructions\n\n## Project Overview\n{{description}}\n\n## Remember\n- All current state info lives in [[CLAUDE.md]]\n- This file contains workflows that rarely change\n- Check CLAUDE.md for stakeholders, dates, versions, status\n\n## Session Start Checklist\n1. Read [[CLAUDE.md]] for current project state\n2. Check [[{{projectName}} - Implementation Log]] for recent work\n3. Review [[{{projectName}} - INDEX]] for open items\n4. Update CLAUDE.md with any status changes\n\n## Critical Operating Rules\n- Always use MCP tools for vault operations\n- Never write files directly to vault paths\n- Maintain consistent cross-linking\n- Update timestamps when modifying files\n- Use wikilink format for all internal links\n\n## File Organization\n\n### Core Files\n- `CLAUDE.md` - Dynamic project state (dates, status, stakeholders)\n- `PROJECT_INSTRUCTIONS.md` - Static workflows (this file)\n- `{{projectName}} - INDEX.md` - Project hub with links\n- `{{projectName}} - Implementation Log.md` - Daily progress log\n\n### Directory Structure\n- `Architecture/` - Technical decisions and design docs\n- `Requirements/` - Feature specs and user stories\n- `Implementation/` - Code samples and technical notes\n- `Meetings/` - All meeting notes and decisions\n- `Resources/` - External references and assets\n\n## Version Control\n- Create git checkpoints before major changes\n- Use descriptive commit messages\n- Reference issue numbers when applicable\n\n## Common Tasks\n\n### Recording a Meeting\n1. Create file: `Meetings/YYYY-MM-DD {{projectName}} - [Meeting Type].md`\n2. Include attendees, agenda, decisions, action items\n3. Link from Implementation Log\n4. Update CLAUDE.md with key decisions\n\n### Adding a Requirement\n1. Create file: `Requirements/{{projectName}} - [Feature Name].md`\n2. Include user story, acceptance criteria, priority\n3. Link from project INDEX\n4. Update status in CLAUDE.md if high priority\n\n### Documenting Architecture\n1. Create file: `Architecture/{{projectName}} - [Component/Decision].md`\n2. Use ADR format if major decision\n3. Link from CLAUDE.md decisions section\n4. Update INDEX with architecture summary\n\n### Daily Progress Update\n1. Add entry to Implementation Log with date header\n2. Include: status, actions, decisions, blockers, next steps\n3. Update CLAUDE.md if phase or status changes\n4. Check off completed items in INDEX\n\n## Workflow Patterns\n\n### Planning Phase\n- Define objectives in CLAUDE.md\n- Create requirement documents\n- Document initial architecture\n- Identify all stakeholders\n\n### Development Phase\n- Daily updates in Implementation Log\n- Regular architecture documentation\n- Link implementations to requirements\n- Track blockers in CLAUDE.md\n\n### Testing Phase\n- Document test plans and results\n- Track issues and resolutions\n- Update requirements with clarifications\n- Prepare deployment documentation\n\n## Tag Conventions\n- Project tag: `project/{{projectSlug}}` (always include)\n- Phase tags: `phase/planning`, `phase/development`, etc.\n- Type tags: `type/meeting`, `type/requirement`, etc.\n- Status tags: `status/active`, `status/blocked`, etc.\n\n## Quality Checklist\n- [ ] All files properly tagged\n- [ ] Cross-links maintained\n- [ ] CLAUDE.md reflects current state\n- [ ] Implementation Log updated regularly\n- [ ] Decisions documented with rationale\n- [ ] Requirements linked to implementations\n"
-    },
-    
-    "project-index": {
-      "content": "---\ncreated: {{currentDate}}\nmodified: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/index\n  - phase/{{phase}}\ntype: project-index\nproject-type: {{projectType}}\n---\n# {{projectName}} - Project Index\n\n## Overview\n**Description**: {{description}}\n\n## Status Dashboard\n> **Current Phase**: See [[CLAUDE.md]] for dates, status, and stakeholders\n\n**Quick Status**: 🟡 {{phase|capitalize}}\n**Type**: {{projectType}}\n\n## Quick Links\n- [[CLAUDE.md]] - Current state, stakeholders, decisions\n- [[PROJECT_INSTRUCTIONS]] - Workflow guide (static)\n- [[{{projectName}} - Implementation Log]] - Daily progress\n\n## Current Phase: {{phase|capitalize}}\n\n### Phase Checklist\n#### Planning\n- [ ] Define project objectives\n- [ ] Identify all stakeholders\n- [ ] Gather initial requirements\n- [ ] Create high-level architecture\n- [ ] Define success criteria\n- [ ] Establish timeline\n\n#### Development\n- [ ] Set up development environment\n- [ ] Implement core features\n- [ ] Regular stakeholder updates\n- [ ] Iterative testing\n- [ ] Documentation\n\n## Key Decisions\n| Date | Decision | Status | Link |\n|------|----------|--------| -----|\n| {{currentDate}} | Project initiated | Active | [[{{projectName}} - Implementation Log]] |\n\n## Open Items\n- [ ] Define initial objectives\n- [ ] Schedule kickoff meeting\n- [ ] Gather detailed requirements\n\n## Progress Summary\n_Updated: {{currentDate}}_\n\nProject initialized. Next steps:\n1. Define clear objectives in [[CLAUDE.md]]\n2. Schedule stakeholder kickoff meeting\n3. Begin requirements gathering\n"
-    },
-    
-    "implementation-log": {
-      "content": "---\ncreated: {{currentDate}}\nmodified: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/log\n  - implementation\n---\n# {{projectName}} - Implementation Log\n\n## Purpose\nTrack daily progress, decisions, and learnings for the {{projectName}} project.\n\n## Log Entries\n\n### {{currentDate}} - Project Initialization\n- **Status**: Project structure created\n- **Phase**: Planning initiated\n- **Actions**:\n  - Created standardized project structure\n  - Set up initial documentation\n  - Established project workspace\n- **Notes**:\n  - Project Description: {{description}}\n  - All foundational files created\n  - Ready for requirements gathering\n- **Next Steps**:\n  - [ ] Review and update [[CLAUDE.md]] with specific objectives\n  - [ ] Schedule stakeholder kickoff meeting\n  - [ ] Begin detailed requirements documentation\n\n---\n\n## Template for Future Entries\n\n### YYYY-MM-DD - [Summary]\n- **Status**: [Current status]\n- **Phase**: [Current phase]\n- **Actions**:\n  - [What was done]\n- **Decisions**:\n  - [Key decisions made]\n- **Blockers**:\n  - [Any impediments]\n- **Notes**:\n  - [Additional context]\n- **Next Steps**:\n  - [ ] [Actionable items]\n"
+    "standard-readme": {
+      "content": "# {{projectName}}\n\n## Description\n{{description}}\n\n## Project Information\n- **Type**: {{projectType}}\n- **Status**: {{phase}}\n- **Created**: {{currentDate}}\n- **Target Date**: {{targetDate|TBD}}\n\n## Team\n{{stakeholderList|To be determined}}\n\n## Overview\n[Add project overview here]\n\n## Goals\n- [ ] [Add project goals]\n\n## Structure\n- `Documentation/` - Project documentation\n- `Resources/` - External resources and references\n- `Archive/` - Archived materials\n\n## Getting Started\n[Add getting started information]\n\n## Links\n- [[Documentation/Notes]] - Project notes\n"
     },
     
     "minimal-readme": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n---\n# {{projectName}}\n\n## Description\n{{description}}\n\n## Status\n- Started: {{currentDate}}\n- Target: {{targetDate}}\n- Phase: {{phase}}\n\n## Notes\n- [[Notes/{{currentDate}} - Project Start]]\n\n## Resources\n- [Add resources here]\n"
+      "content": "# {{projectName}}\n\n{{description}}\n\n- **Created**: {{currentDate}}\n- **Status**: {{phase}}\n"
     },
     
-    "minimal-start-note": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/note\n---\n# {{projectName}} - Project Start\n\n## Initial Thoughts\n{{description}}\n\n## Objectives\n- [Define objectives]\n\n## Next Steps\n- [ ] [Add next steps]\n"
+    "standard-notes": {
+      "content": "# {{projectName}} - Notes\n\n## {{currentDate}}\n\n### Project Setup\n- Project created: {{projectName}}\n- Description: {{description}}\n- Initial phase: {{phase}}\n\n### Next Steps\n- [ ] Define project objectives\n- [ ] Set up project structure\n- [ ] Begin initial work\n\n---\n\n## Note Template\n\n### Date - Topic\n\n**Summary**: \n\n**Details**:\n\n**Action Items**:\n- [ ] \n\n**References**:\n- \n"
     },
     
-    "research-plan": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/research-plan\n---\n# {{projectName}} - Research Plan\n\n## Research Question\n{{description}}\n\n## Objectives\n1. [Primary objective]\n2. [Secondary objectives]\n\n## Methodology\n- [Research methods]\n\n## Timeline\n- **Start**: {{currentDate}}\n- **Target**: {{targetDate}}\n\n## Key Areas\n- [[Literature/Literature Review]]\n- [[Data/]] - Data collection\n- [[Analysis/]] - Analysis methods\n- [[Findings/Initial Findings]]\n"
+    "structured-readme": {
+      "content": "# {{projectName}}\n\n## Description\n{{description}}\n\n## Project Information\n- **Type**: {{projectType}}\n- **Phase**: {{phase}}\n- **Created**: {{currentDate}}\n- **Target**: {{targetDate|TBD}}\n\n## Team\n{{stakeholderList|To be determined}}\n\n## Project Structure\n\n### Directories\n- `Planning/` - Project planning documents\n- `Research/` - Research materials and findings\n- `Development/` - Development work and prototypes\n- `Documentation/` - Project documentation\n- `Meetings/` - Meeting notes and agendas\n- `Resources/` - External resources\n- `Archive/` - Archived materials\n\n### Key Documents\n- [[Planning/Project Plan]] - Main project plan\n- [[Documentation/Overview]] - Documentation overview\n\n## Quick Links\n[Add important links here]\n\n## Status\n[Current project status]\n"
     },
     
-    "research-bibliography": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/bibliography\n---\n# {{projectName}} - Bibliography\n\n## Primary Sources\n- [Add primary sources]\n\n## Secondary Sources\n- [Add secondary sources]\n\n## Key Papers\n| Title | Authors | Year | Relevance |\n|-------|---------|------|-----------||\n| | | | |\n"
+    "project-plan": {
+      "content": "# {{projectName}} - Project Plan\n\n## Overview\n{{description}}\n\n## Objectives\n1. [Define main objectives]\n2. [Add more as needed]\n\n## Scope\n### In Scope\n- [What is included]\n\n### Out of Scope\n- [What is not included]\n\n## Timeline\n- **Start Date**: {{currentDate}}\n- **Target Date**: {{targetDate|TBD}}\n\n### Milestones\n| Date | Milestone | Status |\n|------|-----------|--------|\n| {{currentDate}} | Project kickoff | ✅ |\n| TBD | [Add milestone] | ⏳ |\n\n## Resources\n### Team\n{{stakeholderList|To be determined}}\n\n### Tools & Resources\n- [List required tools]\n- [List required resources]\n\n## Risks\n| Risk | Impact | Mitigation |\n|------|--------|------------|\n| [Identify risks] | [Impact level] | [Mitigation strategy] |\n\n## Success Criteria\n- [ ] [Define what success looks like]\n- [ ] [Add measurable criteria]\n"
     },
     
-    "literature-review": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/literature-review\n---\n# Literature Review\n\n## Overview\n[Summary of existing research]\n\n## Key Themes\n### Theme 1\n[Discussion]\n\n### Theme 2\n[Discussion]\n\n## Gaps in Literature\n- [Identified gaps]\n\n## References\nSee [[{{projectName}} - Bibliography]]\n"
-    },
-    
-    "research-findings": {
-      "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n  - type/findings\n---\n# Initial Findings\n\n## Summary\n[Key findings summary]\n\n## Detailed Findings\n### Finding 1\n- **Observation**: [What was observed]\n- **Evidence**: [Supporting evidence]\n- **Implications**: [What this means]\n\n## Next Steps\n- [ ] [Further investigation needed]\n"
+    "documentation-overview": {
+      "content": "# {{projectName}} - Documentation Overview\n\n## Purpose\nThis directory contains all project documentation.\n\n## Document Index\n\n### Planning Documents\n- [[Planning/Project Plan]] - Main project plan\n\n### Technical Documents\n- [Add technical documentation links]\n\n### Process Documents\n- [Add process documentation links]\n\n### Meeting Notes\n- See [[Meetings/]] directory\n\n## Documentation Standards\n- Use clear, descriptive titles\n- Include creation and update dates\n- Link related documents\n- Keep documents focused and concise\n\n## Templates\n[Add links to any document templates]\n"
     }
   }
 }

@@ -70,9 +70,9 @@ See [Configuration Guide](docs/configuration-guide.md) for all options.
 The `init_project` tool uses customizable templates to create standardized project structures. 
 
 ### Built-in Templates
-- **default**: Full project structure with CLAUDE.md, instructions, and implementation tracking
-- **minimal**: Lightweight structure for quick projects
-- **research**: Academic research project with literature and data organization
+- **default**: Standard project with README and basic documentation structure
+- **minimal**: Single README file for quick starts
+- **structured**: Comprehensive structure with planning, development, and meeting folders
 
 ### Customizing Templates
 

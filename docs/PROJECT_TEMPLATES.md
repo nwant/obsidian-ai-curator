@@ -35,9 +35,9 @@ list_project_templates()
 
 ### Built-in Templates
 
-1. **default** - Full project structure with CLAUDE.md, PROJECT_INSTRUCTIONS.md, index, and implementation log
-2. **minimal** - Lightweight structure with just README and a start note
-3. **research** - Academic research structure with literature review, bibliography, and findings
+1. **default** - Standard project structure with README and documentation folder
+2. **minimal** - Minimal structure with just a README file
+3. **structured** - More organized structure with planning, development, and meeting folders
 
 ## Creating Custom Templates
 
