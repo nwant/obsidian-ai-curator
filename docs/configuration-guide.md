@@ -199,7 +199,7 @@ Create your own templates without affecting the repository:
 2. Edit `config/project-templates.json` with your custom templates
 3. Your custom file is gitignored and takes precedence over defaults
 
-See [Custom Project Templates](CUSTOM_PROJECT_TEMPLATES.md) for detailed configuration.
+See [Project Templates Documentation](PROJECT_TEMPLATES.md) for detailed configuration.
 
 ## Tips
 

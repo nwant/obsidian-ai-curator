@@ -1,20 +1,18 @@
 # Project Templates Documentation
 
-## Overview
-
-The Obsidian AI Curator's `init_project` tool uses a configurable template system that allows you to customize project structures for your specific needs. Templates are defined in `config/project-templates.json`.
-
-> **Note**: For creating your own custom templates that won't be tracked by git, see [Custom Project Templates Configuration](CUSTOM_PROJECT_TEMPLATES.md). This guide covers modifying the default templates.
+This guide explains how to use and customize project templates for the `init_project` tool.
 
 ## Quick Start
 
-### Using Templates
+### Using Built-in Templates
 
 ```javascript
 // Use default template
 init_project({
-  projectName: "My Project",
-  description: "Project description"
+  projectName: "My New Project",
+  description: "Building an AI assistant",
+  stakeholders: ["Alice (PM)", "Bob (Dev)"],
+  targetDate: "2025-12-31"
 })
 
 // Use minimal template
@@ -24,15 +22,67 @@ init_project({
   template: "minimal"
 })
 
+// Use research template
+init_project({
+  projectName: "AI Research",
+  description: "Research into AI patterns",
+  template: "research"
+})
+
 // List available templates
 list_project_templates()
 ```
 
+### Built-in Templates
+
+1. **default** - Full project structure with CLAUDE.md, PROJECT_INSTRUCTIONS.md, index, and implementation log
+2. **minimal** - Lightweight structure with just README and a start note
+3. **research** - Academic research structure with literature review, bibliography, and findings
+
+## Creating Custom Templates
+
+You can create your own templates without modifying the repository:
+
+### Setup
+
+1. **Copy the example configuration**:
+   ```bash
+   cp config/project-templates.example.json config/project-templates.json
+   ```
+
+2. **Edit your custom configuration**:
+   ```bash
+   # Edit with your preferred editor
+   vim config/project-templates.json
+   ```
+
+3. **Your custom file is gitignored** - It won't be tracked or committed
+
+### How It Works
+
+- System tries to load `config/project-templates.json` first (your custom templates)
+- Falls back to `config/project-templates.default.json` if custom doesn't exist
+- Custom templates completely replace defaults (they don't merge)
+
 ## Template Configuration Structure
 
-The configuration file has the following main sections:
+### Top-Level Structure
 
-### 1. Project Types
+```json
+{
+  "version": "1.0",
+  "description": "Your custom project templates",
+  
+  "projectTypes": { ... },      // Types of projects
+  "phases": { ... },           // Project lifecycle phases  
+  "validation": { ... },       // Input validation rules
+  "templates": { ... },        // Template definitions
+  "fileTemplates": { ... }     // File content templates
+}
+```
+
+### Project Types
+
 Define the types of projects you work with:
 
 ```json
@@ -41,14 +91,19 @@ Define the types of projects you work with:
     "name": "AI Agent",
     "description": "AI-powered agent or assistant"
   },
-  "custom-type": {
-    "name": "Custom Type",
-    "description": "Your custom project type"
+  "api": {
+    "name": "API Development", 
+    "description": "REST/GraphQL API projects"
+  },
+  "ml-model": {
+    "name": "Machine Learning Model",
+    "description": "ML model development and training"
   }
 }
 ```
 
-### 2. Phases
+### Phases
+
 Define project lifecycle phases:
 
 ```json
@@ -57,15 +112,20 @@ Define project lifecycle phases:
     "name": "Planning",
     "description": "Requirements gathering and design"
   },
-  "custom-phase": {
-    "name": "Custom Phase",
-    "description": "Your custom phase"
+  "development": {
+    "name": "Development",
+    "description": "Active implementation"
+  },
+  "testing": {
+    "name": "Testing",
+    "description": "Quality assurance"
   }
 }
 ```
 
-### 3. Validation Rules
-Set validation rules for inputs:
+### Validation Rules
+
+Set rules for project names and dates:
 
 ```json
 "validation": {
@@ -74,46 +134,60 @@ Set validation rules for inputs:
     "minLength": 3,
     "maxLength": 100,
     "errorMessage": "Project name can only contain letters, numbers, spaces, and hyphens"
+  },
+  "dateFormat": {
+    "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+    "errorMessage": "Date must be in yyyy-MM-dd format"
   }
 }
 ```
 
-### 4. Templates
-Define project structures:
+### Template Definitions
+
+Define your project templates:
 
 ```json
 "templates": {
-  "custom-template": {
+  "my-template": {
     "name": "My Custom Template",
-    "description": "Template for specific project type",
+    "description": "Template for my specific workflow",
     
     "directories": [
-      "Documents",
-      "Code",
-      "Tests"
+      "Documentation",
+      "Code", 
+      "Tests",
+      "Meetings"
     ],
     
     "files": [
       {
-        "path": "README.md",
-        "template": "custom-readme"
+        "path": "CLAUDE.md",
+        "template": "my-claude-context"
       },
       {
-        "path": "Documents/{{projectName}} - Overview.md",
-        "template": "custom-overview"
+        "path": "README.md", 
+        "template": "my-readme"
+      },
+      {
+        "path": "Code/{{projectSlug}}.py",
+        "template": "python-starter"
       }
     ]
   }
 }
 ```
 
-### 5. File Templates
-Define content for each file:
+### File Content Templates
+
+Define the content for each file:
 
 ```json
 "fileTemplates": {
-  "custom-readme": {
-    "content": "# {{projectName}}\\n\\n## Description\\n{{description}}\\n\\nCreated: {{currentDate}}"
+  "my-claude-context": {
+    "content": "---\ncreated: {{currentDate}}\ntags:\n  - project/{{projectSlug}}\n---\n# {{projectName}}\n\n{{description}}\n\n## Current Status\n- Phase: {{phase}}\n- Started: {{currentDate}}\n\n## Stakeholders\n{{stakeholderList}}\n"
+  },
+  "python-starter": {
+    "content": "#!/usr/bin/env python3\n\"\"\"\n{{projectName}}\n{{description}}\n\nCreated: {{currentDate}}\n\"\"\"\n\nclass {{projectName|capitalize}}:\n    pass\n"
   }
 }
 ```
@@ -124,175 +198,77 @@ Available variables for use in templates:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `{{projectName}}` | Name of the project | "Email Automation" |
-| `{{projectSlug}}` | URL-safe version of name | "email-automation" |
-| `{{projectType}}` | Selected project type | "automation" |
-| `{{description}}` | Project description | "Automated email system" |
+| `{{projectName}}` | Project name as provided | "My New Project" |
+| `{{projectSlug}}` | URL-safe version of project name | "my-new-project" |
+| `{{projectType}}` | Selected project type | "ai-agent" |
+| `{{description}}` | Project description | "Building an AI assistant" |
 | `{{phase}}` | Current project phase | "planning" |
-| `{{currentDate}}` | Today's date (yyyy-MM-dd) | "2025-08-02" |
-| `{{targetDate}}` | Target completion date | "2025-09-15" |
-| `{{stakeholders}}` | Comma-separated list | "John, Jane" |
-| `{{stakeholderList}}` | Formatted list | "- John\\n- Jane" |
+| `{{currentDate}}` | Today's date in configured format | "2025-08-02" |
+| `{{targetDate}}` | Target completion date | "2025-12-31" |
+| `{{stakeholders}}` | Comma-separated stakeholder list | "Alice, Bob, Charlie" |
+| `{{stakeholderList}}` | Formatted stakeholder list | "- Alice\n- Bob\n- Charlie" |
 
 ### Variable Modifiers
 
 - **Default values**: `{{variable|default value}}`
-  - Example: `{{targetDate|TBD}}`
+  - Example: `{{targetDate|TBD}}` outputs "TBD" if no target date provided
   
 - **Filters**: `{{variable|filter}}`
-  - `capitalize`: First letter uppercase
-  - `uppercase`: All uppercase
-  - `lowercase`: All lowercase
-  - Example: `{{phase|capitalize}}`
+  - `capitalize`: Capitalizes first letter (`planning` → `Planning`)
+  - `uppercase`: Converts to uppercase (`planning` → `PLANNING`)
+  - `lowercase`: Converts to lowercase (`Planning` → `planning`)
 
-## Creating Custom Templates
-
-### Step 1: Plan Your Structure
-
-Decide on:
-- What directories you need
-- What files to create
-- What content each file should have
-
-### Step 2: Add Template Definition
-
-Edit `config/project-templates.json`:
+## Complete Example: API Microservice Template
 
 ```json
 {
   "templates": {
-    "my-template": {
-      "name": "My Custom Template",
-      "description": "For my specific workflow",
-      
-      "directories": [
-        "Source",
-        "Documentation",
-        "Tests",
-        "Meetings"
-      ],
-      
-      "files": [
-        {
-          "path": "{{projectName}} - README.md",
-          "template": "my-readme"
-        },
-        {
-          "path": "Documentation/Setup.md",
-          "template": "my-setup"
-        }
-      ]
-    }
-  }
-}
-```
-
-### Step 3: Define File Templates
-
-Add to `fileTemplates` section:
-
-```json
-{
-  "fileTemplates": {
-    "my-readme": {
-      "content": "---\\ncreated: {{currentDate}}\\ntags:\\n  - project/{{projectSlug}}\\n---\\n# {{projectName}}\\n\\n{{description}}"
-    },
-    "my-setup": {
-      "content": "# Setup Instructions\\n\\nProject: {{projectName}}\\nType: {{projectType}}\\n\\n## Requirements\\n- [Add requirements]"
-    }
-  }
-}
-```
-
-### Step 4: Test Your Template
-
-```javascript
-// List templates to verify yours appears
-list_project_templates()
-
-// Create a test project
-init_project({
-  projectName: "Test Project",
-  description: "Testing my template",
-  template: "my-template"
-})
-```
-
-## Advanced Examples
-
-### Research Project Template
-
-```json
-{
-  "templates": {
-    "research": {
-      "name": "Research Project",
-      "description": "Academic research structure",
-      
-      "directories": [
-        "Literature",
-        "Data/Raw",
-        "Data/Processed",
-        "Analysis",
-        "Figures",
-        "Manuscripts"
-      ],
-      
-      "files": [
-        {
-          "path": "{{projectName}} - Research Plan.md",
-          "template": "research-plan"
-        },
-        {
-          "path": "Literature/Bibliography.md",
-          "template": "bibliography"
-        },
-        {
-          "path": "Analysis/Methods.md",
-          "template": "methods"
-        }
-      ]
-    }
-  }
-}
-```
-
-### Software Development Template
-
-```json
-{
-  "templates": {
-    "software": {
-      "name": "Software Project",
-      "description": "Full software development structure",
+    "api-microservice": {
+      "name": "API Microservice",
+      "description": "RESTful API microservice with documentation",
       
       "directories": [
         "src",
+        "src/routes",
+        "src/models", 
+        "src/middleware",
         "tests",
         "docs",
-        "config",
-        "scripts",
-        ".github/workflows"
+        "config"
       ],
       
       "files": [
         {
+          "path": "CLAUDE.md",
+          "template": "api-claude"
+        },
+        {
           "path": "README.md",
-          "template": "software-readme"
+          "template": "api-readme"
         },
         {
-          "path": "CONTRIBUTING.md",
-          "template": "contributing"
+          "path": "src/index.js",
+          "template": "api-index"
         },
         {
-          "path": ".gitignore",
-          "template": "gitignore"
+          "path": "docs/API.md",
+          "template": "api-docs"
         },
         {
-          "path": "docs/ARCHITECTURE.md",
-          "template": "architecture"
+          "path": ".env.example",
+          "template": "api-env"
         }
       ]
+    }
+  },
+  
+  "fileTemplates": {
+    "api-claude": {
+      "content": "---\ncreated: {{currentDate}}\nproject-type: api-microservice\ntags:\n  - project/{{projectSlug}}\n  - api/rest\n  - phase/{{phase}}\n---\n# {{projectName}} - API Context\n\n## Service Overview\n{{description}}\n\n## Current Status\n- **Phase**: {{phase}}\n- **Started**: {{currentDate}}\n- **Target**: {{targetDate}}\n- **Port**: 3000\n- **Version**: 0.1.0\n\n## Team\n{{stakeholderList}}\n\n## Endpoints\n- [ ] GET /health - Health check\n- [ ] GET /api/v1/resource - List resources\n- [ ] POST /api/v1/resource - Create resource\n\n## Architecture Decisions\n- Framework: Express.js\n- Database: [TBD]\n- Authentication: [TBD]\n\n## Environment Variables\n- `PORT` - Server port (default: 3000)\n- `NODE_ENV` - Environment (development/production)\n- `DATABASE_URL` - Database connection string\n"
+    },
+    
+    "api-index": {
+      "content": "const express = require('express');\nconst app = express();\nconst PORT = process.env.PORT || 3000;\n\n// Middleware\napp.use(express.json());\n\n// Health check\napp.get('/health', (req, res) => {\n  res.json({ \n    status: 'healthy',\n    service: '{{projectSlug}}',\n    version: '0.1.0'\n  });\n});\n\n// Start server\napp.listen(PORT, () => {\n  console.log(`{{projectName}} running on port ${PORT}`);\n});\n"
     }
   }
 }
@@ -300,79 +276,81 @@ init_project({
 
 ## Best Practices
 
-### 1. Naming Conventions
-- Use descriptive template keys: `software-dev` not `template1`
-- Keep file template names clear: `project-readme` not `readme`
+### 1. Evergreen Templates
+Follow the v2 pattern for evergreen instructions:
+- **CLAUDE.md**: Contains ALL dynamic content (dates, status, stakeholders)
+- **PROJECT_INSTRUCTIONS.md**: Contains ONLY static workflows
+- This ensures Claude Desktop instructions never need updating
 
-### 2. Directory Structure
-- Start simple, add complexity as needed
-- Group related content together
-- Consider future growth
+### 2. Naming Conventions
+- Use descriptive template keys: `api-microservice`, `ml-experiment`, `frontend-app`
+- Use consistent file template names: `component-readme`, `component-claude`
 
-### 3. File Content
-- Include helpful placeholders and examples
-- Add TODO items for common tasks
-- Link between related files
-- Use consistent formatting
+### 3. Directory Structure
+- Keep directories organized by function
+- Use consistent naming across templates
+- Consider your team's conventions
 
-### 4. Variables
-- Use meaningful default values
-- Apply filters for proper formatting
-- Document any custom variables
-
-### 5. Validation
-- Set reasonable length limits
-- Use clear error messages
-- Test edge cases
+### 4. Variable Usage
+- Always provide sensible defaults for optional variables
+- Use filters to ensure proper formatting
+- Document any custom variables you add
 
 ## Sharing Templates
 
-To share your templates:
+Since custom templates are gitignored, you can share them by:
 
-1. Export your `project-templates.json`
-2. Document any special requirements
-3. Include example usage
-4. Consider creating a GitHub gist or repo
+1. **Team Repository**: Create a separate repo for shared templates
+2. **Documentation**: Add templates to your team wiki
+3. **Pull Request**: Submit useful templates to be added as built-in options
 
 ## Troubleshooting
 
+### Templates Not Loading
+```bash
+# Check if custom file exists and is valid JSON
+cat config/project-templates.json | jq .
+
+# Check console output when running init_project
+# Should see either:
+# - "Loaded custom project templates"
+# - "Loaded default project templates"
+```
+
 ### Template Not Found
-- Check template key spelling
-- Verify JSON syntax is valid
-- Restart Claude/MCP server after changes
+```javascript
+// List all available templates
+list_project_templates()
+
+// Check exact template key
+// Keys are case-sensitive
+```
 
 ### Variables Not Replaced
-- Check variable name spelling
-- Ensure double curly braces: `{{var}}`
-- Verify variable is provided
+- Check variable name matches exactly
+- Ensure variable is provided in init_project parameters
+- Verify syntax: `{{variableName}}` with double braces
 
-### Files Not Created
-- Check file paths are valid
-- Ensure directories exist or are created first
-- Verify template references are correct
+### Validation Errors
+- Project names must match validation pattern
+- Dates must be in yyyy-MM-dd format
+- Check validation rules in your template config
 
-## FAQ
+## Migration Guide
 
-**Q: Can I use subdirectories in file paths?**
-A: Yes, use paths like `Documents/Subfolder/file.md`
+To migrate from defaults to custom templates:
 
-**Q: How do I include special characters in templates?**
-A: Escape with backslash: `\\n` for newline, `\\"` for quotes
+1. Copy the default configuration:
+   ```bash
+   cp config/project-templates.default.json config/project-templates.json
+   ```
 
-**Q: Can I conditionally create files?**
-A: Not directly, but you can create multiple templates for different scenarios
+2. Modify incrementally - test after each change
 
-**Q: How do I update existing templates?**
-A: Edit `project-templates.json` and restart the MCP server
+3. Remove templates you don't need
 
-**Q: Can I use external template files?**
-A: Currently templates must be in the JSON file, but you can use long multi-line strings
+4. Add your custom templates
 
-## Template Ideas
+5. Test thoroughly before using in production
 
-- **Blog Post**: Structure for blog writing projects
-- **Course Development**: Online course creation
-- **Client Project**: Client work with contracts and deliverables
-- **Book Writing**: Chapters, research, and revision tracking
-- **Event Planning**: Timeline, vendors, and logistics
-- **Product Launch**: Marketing, development, and release planning
+Remember: The system always falls back to defaults if your custom configuration fails to load.

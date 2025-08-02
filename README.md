@@ -92,9 +92,7 @@ Templates support:
 - Project types specific to your workflow
 - Validation rules for project names and dates
 
-See documentation:
-- [Custom Project Templates](docs/CUSTOM_PROJECT_TEMPLATES.md) - Create your own templates
-- [Project Templates Guide](docs/PROJECT_TEMPLATES.md) - Modify default templates
+See [Project Templates Documentation](docs/PROJECT_TEMPLATES.md) for complete guide on using built-in templates and creating your own.
 
 ### Example Usage
 ```javascript
