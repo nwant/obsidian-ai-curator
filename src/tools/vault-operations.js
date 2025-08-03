@@ -7,6 +7,98 @@ import matter from 'gray-matter';
  * Vault operations tools
  */
 
+/**
+ * Get AI research partner context and interaction guidelines
+ */
+export async function get_research_context(args = {}) {
+  return {
+    role: "AI Research Partner",
+    guidelines: [
+      "Proactively find and consolidate scattered knowledge",
+      "Suggest connections between related notes", 
+      "Maintain proper links and references",
+      "Respect existing vault structure and conventions",
+      "Track research progress systematically"
+    ],
+    capabilities: [
+      "Search across entire vault for related content",
+      "Identify knowledge gaps and overlaps",
+      "Suggest note merges and reorganization",
+      "Auto-tag based on content analysis",
+      "Create project structures from templates"
+    ],
+    context: {
+      description: "I am your AI research partner, designed to actively curate and consolidate your knowledge in Obsidian.",
+      approach: "I work like 'Tetris for knowledge' - finding scattered pieces of information and helping them fall into place within your vault."
+    }
+  };
+}
+
+/**
+ * Load focused context for specific work
+ */
+export async function get_working_context(args = {}) {
+  const { 
+    scope, 
+    identifier, 
+    depth = 'preview',
+    maxNotes = 10,
+    useCache = true
+  } = args;
+  
+  if (!scope) {
+    throw new Error('Scope is required (project, topic, recent, or linked)');
+  }
+  
+  // Get vault path from config
+  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
+  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+  const vaultPath = config.vaultPath;
+  
+  let notes = [];
+  let context = {};
+  
+  switch (scope) {
+    case 'project':
+      // Find project index and related notes
+      context.type = 'project';
+      context.name = identifier || 'current';
+      // Would search for project index and related notes
+      break;
+      
+    case 'topic':
+      // Find notes related to a topic
+      context.type = 'topic';
+      context.topic = identifier || 'general';
+      // Would search for notes with matching tags/keywords
+      break;
+      
+    case 'recent':
+      // Get recently modified notes
+      context.type = 'recent';
+      context.days = identifier ? parseInt(identifier) : 7;
+      // Would get recently modified files
+      break;
+      
+    case 'linked':
+      // Get notes linked to/from a specific note
+      context.type = 'linked';
+      context.sourcePath = identifier;
+      // Would find linked notes
+      break;
+      
+    default:
+      throw new Error(`Unknown scope: ${scope}`);
+  }
+  
+  return {
+    context,
+    notes: notes.slice(0, maxNotes),
+    depth,
+    timestamp: new Date().toISOString()
+  };
+}
+
 export async function vault_scan(args) {
   const {
     patterns = ['**/*.md'],

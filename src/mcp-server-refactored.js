@@ -32,20 +32,25 @@ import { get_working_context, get_research_context } from './tools/vault-operati
 import { run_benchmark, view_search_metrics } from './tools/benchmark.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CONFIG_PATH = path.join(__dirname, '..', 'config', 'config.json');
+const CONFIG_PATH = path.join(__dirname, '..', 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
+
+// Default config
+let config = { vaultPath: '', ignorePatterns: [] };
 
 async function loadConfig() {
   try {
     const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
-    const config = JSON.parse(configData);
+    const loadedConfig = JSON.parse(configData);
     
     // Fallback to environment variable if vault path not in config
-    config.vaultPath = config.vaultPath || process.env.OBSIDIAN_VAULT_PATH || '';
+    loadedConfig.vaultPath = loadedConfig.vaultPath || process.env.OBSIDIAN_VAULT_PATH || '';
     
-    if (!config.vaultPath) {
+    if (!loadedConfig.vaultPath) {
       throw new Error('Vault path not configured. Please set vaultPath in config/config.json or OBSIDIAN_VAULT_PATH environment variable.');
     }
     
+    // Update global config
+    config = loadedConfig;
     return config;
   } catch (error) {
     console.error('Error loading config:', error.message);
@@ -53,8 +58,10 @@ async function loadConfig() {
   }
 }
 
-class ModularVaultServer {
-  constructor() {
+export class McpServer {
+  constructor(configOverride = null) {
+    this.config = configOverride || config;
+    
     this.server = new Server(
       {
         name: "obsidian-vault",
@@ -98,6 +105,20 @@ class ModularVaultServer {
         }
       }
     );
+    
+    // Initialize cache if enabled
+    if (this.config.cacheEnabled !== false) {
+      this.cache = new VaultCache(this.config);
+    }
+    
+    this.apiClient = new ObsidianAPIClient(this.config);
+    
+    // Initialize handlers
+    this.vaultHandler = new VaultHandler(this.config, this.cache, this.apiClient);
+    this.noteHandler = new NoteHandler(this.config, this.cache, this.apiClient);
+    this.searchHandler = new SearchHandler(this.config, this.cache, this.apiClient);
+    this.gitHandler = new GitHandler(this.config);
+    this.tagHandler = new TagHandler(this.config, this.cache, this.apiClient);
     
     this.setupErrorHandlers();
     this.setupHandlers();
@@ -464,5 +485,5 @@ class ModularVaultServer {
 }
 
 // Main entry point
-const server = new ModularVaultServer();
+const server = new McpServer();
 server.run().catch(console.error);
