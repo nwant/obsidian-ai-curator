@@ -1,0 +1,333 @@
+/**
+ * Performance monitoring system for MCP server
+ * Tracks operation latencies, throughput, and resource usage
+ */
+
+import { performance } from 'perf_hooks';
+import fs from 'fs/promises';
+import path from 'path';
+import os from 'os';
+
+export class PerformanceMonitor {
+  constructor(config) {
+    this.config = config;
+    this.metrics = {
+      operations: new Map(), // Track individual operations
+      summary: {
+        totalCalls: 0,
+        totalErrors: 0,
+        avgLatency: 0,
+        p95Latency: 0,
+        p99Latency: 0,
+        throughput: 0
+      },
+      resources: {
+        memoryUsage: [],
+        cpuUsage: []
+      }
+    };
+    
+    this.windowSize = config.metricsWindowSize || 3600000; // 1 hour default
+    this.sampleInterval = config.metricsSampleInterval || 10000; // 10 seconds
+    this.maxSamples = Math.floor(this.windowSize / this.sampleInterval);
+    
+    this.startTime = Date.now();
+    this.samplingTimer = null;
+  }
+
+  /**
+   * Start performance monitoring
+   */
+  start() {
+    this.startResourceMonitoring();
+    console.error('[Performance Monitor] Started monitoring');
+  }
+
+  /**
+   * Stop performance monitoring
+   */
+  async stop() {
+    if (this.samplingTimer) {
+      clearInterval(this.samplingTimer);
+    }
+    
+    // Export final metrics
+    await this.exportMetrics();
+    console.error('[Performance Monitor] Stopped monitoring');
+  }
+
+  /**
+   * Track the start of an operation
+   */
+  startOperation(operationName, metadata = {}) {
+    const operationId = `${operationName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    this.metrics.operations.set(operationId, {
+      name: operationName,
+      startTime: performance.now(),
+      metadata,
+      status: 'running'
+    });
+    
+    return operationId;
+  }
+
+  /**
+   * Track the completion of an operation
+   */
+  endOperation(operationId, success = true, result = {}) {
+    const operation = this.metrics.operations.get(operationId);
+    if (!operation) return;
+    
+    const endTime = performance.now();
+    const latency = endTime - operation.startTime;
+    
+    operation.endTime = endTime;
+    operation.latency = latency;
+    operation.success = success;
+    operation.status = success ? 'completed' : 'failed';
+    operation.result = result;
+    
+    // Update summary metrics
+    this.updateSummaryMetrics(operation);
+    
+    // Clean up old operations to prevent memory leak
+    this.cleanupOldOperations();
+    
+    return {
+      operationId,
+      latency,
+      success
+    };
+  }
+
+  /**
+   * Track a complete operation (convenience method)
+   */
+  async trackOperation(operationName, fn, metadata = {}) {
+    const operationId = this.startOperation(operationName, metadata);
+    
+    try {
+      const result = await fn();
+      this.endOperation(operationId, true, { result });
+      return result;
+    } catch (error) {
+      this.endOperation(operationId, false, { error: error.message });
+      throw error;
+    }
+  }
+
+  /**
+   * Update summary metrics
+   */
+  updateSummaryMetrics(operation) {
+    const summary = this.metrics.summary;
+    
+    summary.totalCalls++;
+    if (!operation.success) {
+      summary.totalErrors++;
+    }
+    
+    // Calculate latencies
+    const recentOps = Array.from(this.metrics.operations.values())
+      .filter(op => op.endTime && op.endTime > performance.now() - this.windowSize)
+      .sort((a, b) => a.latency - b.latency);
+    
+    if (recentOps.length > 0) {
+      // Average latency
+      const totalLatency = recentOps.reduce((sum, op) => sum + op.latency, 0);
+      summary.avgLatency = totalLatency / recentOps.length;
+      
+      // P95 and P99 latencies
+      const p95Index = Math.floor(recentOps.length * 0.95);
+      const p99Index = Math.floor(recentOps.length * 0.99);
+      summary.p95Latency = recentOps[p95Index]?.latency || 0;
+      summary.p99Latency = recentOps[p99Index]?.latency || 0;
+      
+      // Throughput (operations per second)
+      const windowSeconds = this.windowSize / 1000;
+      summary.throughput = recentOps.length / windowSeconds;
+    }
+  }
+
+  /**
+   * Start monitoring system resources
+   */
+  startResourceMonitoring() {
+    // Initial sample
+    this.sampleResources();
+    
+    // Schedule periodic sampling
+    this.samplingTimer = setInterval(() => {
+      this.sampleResources();
+    }, this.sampleInterval);
+  }
+
+  /**
+   * Sample current resource usage
+   */
+  sampleResources() {
+    // Memory usage
+    const memUsage = process.memoryUsage();
+    this.metrics.resources.memoryUsage.push({
+      timestamp: Date.now(),
+      heapUsed: memUsage.heapUsed,
+      heapTotal: memUsage.heapTotal,
+      rss: memUsage.rss,
+      external: memUsage.external
+    });
+    
+    // CPU usage (simple approximation)
+    const cpuUsage = process.cpuUsage();
+    this.metrics.resources.cpuUsage.push({
+      timestamp: Date.now(),
+      user: cpuUsage.user,
+      system: cpuUsage.system
+    });
+    
+    // Limit sample history
+    if (this.metrics.resources.memoryUsage.length > this.maxSamples) {
+      this.metrics.resources.memoryUsage.shift();
+    }
+    if (this.metrics.resources.cpuUsage.length > this.maxSamples) {
+      this.metrics.resources.cpuUsage.shift();
+    }
+  }
+
+  /**
+   * Clean up old operations to prevent memory leak
+   */
+  cleanupOldOperations() {
+    const cutoffTime = performance.now() - this.windowSize;
+    
+    for (const [id, op] of this.metrics.operations.entries()) {
+      if (op.endTime && op.endTime < cutoffTime) {
+        this.metrics.operations.delete(id);
+      }
+    }
+  }
+
+  /**
+   * Get current metrics snapshot
+   */
+  getMetrics() {
+    const now = Date.now();
+    const uptime = (now - this.startTime) / 1000; // seconds
+    
+    // Get operation breakdown by type
+    const operationBreakdown = {};
+    for (const op of this.metrics.operations.values()) {
+      if (op.endTime) {
+        if (!operationBreakdown[op.name]) {
+          operationBreakdown[op.name] = {
+            count: 0,
+            totalLatency: 0,
+            errors: 0,
+            avgLatency: 0
+          };
+        }
+        
+        const breakdown = operationBreakdown[op.name];
+        breakdown.count++;
+        breakdown.totalLatency += op.latency;
+        if (!op.success) breakdown.errors++;
+      }
+    }
+    
+    // Calculate averages
+    for (const breakdown of Object.values(operationBreakdown)) {
+      breakdown.avgLatency = breakdown.count > 0 ? breakdown.totalLatency / breakdown.count : 0;
+    }
+    
+    // Get latest resource usage
+    const latestMemory = this.metrics.resources.memoryUsage[this.metrics.resources.memoryUsage.length - 1];
+    const latestCpu = this.metrics.resources.cpuUsage[this.metrics.resources.cpuUsage.length - 1];
+    
+    return {
+      summary: {
+        ...this.metrics.summary,
+        uptime,
+        errorRate: this.metrics.summary.totalCalls > 0 
+          ? (this.metrics.summary.totalErrors / this.metrics.summary.totalCalls) * 100 
+          : 0
+      },
+      operations: operationBreakdown,
+      resources: {
+        memory: latestMemory || {},
+        cpu: latestCpu || {},
+        system: {
+          platform: os.platform(),
+          totalMemory: os.totalmem(),
+          freeMemory: os.freemem(),
+          cpuCount: os.cpus().length,
+          loadAverage: os.loadavg()
+        }
+      },
+      timestamp: now
+    };
+  }
+
+  /**
+   * Export metrics to file
+   */
+  async exportMetrics() {
+    if (!this.config.metricsExportPath) return;
+    
+    try {
+      const metrics = this.getMetrics();
+      const exportPath = path.join(
+        this.config.metricsExportPath,
+        `metrics-${new Date().toISOString().split('T')[0]}.json`
+      );
+      
+      await fs.mkdir(path.dirname(exportPath), { recursive: true });
+      await fs.writeFile(exportPath, JSON.stringify(metrics, null, 2));
+      
+      console.error(`[Performance Monitor] Metrics exported to ${exportPath}`);
+    } catch (error) {
+      console.error('[Performance Monitor] Failed to export metrics:', error.message);
+    }
+  }
+
+  /**
+   * Generate performance report
+   */
+  generateReport() {
+    const metrics = this.getMetrics();
+    
+    let report = '# Performance Report\n\n';
+    
+    // Summary
+    report += '## Summary\n';
+    report += `- Uptime: ${Math.floor(metrics.summary.uptime / 60)} minutes\n`;
+    report += `- Total Operations: ${metrics.summary.totalCalls}\n`;
+    report += `- Error Rate: ${metrics.summary.errorRate.toFixed(2)}%\n`;
+    report += `- Average Latency: ${metrics.summary.avgLatency.toFixed(2)}ms\n`;
+    report += `- P95 Latency: ${metrics.summary.p95Latency.toFixed(2)}ms\n`;
+    report += `- P99 Latency: ${metrics.summary.p99Latency.toFixed(2)}ms\n`;
+    report += `- Throughput: ${metrics.summary.throughput.toFixed(2)} ops/sec\n\n`;
+    
+    // Operation Breakdown
+    report += '## Operation Breakdown\n';
+    const sortedOps = Object.entries(metrics.operations)
+      .sort((a, b) => b[1].count - a[1].count);
+    
+    for (const [name, stats] of sortedOps) {
+      report += `\n### ${name}\n`;
+      report += `- Count: ${stats.count}\n`;
+      report += `- Average Latency: ${stats.avgLatency.toFixed(2)}ms\n`;
+      report += `- Errors: ${stats.errors}\n`;
+      report += `- Error Rate: ${stats.count > 0 ? ((stats.errors / stats.count) * 100).toFixed(2) : 0}%\n`;
+    }
+    
+    // Resource Usage
+    report += '\n## Resource Usage\n';
+    report += `- Heap Used: ${(metrics.resources.memory.heapUsed / 1024 / 1024).toFixed(2)} MB\n`;
+    report += `- Heap Total: ${(metrics.resources.memory.heapTotal / 1024 / 1024).toFixed(2)} MB\n`;
+    report += `- RSS: ${(metrics.resources.memory.rss / 1024 / 1024).toFixed(2)} MB\n`;
+    report += `- System Free Memory: ${(metrics.resources.system.freeMemory / 1024 / 1024 / 1024).toFixed(2)} GB\n`;
+    report += `- Load Average: ${metrics.resources.system.loadAverage.map(l => l.toFixed(2)).join(', ')}\n`;
+    
+    return report;
+  }
+}
