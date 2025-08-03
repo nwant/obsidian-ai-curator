@@ -1,0 +1,10 @@
+{
+  "vaultPath": "/path/to/project/test/fixtures/test-vault",
+  "dateFormat": "yyyy-MM-dd",
+  "ignorePatterns": [
+    ".obsidian",
+    ".git",
+    ".trash"
+  ],
+  "testMode": true
+}
