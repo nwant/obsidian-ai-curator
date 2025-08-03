@@ -6,6 +6,7 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { glob } from 'glob';
+import { minimatch } from 'minimatch';
 import matter from 'gray-matter';
 
 export class VaultHandler {
@@ -65,7 +66,7 @@ export class VaultHandler {
         files = files.filter(file => {
           return matchPatterns.some(pattern => {
             const globPattern = pattern.replace(/\\/g, '/');
-            return glob.minimatch(file.path, globPattern, { nocase: true });
+            return minimatch(file.path, globPattern, { nocase: true });
           });
         });
       }

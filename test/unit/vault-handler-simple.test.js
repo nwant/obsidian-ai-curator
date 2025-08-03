@@ -18,14 +18,14 @@ describe('VaultHandler - Simple Tests', () => {
     // Simple mock cache
     cache = {
       getVaultStructure: async (forceRefresh) => {
-        const notes = await testHarness.getAllNotes();
+        const notePaths = await testHarness.getAllNotes();
         return {
-          files: notes.map(n => ({
-            path: n.path,
-            size: n.content?.length || 0,
+          files: notePaths.map(notePath => ({
+            path: notePath,
+            size: 100, // Mock size
             mtime: new Date()
           })),
-          total: notes.length
+          total: notePaths.length
         };
       }
     };

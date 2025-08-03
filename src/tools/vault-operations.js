@@ -185,7 +185,8 @@ export async function vault_scan(args) {
 
   return {
     files: limitedFiles,
-    totalCount: uniqueFiles.length,
+    total: uniqueFiles.length,
+    totalCount: uniqueFiles.length, // Keep for backward compatibility
     patterns,
     sortBy,
     limit
@@ -284,7 +285,17 @@ export async function read_notes(args) {
       };
     } catch (error) {
       if (error.code === 'ENOENT') {
-        throw new Error(`Note not found: ${notePath}`);
+        // Return empty note for missing files
+        return {
+          path: notePath,
+          exists: false,
+          content: '',
+          frontmatter: {},
+          headings: [],
+          links: [],
+          raw: '',
+          error: `Note not found: ${notePath}`
+        };
       }
       throw error;
     }

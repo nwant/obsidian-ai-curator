@@ -1,6 +1,8 @@
 import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
 import { SearchHandler } from '../../src/handlers/search-handler.js';
 import { testHarness } from '../test-harness.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 describe('SearchHandler', () => {
   let handler;
@@ -17,15 +19,26 @@ describe('SearchHandler', () => {
     
     // Mock cache
     cache = {
-      getVaultStructure: async () => ({
-        files: [],
-        total: 0
-      }),
-      getFileContent: async (path) => {
+      getVaultStructure: async () => {
         const notes = await testHarness.getAllNotes();
-        const note = notes.find(n => n.path === path);
-        if (note) return note.content;
-        throw new Error(`File not found: ${path}`);
+        const files = notes.map(notePath => ({
+          path: notePath,
+          name: path.basename(notePath),
+          extension: path.extname(notePath)
+        }));
+        return {
+          files,
+          total: files.length
+        };
+      },
+      getFileContent: async (filePath) => {
+        try {
+          const fullPath = path.join(testHarness.testVaultPath, filePath);
+          const content = await fs.readFile(fullPath, 'utf-8');
+          return content;
+        } catch (error) {
+          throw new Error(`File not found: ${fullPath}`);
+        }
       }
     };
     

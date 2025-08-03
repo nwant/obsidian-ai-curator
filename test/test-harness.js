@@ -314,6 +314,29 @@ export class TestHarness {
   /**
    * Get vault statistics
    */
+  async getAllNotes() {
+    const notesPath = this.testVaultPath;
+    const noteFiles = [];
+    
+    async function walkDir(dir) {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        const relativePath = path.relative(notesPath, fullPath);
+        
+        if (entry.isDirectory()) {
+          await walkDir(fullPath);
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          noteFiles.push(relativePath);
+        }
+      }
+    }
+    
+    await walkDir(notesPath);
+    return noteFiles;
+  }
+  
   async getVaultStats() {
     const stats = {
       totalFiles: 0,

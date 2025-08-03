@@ -1,6 +1,8 @@
 import { describe, it, beforeEach, expect } from '@jest/globals';
 import { DataviewRenderer } from '../../src/dataview/renderer.js';
 import { testHarness } from '../test-harness.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 describe('DataviewRenderer', () => {
   let renderer;
@@ -11,12 +13,25 @@ describe('DataviewRenderer', () => {
     
     // Create a simple mock cache
     cache = {
-      getVaultStructure: async () => ({
-        files: [],
-        total: 0
-      }),
-      getFileContent: async (path) => {
-        throw new Error(`File not found: ${path}`);
+      getVaultStructure: async () => {
+        const notePaths = await testHarness.getAllNotes();
+        return {
+          files: notePaths.map(notePath => ({
+            path: notePath,
+            name: path.basename(notePath),
+            extension: path.extname(notePath)
+          })),
+          total: notePaths.length
+        };
+      },
+      getFileContent: async (filePath) => {
+        try {
+          const fullPath = path.join(testHarness.testVaultPath, filePath);
+          const content = await fs.readFile(fullPath, 'utf-8');
+          return content;
+        } catch (error) {
+          throw new Error(`File not found: ${fullPath}`);
+        }
       }
     };
     
