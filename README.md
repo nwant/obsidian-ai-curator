@@ -133,6 +133,34 @@ This repository contains:
 
 See [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for more help.
 
+## Testing
+
+This project uses **Jest** as the test runner with a comprehensive test suite:
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test suites
+npm run test:unit        # Unit tests (parallel execution)
+npm run test:integration # Integration tests (sequential execution)
+npm run test:coverage    # With coverage report
+npm run test:watch       # Watch mode for development
+npm run test:verbose     # Detailed output
+
+# Additional testing tools
+npm run test:benchmark   # Performance benchmarks
+npm run test:harness     # Verify test infrastructure
+```
+
+**Jest Benefits:**
+- ✅ **Reliable integration tests** - No vault conflicts
+- ✅ **Fast unit tests** - 4x parallel execution
+- ✅ **Enhanced error messages** - Better debugging
+- ✅ **Modern tooling** - Watch mode, coverage, verbose output
+
+See [test documentation](test/README.md) for details on writing and running tests.
+
 ## Contributing
 
 Contributions welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting PRs.
