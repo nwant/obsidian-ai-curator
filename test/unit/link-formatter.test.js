@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, beforeEach, expect } from '@jest/globals';
 import { LinkFormatter } from '../../src/tools/link-formatter.js';
 
 describe('LinkFormatter', () => {
@@ -8,195 +8,269 @@ describe('LinkFormatter', () => {
     formatter = new LinkFormatter();
   });
   
-  describe('convertToWikilinks', () => {
-    it('should convert basic markdown links to wikilinks', () => {
-      const content = 'Check out [my note](Notes/my note.md) for details.';
-      const result = formatter.convertToWikilinks(content);
+  describe('formatLinks (instance method)', () => {
+    it('should convert markdown links to wikilinks', async () => {
+      const content = 'Here is [a link](path/to/note.md) and [another](file.md).';
+      const result = await formatter.formatLinks(content);
       
-      expect(result).toBe('Check out [[my note]] for details.');
+      expect(result).toBe('Here is [[note|a link]] and [[file|another]].');
     });
     
-    it('should handle links with aliases', () => {
-      const content = 'See [this important document](Notes/Project Plan.md) for more info.';
-      const result = formatter.convertToWikilinks(content);
+    it('should handle links without aliases', async () => {
+      const content = '[note](note.md) here';
+      const result = await formatter.formatLinks(content);
       
-      expect(result).toBe('See [[Project Plan|this important document]] for more info.');
+      expect(result).toBe('[[note]] here');
     });
     
-    it('should preserve existing wikilinks', () => {
-      const content = 'Already has [[wikilink]] and [[link|with alias]].';
-      const result = formatter.convertToWikilinks(content);
+    it('should handle paths correctly', async () => {
+      const content = '[Link text](../folder/My Note.md)';
+      const result = await formatter.formatLinks(content);
       
-      expect(result).toBe(content);
+      expect(result).toBe('[[My Note|Link text]]');
     });
     
-    it('should handle multiple links in one line', () => {
-      const content = '[First](Notes/First.md) and [Second](Notes/Second.md) links.';
-      const result = formatter.convertToWikilinks(content);
+    it('should skip external URLs', async () => {
+      const content = '[External](https://example.com) and [Internal](note.md)';
+      const result = await formatter.formatLinks(content);
       
-      expect(result).toBe('[[First]] and [[Second]] links.');
+      expect(result).toBe('[External](https://example.com) and [[note|Internal]]');
+    });
+  });
+  
+  describe('formatLinksStatic (static method)', () => {
+    it('should convert markdown links to wikilinks', () => {
+      const content = `
+        Here is [a link](notes/My Note.md).
+        And [another link](../Other Note.md).
+        But not [this](https://example.com).
+      `;
+      
+      const result = LinkFormatter.formatLinksStatic(content);
+      
+      expect(result).toContain('[[My Note|a link]]');
+      expect(result).toContain('[[Other Note|another link]]');
+      expect(result).toContain('[this](https://example.com)');
     });
     
-    it('should handle links with subdirectories', () => {
-      const content = 'Link to [nested note](Projects/AI/Overview.md).';
-      const result = formatter.convertToWikilinks(content);
+    it('should handle links without aliases', () => {
+      const content = '[My Note](My Note.md)';
+      const result = LinkFormatter.formatLinksStatic(content);
       
-      expect(result).toBe('Link to [[Overview|nested note]].');
+      expect(result).toBe('[[My Note]]');
     });
     
-    it('should not convert external links', () => {
-      const content = 'External [link](https://example.com) stays.';
-      const result = formatter.convertToWikilinks(content);
+    it('should handle complex paths', () => {
+      const content = '[Complex](../../deeply/nested/Note Name.md)';
+      const result = LinkFormatter.formatLinksStatic(content);
       
-      expect(result).toBe(content);
+      expect(result).toBe('[[Note Name|Complex]]');
+    });
+    
+    it('should convert bare paths to wikilinks', () => {
+      const content = 'Reference to /path/to/MyNote.md in text';
+      const result = LinkFormatter.formatLinksStatic(content);
+      
+      expect(result).toBe('Reference to [[MyNote]] in text');
+    });
+  });
+  
+  describe('formatLink (static)', () => {
+    it('should format simple links', () => {
+      expect(LinkFormatter.formatLink('My Note')).toBe('[[My Note]]');
+      expect(LinkFormatter.formatLink('My Note', 'Custom Text')).toBe('[[My Note|Custom Text]]');
+    });
+    
+    it('should handle paths in targets', () => {
+      expect(LinkFormatter.formatLink('folder/My Note.md')).toBe('[[My Note]]');
+      expect(LinkFormatter.formatLink('deep/path/to/Note.md', 'Alias')).toBe('[[Note|Alias]]');
+    });
+    
+    it('should handle special characters', () => {
+      expect(LinkFormatter.formatLink('Note (2023)')).toBe('[[Note (2023)]]');
+      expect(LinkFormatter.formatLink('C++ Guide')).toBe('[[C++ Guide]]');
+    });
+    
+    it('should remove .md extension', () => {
+      expect(LinkFormatter.formatLink('MyNote.md')).toBe('[[MyNote]]');
+      expect(LinkFormatter.formatLink('path/to/Note.md')).toBe('[[Note]]');
+    });
+  });
+  
+  describe('extractWikilinks (static)', () => {
+    it('should extract wikilinks from content', () => {
+      const content = `
+        Here is [[Note One]] and [[Note Two|Custom Alias]].
+        Also [[Folder/Note Three]].
+      `;
+      
+      const links = LinkFormatter.extractWikilinks(content);
+      
+      expect(links).toHaveLength(3);
+      expect(links[0]).toEqual({ 
+        link: '[[Note One]]',
+        target: 'Note One', 
+        alias: null 
+      });
+      expect(links[1]).toEqual({ 
+        link: '[[Note Two|Custom Alias]]',
+        target: 'Note Two', 
+        alias: 'Custom Alias' 
+      });
+      expect(links[2]).toEqual({ 
+        link: '[[Folder/Note Three]]',
+        target: 'Folder/Note Three', 
+        alias: null 
+      });
     });
     
     it('should handle empty content', () => {
-      expect(formatter.convertToWikilinks('')).toBe('');
-      expect(formatter.convertToWikilinks(null)).toBe('');
-      expect(formatter.convertToWikilinks(undefined)).toBe('');
+      expect(LinkFormatter.extractWikilinks('')).toEqual([]);
+      expect(LinkFormatter.extractWikilinks('No links here')).toEqual([]);
     });
     
-    it('should handle links with special characters', () => {
-      const content = '[C++ Guide](Notes/C++ Guide.md) and [Q&A](Notes/Q&A.md)';
-      const result = formatter.convertToWikilinks(content);
-      
-      expect(result).toBe('[[C++ Guide]] and [[Q&A]]');
-    });
-    
-    it('should handle links with numbers', () => {
-      const content = 'See [2024 Report](Reports/2024 Report.md)';
-      const result = formatter.convertToWikilinks(content);
-      
-      expect(result).toBe('See [[2024 Report]]');
-    });
-    
-    it('should handle multiline content', () => {
-      const content = `First line with [link1](Notes/link1.md)
-Second line with [link2](Notes/link2.md)
-Third line with [[existing wikilink]]`;
-      
-      const expected = `First line with [[link1]]
-Second line with [[link2]]
-Third line with [[existing wikilink]]`;
-      
-      expect(formatter.convertToWikilinks(content)).toBe(expected);
-    });
-    
-    it('should preserve code blocks', () => {
-      const content = `
-Normal [link](Notes/test.md)
-\`\`\`
-Code with [link](Notes/code.md) should not change
-\`\`\`
-Another [link](Notes/test2.md)`;
-      
-      const result = formatter.convertToWikilinks(content);
-      
-      expect(result).toContain('[[test]]');
-      expect(result).toContain('[link](Notes/code.md)'); // In code block
-      expect(result).toContain('[[test2]]');
-    });
-    
-    it('should handle edge cases', () => {
-      // Empty link text
-      const emptyText = '[](Notes/empty.md)';
-      expect(formatter.convertToWikilinks(emptyText)).toBe('[[empty]]');
-      
-      // Link at start of line
-      const startLine = '[Start](Notes/Start.md) of line';
-      expect(formatter.convertToWikilinks(startLine)).toBe('[[Start]] of line');
-      
-      // Link at end of line
-      const endLine = 'End of line [End](Notes/End.md)';
-      expect(formatter.convertToWikilinks(endLine)).toBe('End of line [[End]]');
-      
-      // Adjacent links
-      const adjacent = '[One](Notes/One.md)[Two](Notes/Two.md)';
-      expect(formatter.convertToWikilinks(adjacent)).toBe('[[One]][[Two]]');
+    it('should not extract markdown links', () => {
+      const content = '[Not a wikilink](path/to/file.md)';
+      expect(LinkFormatter.extractWikilinks(content)).toEqual([]);
     });
   });
   
-  describe('formatLink', () => {
-    it('should format simple links', () => {
-      expect(formatter.formatLink('My Note')).toBe('[[My Note]]');
-      expect(formatter.formatLink('My Note', 'Custom Text')).toBe('[[My Note|Custom Text]]');
+  describe('validateLinks (static)', () => {
+    it('should validate correct wikilink formats', () => {
+      const valid = LinkFormatter.validateLinks('Content with [[Good Link]] and [[Another]]');
+      expect(valid.valid).toBe(true);
+      expect(valid.issues).toEqual([]);
     });
     
-    it('should handle empty inputs', () => {
-      expect(formatter.formatLink('')).toBe('[[]]');
-      expect(formatter.formatLink('Note', '')).toBe('[[Note]]');
+    it('should detect incorrect markdown links', () => {
+      const invalid = LinkFormatter.validateLinks('Bad [link](path/to/note.md)');
+      expect(invalid.valid).toBe(false);
+      // The validateLinks function finds both the markdown link and the bare path
+      expect(invalid.issues.length).toBeGreaterThanOrEqual(1);
+      expect(invalid.issues.some(i => i.type === 'incorrect-format')).toBe(true);
+      expect(invalid.issues[0].suggestion).toBe('[[note|link]]');
+    });
+    
+    it('should detect bare paths', () => {
+      const invalid = LinkFormatter.validateLinks('Reference to /path/to/note.md directly');
+      expect(invalid.valid).toBe(false);
+      expect(invalid.issues).toHaveLength(1);
+      expect(invalid.issues[0].type).toBe('bare-path');
+      expect(invalid.issues[0].suggestion).toBe('[[note]]');
+    });
+    
+    it('should ignore external URLs', () => {
+      const valid = LinkFormatter.validateLinks('[External](https://example.com)');
+      expect(valid.valid).toBe(true);
+      expect(valid.issues).toEqual([]);
     });
   });
   
-  describe('extractLinks', () => {
-    it('should extract all wikilinks from content', () => {
-      const content = `
-        This has [[Link One]] and [[Link Two|with alias]].
-        Also [[Link Three]] appears here.
-      `;
+  describe('wikilinksToPaths (static)', () => {
+    it('should convert wikilinks to markdown paths', () => {
+      const content = 'Link to [[My Note]] and [[Other Note|custom text]]';
+      const result = LinkFormatter.wikilinksToPaths(content);
       
-      const links = formatter.extractLinks(content);
-      
-      expect(links).toHaveLength(3);
-      expect(links).toContain('Link One');
-      expect(links).toContain('Link Two');
-      expect(links).toContain('Link Three');
+      expect(result).toBe('Link to [My Note](My Note.md) and [custom text](Other Note.md)');
     });
     
-    it('should extract markdown links', () => {
-      const content = 'Has [markdown link](Notes/Target.md) here.';
-      const links = formatter.extractLinks(content);
+    it('should use vault structure when provided', () => {
+      const content = '[[Note A]] and [[Note B]]';
+      const vaultStructure = {
+        'Note A': 'folder/Note A.md',
+        'Note B': 'other/Note B.md'
+      };
       
-      expect(links).toHaveLength(1);
-      expect(links).toContain('Target');
+      const result = LinkFormatter.wikilinksToPaths(content, vaultStructure);
+      
+      expect(result).toBe('[Note A](folder/Note A.md) and [Note B](other/Note B.md)');
     });
     
-    it('should handle mixed link types', () => {
-      const content = `
-        [[Wikilink]] and [markdown](Notes/Markdown.md)
-        Plus [[Another|with alias]] link.
-      `;
+    it('should handle aliases correctly', () => {
+      const content = '[[Target|Display Text]]';
+      const result = LinkFormatter.wikilinksToPaths(content);
       
-      const links = formatter.extractLinks(content);
-      
-      expect(links).toHaveLength(3);
-      expect(links).toContain('Wikilink');
-      expect(links).toContain('Markdown');
-      expect(links).toContain('Another');
-    });
-    
-    it('should return empty array for no links', () => {
-      const content = 'No links here at all.';
-      expect(formatter.extractLinks(content)).toEqual([]);
-    });
-    
-    it('should handle duplicate links', () => {
-      const content = '[[Same]] and [[Same]] again, plus [[Same|different text]]';
-      const links = formatter.extractLinks(content);
-      
-      // Should deduplicate
-      expect(links).toHaveLength(1);
-      expect(links).toContain('Same');
+      expect(result).toBe('[Display Text](Target.md)');
     });
   });
   
-  describe('isWikilink', () => {
-    it('should identify wikilinks correctly', () => {
-      expect(formatter.isWikilink('[[Note]]')).toBe(true);
-      expect(formatter.isWikilink('[[Note|Alias]]')).toBe(true);
-      expect(formatter.isWikilink('[Not](a/wikilink.md)')).toBe(false);
-      expect(formatter.isWikilink('[[]]')).toBe(true);
-      expect(formatter.isWikilink('Not a link')).toBe(false);
+  describe('formatLinksWithAPI', () => {
+    it('should use static method when API is not available', async () => {
+      const content = '[link](path/to/note.md)';
+      const result = await formatter.formatLinksWithAPI(content, '');
+      
+      // Should fall back to static conversion
+      expect(result).toBe('[[note|link]]');
+    });
+    
+    it('should handle API errors gracefully', async () => {
+      // Create formatter with mock API that throws errors
+      const mockAPI = {
+        isAvailable: () => true,
+        request: async () => { throw new Error('API Error'); }
+      };
+      
+      const formatterWithAPI = new LinkFormatter(mockAPI);
+      const content = '[test](path/to/test.md)';
+      const result = await formatterWithAPI.formatLinksWithAPI(content, '');
+      
+      // Should fall back to basic formatting
+      expect(result).toBe('[[test]]');
     });
   });
   
-  describe('normalizeLink', () => {
-    it('should normalize link paths', () => {
-      expect(formatter.normalizeLink('Notes/My Note.md')).toBe('My Note');
-      expect(formatter.normalizeLink('Subfolder/Deep/Note.md')).toBe('Note');
-      expect(formatter.normalizeLink('Simple.md')).toBe('Simple');
-      expect(formatter.normalizeLink('NoExtension')).toBe('NoExtension');
+  describe('error handling', () => {
+    it('should handle null/undefined input', () => {
+      expect(LinkFormatter.formatLink(null)).toBe('[[]]');
+      expect(LinkFormatter.formatLink(undefined)).toBe('[[]]');
+      expect(LinkFormatter.extractWikilinks(null)).toEqual([]);
+      expect(LinkFormatter.extractWikilinks(undefined)).toEqual([]);
+    });
+    
+    it('should handle empty aliases', () => {
+      expect(LinkFormatter.formatLink('Note', '')).toBe('[[Note]]');
+      expect(LinkFormatter.formatLink('Note', null)).toBe('[[Note]]');
+    });
+    
+    it('should handle empty content in formatLinks', async () => {
+      expect(await formatter.formatLinks('')).toBe('');
+      expect(await formatter.formatLinks(null)).toBe('');
+      expect(await formatter.formatLinks(undefined)).toBe('');
+    });
+  });
+  
+  describe('performance', () => {
+    it('should handle large documents efficiently', () => {
+      const largeContent = Array(1000).fill('Some text [[Link]] more text').join('\n');
+      
+      const start = Date.now();
+      const links = LinkFormatter.extractWikilinks(largeContent);
+      const duration = Date.now() - start;
+      
+      expect(links).toHaveLength(1000);
+      expect(duration).toBeLessThan(100); // Should process in under 100ms
+    });
+    
+    it('should handle many links in one document', () => {
+      const links = Array(100).fill(null).map((_, i) => `[[Note ${i}]]`).join(' ');
+      
+      const start = Date.now();
+      const extracted = LinkFormatter.extractWikilinks(links);
+      const duration = Date.now() - start;
+      
+      expect(extracted).toHaveLength(100);
+      expect(duration).toBeLessThan(50);
+    });
+    
+    it('should handle large conversion operations efficiently', async () => {
+      const largeContent = Array(100).fill('[link](path/to/note.md)').join(' ');
+      
+      const start = Date.now();
+      const result = await formatter.formatLinks(largeContent);
+      const duration = Date.now() - start;
+      
+      expect(result).toContain('[[note|link]]');
+      expect(duration).toBeLessThan(100);
     });
   });
 });

@@ -9,6 +9,8 @@ export class LinkFormatter {
    * Can use instance method for API support or static for basic formatting
    */
   async formatLinks(content, currentNotePath = '') {
+    if (!content) return '';
+    
     // If we have Obsidian API, use it for better link resolution
     if (this.obsidianAPI && this.obsidianAPI.isAvailable()) {
       return await this.formatLinksWithAPI(content, currentNotePath);
@@ -21,6 +23,7 @@ export class LinkFormatter {
    * Format links using Obsidian API for proper resolution
    */
   async formatLinksWithAPI(content, currentNotePath) {
+    if (!content) return '';
     // Convert markdown links with paths to wikilinks
     const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
     const replacements = [];
@@ -89,6 +92,8 @@ export class LinkFormatter {
    * Static method for basic link formatting without API
    */
   static formatLinksStatic(content, currentNotePath = '') {
+    if (!content) return '';
+    
     // Pattern to match various link formats
     // 1. Full paths: [text](/full/path/to/note.md)
     // 2. Relative paths: [text](../path/to/note.md)
@@ -129,6 +134,8 @@ export class LinkFormatter {
    * Validate that links use proper Obsidian format
    */
   static validateLinks(content) {
+    if (!content) return { valid: true, issues: [] };
+    
     const issues = [];
     
     // Find markdown links with .md paths
@@ -166,6 +173,8 @@ export class LinkFormatter {
    * Extract all wikilinks from content
    */
   static extractWikilinks(content) {
+    if (!content) return [];
+    
     const wikilinks = [];
     
     // Match [[Note Name]] or [[Note Name|Alias]]
@@ -187,6 +196,7 @@ export class LinkFormatter {
    * Convert wikilinks to relative paths (for compatibility)
    */
   static wikilinksToPaths(content, vaultStructure = {}) {
+    if (!content) return '';
     return content.replace(/\[\[([^\]|]+)(\|[^\]]+)?\]\]/g, (match, target, alias) => {
       // If we have vault structure, try to find the actual path
       const actualPath = vaultStructure[target] || `${target}.md`;
@@ -199,6 +209,8 @@ export class LinkFormatter {
    * Format a single link
    */
   static formatLink(target, alias = null) {
+    if (!target) return '[[]]';
+    
     // Remove .md extension if present
     target = target.replace(/\.md$/, '');
     
