@@ -19,7 +19,7 @@ import { LinkFormatter } from './tools/link-formatter.js';
 import { DateManager } from './tools/date-manager.js';
 import { DailyNoteManager } from './tools/daily-note-manager.js';
 import { FrontmatterManager } from './tools/frontmatter-manager.js';
-import { FileOperations } from './tools/file-operations.js';
+import { FileOperations } from './tools/file-operations-helper.js';
 import { TagRenamer } from './tools/tag-renamer.js';
 import { FrontmatterValidator } from './tools/frontmatter-validator.js';
 import { ProjectInitializer } from './tools/project-init.js';
