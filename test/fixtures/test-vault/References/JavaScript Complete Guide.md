@@ -22,7 +22,7 @@ Common methods: map, filter, reduce
 ### Closures
 Functions that have access to outer scope.
 
-## Sources
+## References
 - [[Archive/2025/JavaScript Basics|JavaScript Basics]] - Original basics note
 - [[Archive/2025/JS Functions|JS Functions]] - Original functions note
 - [[Archive/2025/JavaScript Arrays|JavaScript Arrays]] - Original arrays note
