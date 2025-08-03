@@ -52,8 +52,7 @@ export class SearchHandler {
         if (matches.length >= maxResults) break;
         
         try {
-          const fullPath = path.join(this.config.vaultPath, file.path);
-          const content = await this.cache.getFileContent(fullPath);
+          const content = await this.cache.getFileContent(file.path);
           const lines = content.split('\n');
           
           for (let i = 0; i < lines.length; i++) {
@@ -116,8 +115,7 @@ export class SearchHandler {
             if (modifiedBefore && mtime > new Date(modifiedBefore)) continue;
           }
           
-          const fullPath = path.join(this.config.vaultPath, file.path);
-          const content = await this.cache.getFileContent(fullPath);
+          const content = await this.cache.getFileContent(file.path);
           const parsed = matter(content);
           
           // Check word count filters
