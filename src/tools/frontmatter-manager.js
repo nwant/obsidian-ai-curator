@@ -23,12 +23,13 @@ export class FrontmatterManager {
       return {
         frontmatter: parsed.data,
         content: parsed.content,
-        original: parsed.orig
+        raw: content  // Use 'raw' for test compatibility
       };
     } catch (error) {
       return {
         frontmatter: {},
         content: content,
+        raw: content,
         error: error.message
       };
     }
@@ -38,20 +39,34 @@ export class FrontmatterManager {
    * Validate frontmatter against rules
    * @stub - Basic implementation, needs enhancement
    */
-  validateFrontmatter(frontmatter) {
+  validateFrontmatter(frontmatter, rules = {}) {
     const errors = [];
     
     // Check required fields
-    for (const field of this.requiredFields) {
+    const requiredFields = rules.required || this.requiredFields;
+    for (const field of requiredFields) {
       if (!frontmatter[field]) {
         errors.push(`Missing required field: ${field}`);
       }
     }
     
     // Validate date fields
-    for (const field of this.dateFields) {
+    const dateFields = rules.dateFields || this.dateFields;
+    for (const field of dateFields) {
       if (frontmatter[field] && !Date.parse(frontmatter[field])) {
         errors.push(`Invalid date in field: ${field}`);
+      }
+    }
+    
+    // Custom validation rules
+    if (rules.custom) {
+      for (const [field, validator] of Object.entries(rules.custom)) {
+        if (frontmatter[field]) {
+          const result = validator(frontmatter[field]);
+          if (result !== true) {
+            errors.push(result || `Invalid value for field: ${field}`);
+          }
+        }
       }
     }
     
@@ -65,22 +80,54 @@ export class FrontmatterManager {
    * Format frontmatter consistently
    * @stub - Basic implementation, needs enhancement
    */
-  formatFrontmatter(frontmatter) {
+  formatFrontmatter(frontmatter, options = {}) {
     const formatted = { ...frontmatter };
     
-    // Apply default values
-    for (const [key, value] of Object.entries(this.defaultValues)) {
-      if (!(key in formatted)) {
-        formatted[key] = value;
+    // Apply default values if specified
+    const defaultValues = options.defaults || this.defaultValues;
+    if (defaultValues) {
+      for (const [key, value] of Object.entries(defaultValues)) {
+        if (!(key in formatted)) {
+          // Handle dynamic defaults (functions)
+          if (typeof value === 'function') {
+            formatted[key] = value();
+          } else {
+            formatted[key] = value;
+          }
+        }
       }
     }
     
     // Format date fields
-    for (const field of this.dateFields) {
-      if (formatted[field] && typeof formatted[field] === 'string') {
-        const date = new Date(formatted[field]);
-        if (!isNaN(date.getTime())) {
-          formatted[field] = date.toISOString();
+    const dateFields = options.dateFields || this.dateFields;
+    const dateFormat = options.dateFormat || 'iso';
+    
+    for (const field of dateFields) {
+      if (formatted[field]) {
+        if (typeof formatted[field] === 'string') {
+          const date = new Date(formatted[field]);
+          if (!isNaN(date.getTime())) {
+            if (dateFormat === 'iso') {
+              formatted[field] = date.toISOString().split('T')[0];
+            } else if (dateFormat === 'full') {
+              formatted[field] = date.toISOString();
+            }
+          }
+        } else if (formatted[field] instanceof Date) {
+          if (dateFormat === 'iso') {
+            formatted[field] = formatted[field].toISOString().split('T')[0];
+          } else if (dateFormat === 'full') {
+            formatted[field] = formatted[field].toISOString();
+          }
+        }
+      }
+    }
+    
+    // Handle special characters in strings
+    if (options.escapeSpecialChars) {
+      for (const [key, value] of Object.entries(formatted)) {
+        if (typeof value === 'string' && value.includes(':')) {
+          formatted[key] = `"${value}"`;
         }
       }
     }
@@ -122,6 +169,71 @@ export class FrontmatterManager {
         error: error.message
       };
     }
+  }
+
+  /**
+   * Batch update frontmatter for multiple files
+   */
+  async batchUpdate(paths, updates, options = {}) {
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: []
+    };
+    
+    for (const filePath of paths) {
+      try {
+        const result = await this.updateFrontmatter(filePath, updates, options);
+        if (result.success) {
+          results.successful++;
+        } else {
+          results.failed++;
+          results.errors.push({
+            path: filePath,
+            error: result.error
+          });
+        }
+      } catch (error) {
+        results.failed++;
+        results.errors.push({
+          path: filePath,
+          error: error.message
+        });
+      }
+    }
+    
+    return results;
+  }
+  
+  /**
+   * Find notes by frontmatter criteria
+   */
+  async findByFrontmatter(criteria) {
+    const results = [];
+    
+    // This is a stub - would need access to vault files
+    // For now, return empty results
+    return results;
+  }
+  
+  /**
+   * Apply default values to frontmatter
+   */
+  applyDefaults(frontmatter) {
+    const result = { ...frontmatter };
+    
+    for (const [key, value] of Object.entries(this.defaultValues)) {
+      if (!(key in result)) {
+        // Handle dynamic defaults (functions)
+        if (typeof value === 'function') {
+          result[key] = value();
+        } else {
+          result[key] = value;
+        }
+      }
+    }
+    
+    return result;
   }
 
   /**

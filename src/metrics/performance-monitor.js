@@ -66,7 +66,7 @@ export class PerformanceMonitor {
   startOperation(operationName, metadata = {}) {
     const operationId = `${operationName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    this.metrics.operations.set(operationId, {
+    this.activeOperations.set(operationId, {
       name: operationName,
       startTime: performance.now(),
       metadata,
@@ -80,7 +80,7 @@ export class PerformanceMonitor {
    * Track the completion of an operation
    */
   endOperation(operationId, success = true, result = {}) {
-    const operation = this.metrics.operations.get(operationId);
+    const operation = this.activeOperations.get(operationId);
     if (!operation) return;
     
     const endTime = performance.now();
@@ -91,6 +91,35 @@ export class PerformanceMonitor {
     operation.success = success;
     operation.status = success ? 'completed' : 'failed';
     operation.result = result;
+    
+    // Store completed operation
+    this.operationHistory.push(operation);
+    
+    // Update metrics by operation name
+    if (!this.metrics.operations.has(operation.name)) {
+      this.metrics.operations.set(operation.name, {
+        count: 0,
+        successCount: 0,
+        errorCount: 0,
+        totalDuration: 0,
+        durations: []
+      });
+    }
+    
+    const opMetrics = this.metrics.operations.get(operation.name);
+    opMetrics.count++;
+    if (success) {
+      opMetrics.successCount++;
+    } else {
+      opMetrics.errorCount++;
+    }
+    opMetrics.totalDuration += latency;
+    opMetrics.durations.push(latency);
+    opMetrics.avgDuration = opMetrics.totalDuration / opMetrics.count;
+    opMetrics.successRate = opMetrics.count > 0 ? opMetrics.successCount / opMetrics.count : 0;
+    
+    // Remove from active operations
+    this.activeOperations.delete(operationId);
     
     // Update summary metrics
     this.updateSummaryMetrics(operation);
@@ -421,8 +450,9 @@ export class PerformanceMonitor {
   getMetrics() {
     const metrics = {};
     
-    this.metrics.operations.forEach((value, key) => {
-      metrics[key] = { ...value };
+    // Return metrics grouped by operation name
+    this.metrics.operations.forEach((value, name) => {
+      metrics[name] = { ...value };
     });
     
     return metrics;

@@ -50,11 +50,13 @@ export class TagHandler {
         // Single file - already returns { tags: [...], file: ... }
         return result;
       } else {
-        // All tags - transform to array format for tests
+        // All tags - convert tags object to array for tests
         return {
-          tags: Object.keys(result.tags), // Convert object keys to array
-          tagCounts: result.tags, // Keep counts for reference
-          ...result
+          tags: Object.keys(result.tags || {}), // Convert object keys to array
+          tagCounts: result.tags || {}, // Keep counts for reference
+          tagList: result.tagList || [],
+          totalTags: result.totalTags || 0,
+          hierarchy: result.hierarchy || {}
         };
       }
     } catch (error) {
@@ -88,6 +90,37 @@ export class TagHandler {
     }
   }
 
+  /**
+   * Update tags for a note
+   */
+  async updateTags({ path: filePath, add = [], remove = [], replace }) {
+    try {
+      // Try API first
+      if (this.apiClient.isConnected()) {
+        try {
+          const result = await this.apiClient.request('tags/update', {
+            path: filePath,
+            add,
+            remove,
+            replace
+          });
+          
+          if (result.success) {
+            return result.data;
+          }
+        } catch (apiError) {
+          console.error('API tag update failed, falling back:', apiError.message);
+        }
+      }
+      
+      // Fallback to tool function
+      return await update_tags({ path: filePath, add, remove, replace });
+    } catch (error) {
+      console.error('Update tags error:', error);
+      throw error;
+    }
+  }
+  
   /**
    * Suggest tags based on content
    */
