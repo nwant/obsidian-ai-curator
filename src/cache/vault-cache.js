@@ -33,12 +33,20 @@ export class VaultCache {
   // Get vault structure with smart caching
   async getVaultStructure(forceRefresh = false) {
     if (!forceRefresh && this.isCacheValid(this.lastFullScan)) {
-      return Array.from(this.structure.values());
+      const files = Array.from(this.structure.values());
+      return {
+        files,
+        total: files.length
+      };
     }
 
     // Full scan needed
     await this.scanVault();
-    return Array.from(this.structure.values());
+    const files = Array.from(this.structure.values());
+    return {
+      files,
+      total: files.length
+    };
   }
 
   // Scan vault and build structure cache
@@ -174,6 +182,37 @@ export class VaultCache {
     return ignorePatterns.includes(name) || name.startsWith('.');
   }
 
+  // Invalidate specific file cache
+  async invalidateFile(relativePath) {
+    this.content.delete(relativePath);
+    // Update structure if file exists
+    if (this.structure.has(relativePath)) {
+      const fullPath = path.join(this.config.vaultPath, relativePath);
+      try {
+        const stats = await fs.stat(fullPath);
+        this.structure.set(relativePath, {
+          path: relativePath,
+          fullPath,
+          size: stats.size,
+          modified: stats.mtime.toISOString(),
+          mtime: stats.mtime.getTime()
+        });
+      } catch {
+        // File might have been deleted
+        this.structure.delete(relativePath);
+      }
+    }
+  }
+  
+  // Clear all caches
+  clearCache() {
+    this.structure.clear();
+    this.content.clear();
+    this.contexts.clear();
+    this.searchIndex = null;
+    this.lastFullScan = 0;
+  }
+  
   // Get cache statistics
   getStats() {
     return {

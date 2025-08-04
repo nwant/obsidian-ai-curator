@@ -66,9 +66,12 @@ export class PerformanceMonitor {
   startOperation(operationName, metadata = {}) {
     const operationId = `${operationName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
+    const memUsage = process.memoryUsage();
+    
     this.activeOperations.set(operationId, {
       name: operationName,
       startTime: performance.now(),
+      startMemory: memUsage.heapUsed,
       metadata,
       status: 'running'
     });
@@ -118,6 +121,20 @@ export class PerformanceMonitor {
     opMetrics.avgDuration = opMetrics.totalDuration / opMetrics.count;
     opMetrics.successRate = opMetrics.count > 0 ? opMetrics.successCount / opMetrics.count : 0;
     
+    // Calculate percentiles
+    if (opMetrics.durations.length > 0) {
+      const sorted = [...opMetrics.durations].sort((a, b) => a - b);
+      const p50Index = Math.floor(sorted.length * 0.5);
+      const p90Index = Math.floor(sorted.length * 0.9);
+      const p95Index = Math.floor(sorted.length * 0.95);
+      const p99Index = Math.floor(sorted.length * 0.99);
+      
+      opMetrics.p50 = sorted[p50Index] || sorted[sorted.length - 1];
+      opMetrics.p90 = sorted[p90Index] || sorted[sorted.length - 1];
+      opMetrics.p95 = sorted[p95Index] || sorted[sorted.length - 1];
+      opMetrics.p99 = sorted[p99Index] || sorted[sorted.length - 1];
+    }
+    
     // Remove from active operations
     this.activeOperations.delete(operationId);
     
@@ -127,10 +144,15 @@ export class PerformanceMonitor {
     // Clean up old operations to prevent memory leak
     this.cleanupOldOperations();
     
+    // Calculate memory delta
+    const currentMemory = process.memoryUsage().heapUsed;
+    const memoryDelta = operation.startMemory ? currentMemory - operation.startMemory : 0;
+    
     return {
       operationId,
       latency,
-      success
+      success,
+      memoryDelta
     };
   }
 
@@ -458,6 +480,92 @@ export class PerformanceMonitor {
     return metrics;
   }
 
+  /**
+   * Export metrics to CSV format
+   */
+  exportToCSV() {
+    const metrics = this.getMetrics();
+    let csv = 'Operation,Count,Success Rate,Avg Duration,P50,P90,P99\n';
+    
+    for (const [name, stats] of Object.entries(metrics)) {
+      const successRate = stats.successRate ? (stats.successRate * 100).toFixed(2) : '0.00';
+      const avgDuration = stats.avgDuration ? stats.avgDuration.toFixed(2) : '0.00';
+      const p50 = stats.p50 ? stats.p50.toFixed(2) : '0.00';
+      const p90 = stats.p90 ? stats.p90.toFixed(2) : '0.00';
+      const p99 = stats.p99 ? stats.p99.toFixed(2) : '0.00';
+      
+      csv += `${name},${stats.count || 0},${successRate}%,${avgDuration},${p50},${p90},${p99}\n`;
+    }
+    
+    return csv;
+  }
+  
+  /**
+   * Get resource summary
+   */
+  getResourceSummary() {
+    const memUsage = process.memoryUsage();
+    
+    return {
+      memory: {
+        heapUsed: memUsage.heapUsed,
+        heapTotal: memUsage.heapTotal,
+        external: memUsage.external,
+        rss: memUsage.rss
+      },
+      cpu: process.cpuUsage(),
+      uptime: process.uptime()
+    };
+  }
+  
+  /**
+   * Get active operations
+   */
+  getActiveOperations() {
+    const active = [];
+    const now = performance.now();
+    
+    this.activeOperations.forEach((op, id) => {
+      active.push({
+        id,
+        name: op.name,
+        duration: now - op.startTime,
+        status: op.status
+      });
+    });
+    
+    return active;
+  }
+  
+  /**
+   * Get long running operations
+   */
+  getLongRunningOperations(thresholdMs = 5000) {
+    const longRunning = [];
+    const now = performance.now();
+    
+    this.activeOperations.forEach((op, id) => {
+      const duration = now - op.startTime;
+      if (duration > thresholdMs) {
+        longRunning.push({
+          id,
+          name: op.name,
+          duration,
+          metadata: op.metadata
+        });
+      }
+    });
+    
+    return longRunning;
+  }
+  
+  /**
+   * Get operation history
+   */
+  getHistory(limit = 100) {
+    return this.operationHistory.slice(-limit);
+  }
+  
   /**
    * Set performance thresholds
    * @stub - Basic implementation for testing
