@@ -338,8 +338,10 @@ export class DataviewRenderer {
     }
 
     // Basic implementation - return parsed structure with mock data
-    switch (parsed.type) {
-      case 'TABLE':
+    const type = parsed.type.toLowerCase();  // Convert to lowercase for renderQuery
+    
+    switch (type) {
+      case 'table':
         return {
           type: 'table',
           headers: ['File', ...parsed.fields],
@@ -347,14 +349,14 @@ export class DataviewRenderer {
           ...parsed
         };
       
-      case 'LIST':
+      case 'list':
         return {
           type: 'list',
           items: [],
           ...parsed
         };
       
-      case 'TASK':
+      case 'task':
         return {
           type: 'task',
           tasks: [],
@@ -369,6 +371,168 @@ export class DataviewRenderer {
     }
   }
 
+  /**
+   * Choose render mode based on result count
+   */
+  chooseRenderMode(results) {
+    if (!results || results.length === 0) {
+      return 'empty';
+    }
+    
+    if (results.length > 10) {
+      return 'summary';
+    }
+    
+    return 'table';
+  }
+  
+  /**
+   * Extract fields from a field string
+   */
+  extractFields(fieldStr) {
+    if (!fieldStr || fieldStr.trim() === '') {
+      return [];
+    }
+    
+    // Handle AS aliases properly
+    const fields = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < fieldStr.length; i++) {
+      const char = fieldStr[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+        current += char;
+      } else if (char === ',' && !inQuotes) {
+        if (current.trim()) {
+          fields.push(current.trim());
+        }
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    if (current.trim()) {
+      fields.push(current.trim());
+    }
+    
+    return fields;
+  }
+  
+  /**
+   * Evaluate FROM clause to get matching files
+   */
+  async evaluateFrom(fromClause) {
+    const vaultStructure = await this.cache.getVaultStructure();
+    const files = vaultStructure.files || [];
+    
+    if (!fromClause) {
+      return files;
+    }
+    
+    // Remove quotes
+    const from = fromClause.replace(/"/g, '');
+    
+    // Handle folder paths
+    if (!from.startsWith('#')) {
+      return files.filter(file => {
+        return file.path.startsWith(from + '/') || file.path.startsWith(from);
+      });
+    }
+    
+    // Handle tag queries (e.g., #tag)
+    const tag = from.substring(1);
+    const matchingFiles = [];
+    
+    for (const file of files) {
+      try {
+        const content = await this.cache.getFileContent(file.path);
+        const parsed = matter(content);
+        const tags = parsed.data?.tags || [];
+        
+        if (tags.includes(tag)) {
+          matchingFiles.push(file);
+        }
+      } catch (error) {
+        // Skip files that can't be read
+      }
+    }
+    
+    return matchingFiles;
+  }
+  
+  /**
+   * Evaluate WHERE clause conditions
+   */
+  async evaluateWhere(files, whereClause) {
+    if (!whereClause) {
+      return files;
+    }
+    
+    const filtered = [];
+    
+    for (const file of files) {
+      try {
+        const content = await this.cache.getFileContent(file.path);
+        const parsed = matter(content);
+        
+        // Handle simple conditions
+        if (whereClause.includes('OR')) {
+          const conditions = whereClause.split('OR').map(c => c.trim());
+          let matches = false;
+          
+          for (const condition of conditions) {
+            if (await this.evaluateSingleCondition(parsed.data, condition)) {
+              matches = true;
+              break;
+            }
+          }
+          
+          if (matches) {
+            filtered.push(file);
+          }
+        } else {
+          if (await this.evaluateSingleCondition(parsed.data, whereClause)) {
+            filtered.push(file);
+          }
+        }
+      } catch (error) {
+        // Skip files that can't be evaluated
+      }
+    }
+    
+    return filtered;
+  }
+  
+  /**
+   * Evaluate a single WHERE condition
+   */
+  async evaluateSingleCondition(frontmatter, condition) {
+    // Handle tag contains
+    const tagMatch = condition.match(/contains\(tags?,\s*"([^"]+)"\)/);
+    if (tagMatch) {
+      const tags = frontmatter.tags || [];
+      return tags.includes(tagMatch[1]);
+    }
+    
+    // Handle simple equality
+    const equalMatch = condition.match(/(\w+)\s*=\s*"([^"]+)"/);
+    if (equalMatch) {
+      const [, field, value] = equalMatch;
+      return frontmatter[field] === value;
+    }
+    
+    // Handle !completed for tasks
+    if (condition === '!completed') {
+      return frontmatter.completed !== true;
+    }
+    
+    return false;
+  }
+  
   /**
    * Parse a Dataview query
    * @stub - Basic implementation for testing
@@ -385,17 +549,33 @@ export class DataviewRenderer {
     
     // Parse TABLE queries
     if (trimmed.toUpperCase().startsWith('TABLE')) {
-      const match = trimmed.match(/TABLE\s+(.*?)\s+FROM\s+"?([^"]+)"?(?:\s+WHERE\s+(.+?))?(?:\s+SORT\s+(.+?))?(?:\s+LIMIT\s+(\d+))?$/i);
+      // Try with fields first
+      let match = trimmed.match(/TABLE\s+(.*?)\s+FROM\s+("[^"]+"|[^\s]+)(?:\s+WHERE\s+(.+?))?(?:\s+SORT\s+(.+?))?(?:\s+LIMIT\s+(\d+))?$/i);
       
       if (match) {
         const [, fields, from, where, sort, limit] = match;
         return {
-          type: 'TABLE',
+          type: 'TABLE',  // uppercase for parseQuery
           fields: fields ? fields.split(',').map(f => f.trim()) : [],
           from,
           where,
           sort,
-          limit: limit ? parseInt(limit) : undefined
+          limit: limit || undefined  // Keep as string
+        };
+      }
+      
+      // Try without fields (TABLE FROM ...)
+      match = trimmed.match(/TABLE\s+FROM\s+("[^"]+"|[^\s]+)(?:\s+WHERE\s+(.+?))?(?:\s+SORT\s+(.+?))?(?:\s+LIMIT\s+(\d+))?$/i);
+      
+      if (match) {
+        const [, from, where, sort, limit] = match;
+        return {
+          type: 'TABLE',  // uppercase for parseQuery
+          fields: [],
+          from,
+          where,
+          sort,
+          limit: limit || undefined  // Keep as string
         };
       }
     }
@@ -407,11 +587,11 @@ export class DataviewRenderer {
       if (match) {
         const [, from, where, sort, limit] = match;
         return {
-          type: 'LIST',
+          type: 'LIST',  // uppercase for parseQuery
           from,
           where,
           sort,
-          limit: limit ? parseInt(limit) : undefined
+          limit: limit || undefined  // Keep as string
         };
       }
     }
@@ -423,10 +603,10 @@ export class DataviewRenderer {
       if (match) {
         const [, where, sort, limit] = match;
         return {
-          type: 'TASK',
+          type: 'TASK',  // uppercase for parseQuery
           where,
           sort,
-          limit: limit ? parseInt(limit) : undefined
+          limit: limit || undefined  // Keep as string
         };
       }
     }

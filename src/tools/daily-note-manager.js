@@ -61,7 +61,14 @@ tags: [#daily-note]
       return tomorrow;
     }
     
-    // Try to parse as ISO date
+    // Try to parse as ISO date or yyyy-MM-dd format
+    // Handle yyyy-MM-dd format explicitly to avoid timezone issues
+    const dateMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (dateMatch) {
+      const [, year, month, day] = dateMatch;
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    }
+    
     const parsed = new Date(dateStr);
     if (!isNaN(parsed.getTime())) {
       return parsed;
@@ -76,6 +83,7 @@ tags: [#daily-note]
   formatDate(date, format = null) {
     format = format || this.dateFormat;
     
+    // Ensure we're working with local date values
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -83,8 +91,8 @@ tags: [#daily-note]
     // Simple format replacements - order matters for overlapping patterns
     return format
       .replace(/yyyy/g, year)
-      .replace(/dd/g, day)
-      .replace(/MM/g, month);
+      .replace(/MM/g, month)  // Month before day to avoid dd matching in MM
+      .replace(/dd/g, day);
   }
   
   /**
@@ -99,7 +107,9 @@ tags: [#daily-note]
    */
   getDailyNotePath(date) {
     const filename = this.getDailyNoteFilename(date);
-    return path.join(this.dailyNotesPath, filename);
+    // Support both property names for backward compatibility
+    const folder = this.dailyNotesFolder || this.dailyNotesPath;
+    return path.join(folder, filename);
   }
   
   /**
@@ -133,6 +143,40 @@ tags: [#daily-note]
     } catch {
       return [];
     }
+  }
+  
+  /**
+   * Get daily notes for a date range
+   */
+  async getDailyNotes(startDate, endDate) {
+    const notes = [];
+    const current = new Date(startDate);
+    const end = new Date(endDate);
+    
+    while (current <= end) {
+      const dateStr = this.formatDate(current);
+      const notePath = this.getDailyNotePath(current);
+      const fullPath = path.join(this.vaultPath, notePath);
+      
+      try {
+        await fs.access(fullPath);
+        notes.push({
+          date: dateStr,
+          path: notePath,
+          exists: true
+        });
+      } catch {
+        notes.push({
+          date: dateStr,
+          path: notePath,
+          exists: false
+        });
+      }
+      
+      current.setDate(current.getDate() + 1);
+    }
+    
+    return notes;
   }
   
   /**
@@ -307,11 +351,24 @@ tags: [#daily-note]
   /**
    * Add a task to daily note
    */
-  async addTask(date, task, completed = false, priority = null) {
+  async addTask(task, date = 'today', options = {}) {
+    const { completed = false, priority = null, due = null } = options;
     const parsedDate = typeof date === 'string' ? this.parseDate(date) : date;
     const checkbox = completed ? '[x]' : '[ ]';
-    const priorityStr = priority ? ` [${priority}]` : '';
-    const taskLine = `- ${checkbox}${priorityStr} ${task}`;
+    
+    // Use emoji icons for priority
+    let priorityStr = '';
+    if (priority) {
+      const priorityMap = {
+        'high': ' 🔴',
+        'medium': ' 🟡',
+        'low': ' 🟢'
+      };
+      priorityStr = priorityMap[priority.toLowerCase()] || '';
+    }
+    
+    const dueStr = due ? ` 📅 ${due}` : '';
+    const taskLine = `- ${checkbox}${priorityStr} ${task}${dueStr}`;
     
     return this.appendToSection(parsedDate, 'Tasks', taskLine);
   }
@@ -319,12 +376,26 @@ tags: [#daily-note]
   /**
    * Add a note to daily note
    */
-  async addNote(date, content, metadata = {}) {
-    const parsedDate = typeof date === 'string' ? this.parseDate(date) : date;
-    const timestamp = metadata.timestamp ? `[${new Date().toLocaleTimeString()}] ` : '';
-    const noteContent = `${timestamp}${content}`;
+  async addNote(content, date = 'today', sectionOrOptions = 'Notes', maybeOptions = {}) {
+    // Handle overloaded signature for backward compatibility
+    let section, options;
+    if (typeof sectionOrOptions === 'string') {
+      section = sectionOrOptions;
+      options = maybeOptions;
+    } else {
+      section = sectionOrOptions.section || 'Notes';
+      options = sectionOrOptions;
+    }
     
-    return this.appendToSection(parsedDate, 'Notes', noteContent);
+    const { timestamp = false } = options;
+    const parsedDate = typeof date === 'string' ? this.parseDate(date) : date;
+    
+    // Format timestamp as HH:MM - 
+    const timestampStr = timestamp ? 
+      `${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })} - ` : '';
+    const noteContent = `${timestampStr}${content}`;
+    
+    return this.appendToSection(parsedDate, section, noteContent);
   }
   
   /**
@@ -641,24 +712,24 @@ tags: [#daily-note]
     const lines = content.split('\n');
     
     for (const line of lines) {
-      const taskMatch = line.match(/^[\s-]*\[([x ])\]\s*(.*)$/);
+      const taskMatch = line.match(/^[\s-]*\[([x ])\]\s*(.*)$/i);
       if (taskMatch) {
         const completed = taskMatch[1].toLowerCase() === 'x';
         const text = taskMatch[2].trim();
         
-        // Extract priority if present
+        // Extract priority if present (using new emoji style)
         let priority = null;
         let cleanText = text;
         
-        if (text.includes('⏫')) {
+        if (text.includes('🔴')) {
           priority = 'high';
-          cleanText = text.replace('⏫', '').trim();
-        } else if (text.includes('🔼')) {
+          cleanText = text.replace('🔴', '').trim();
+        } else if (text.includes('🟡')) {
           priority = 'medium';
-          cleanText = text.replace('🔼', '').trim();
-        } else if (text.includes('🔽')) {
+          cleanText = text.replace('🟡', '').trim();
+        } else if (text.includes('🟢')) {
           priority = 'low';
-          cleanText = text.replace('🔽', '').trim();
+          cleanText = text.replace('🟢', '').trim();
         }
         
         // Extract due date if present
@@ -678,7 +749,7 @@ tags: [#daily-note]
         }
         
         tasks.push({
-          text: cleanText,
+          task: cleanText,  // Use 'task' key for test compatibility
           completed,
           priority,
           due,
@@ -702,9 +773,9 @@ tags: [#daily-note]
     
     if (priority) {
       const priorityMap = {
-        'high': '⏫',
-        'medium': '🔼',
-        'low': '🔽'
+        'high': '🔴',
+        'medium': '🟡',
+        'low': '🟢'
       };
       taskLine += `${priorityMap[priority.toLowerCase()] || ''} `;
     }

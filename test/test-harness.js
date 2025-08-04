@@ -204,6 +204,27 @@ export class TestHarness {
       throw new Error(`File does not exist: ${relativePath}`);
     }
   }
+  
+  /**
+   * Assert file does not exist
+   */
+  async assertFileNotExists(relativePath) {
+    const fullPath = path.join(this.testVaultPath, relativePath);
+    try {
+      await fs.access(fullPath);
+      throw new Error(`File should not exist but does: ${relativePath}`);
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        return true;
+      }
+      // Re-throw our custom error
+      if (error.message.includes('should not exist')) {
+        throw error;
+      }
+      // Otherwise it's an unexpected error
+      throw new Error(`Unexpected error checking file: ${error.message}`);
+    }
+  }
 
   /**
    * Assert file contains text
