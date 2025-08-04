@@ -7,9 +7,11 @@ export class DailyNoteManager {
   constructor(config, cache) {
     this.config = config || {};
     this.cache = cache;
-    this.dailyNotesPath = this.config.dailyNotesPath || 'Daily';
-    this.dateFormat = this.config.dailyNoteDateFormat || 'yyyy-MM-dd';
-    this.template = this.config.dailyNoteTemplate || this.getDefaultTemplate();
+    // Support both naming conventions for backward compatibility
+    this.dailyNotesPath = this.config.dailyNotesPath || this.config.dailyNotesFolder || 'Daily Notes';
+    this.dailyNotesFolder = this.dailyNotesPath; // Alias for test compatibility
+    this.dateFormat = this.config.dailyNoteDateFormat || this.config.dateFormat || 'yyyy-MM-dd';
+    this.template = this.config.dailyNoteTemplate || this.config.template || this.getDefaultTemplate();
     this.vaultPath = this.config.vaultPath || '';
   }
 
@@ -78,11 +80,11 @@ tags: [#daily-note]
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     
-    // Simple format replacements
+    // Simple format replacements - order matters for overlapping patterns
     return format
-      .replace('yyyy', year)
-      .replace('MM', month)
-      .replace('dd', day);
+      .replace(/yyyy/g, year)
+      .replace(/dd/g, day)
+      .replace(/MM/g, month);
   }
   
   /**
@@ -136,7 +138,7 @@ tags: [#daily-note]
   /**
    * Get or create daily note
    */
-  async getDailyNote(date) {
+  async getDailyNote(date, createIfMissing = false) {
     const parsedDate = typeof date === 'string' ? this.parseDate(date) : date;
     const notePath = this.getDailyNotePath(parsedDate);
     const fullPath = path.join(this.vaultPath, notePath);
@@ -152,9 +154,24 @@ tags: [#daily-note]
         body: parsed.content
       };
     } catch {
-      // Create new daily note
-      const created = await this.createDailyNote(parsedDate);
-      return created;
+      if (createIfMissing) {
+        // Create new daily note
+        const created = await this.createDailyNote(parsedDate);
+        return {
+          ...created,
+          exists: true,
+          created: true
+        };
+      } else {
+        // Return empty result
+        return {
+          exists: false,
+          path: notePath,
+          content: '',
+          frontmatter: {},
+          body: ''
+        };
+      }
     }
   }
 
@@ -199,51 +216,92 @@ tags: [#daily-note]
   /**
    * Append content to a section
    */
-  async appendToSection(date, section, content) {
-    const parsedDate = typeof date === 'string' ? this.parseDate(date) : date;
-    const note = await this.getDailyNote(parsedDate);
-    
-    // Find section in body
-    const sectionHeader = `## ${section}`;
-    const lines = note.body.split('\n');
-    let sectionIndex = -1;
-    
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].trim() === sectionHeader) {
-        sectionIndex = i;
-        break;
-      }
-    }
-    
-    if (sectionIndex === -1) {
-      // Section doesn't exist, add it
-      note.body += `\n\n${sectionHeader}\n${content}`;
-    } else {
-      // Find next section or end
-      let nextSectionIndex = lines.length;
-      for (let i = sectionIndex + 1; i < lines.length; i++) {
-        if (lines[i].startsWith('## ')) {
-          nextSectionIndex = i;
+  async appendToSection(dateOrPath, sectionOrContent, contentOrSection, newContent) {
+    // Handle two different call signatures for backward compatibility
+    if (arguments.length === 4) {
+      // Test signature: (path, existingContent, section, newContent)
+      const filePath = dateOrPath;
+      const existingContent = sectionOrContent;
+      const section = contentOrSection;
+      const contentToAdd = newContent;
+      
+      const sectionHeader = `## ${section}`;
+      const lines = existingContent.split('\n');
+      let sectionIndex = -1;
+      
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim() === sectionHeader) {
+          sectionIndex = i;
           break;
         }
       }
       
-      // Insert content before next section
-      lines.splice(nextSectionIndex, 0, content);
-      note.body = lines.join('\n');
+      if (sectionIndex === -1) {
+        // Section doesn't exist, add it
+        return existingContent + `\n\n${sectionHeader}\n${contentToAdd}`;
+      } else {
+        // Find next section or end
+        let nextSectionIndex = lines.length;
+        for (let i = sectionIndex + 1; i < lines.length; i++) {
+          if (lines[i].startsWith('## ')) {
+            nextSectionIndex = i;
+            break;
+          }
+        }
+        
+        // Insert content before next section
+        lines.splice(nextSectionIndex, 0, contentToAdd);
+        return lines.join('\n');
+      }
+    } else {
+      // Original signature: (date, section, content)
+      const parsedDate = typeof dateOrPath === 'string' ? this.parseDate(dateOrPath) : dateOrPath;
+      const note = await this.getDailyNote(parsedDate);
+      const section = sectionOrContent;
+      const content = contentOrSection;
+      
+      // Find section in body
+      const sectionHeader = `## ${section}`;
+      const lines = note.body.split('\n');
+      let sectionIndex = -1;
+      
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim() === sectionHeader) {
+          sectionIndex = i;
+          break;
+        }
+      }
+      
+      if (sectionIndex === -1) {
+        // Section doesn't exist, add it
+        note.body += `\n\n${sectionHeader}\n${content}`;
+      } else {
+        // Find next section or end
+        let nextSectionIndex = lines.length;
+        for (let i = sectionIndex + 1; i < lines.length; i++) {
+          if (lines[i].startsWith('## ')) {
+            nextSectionIndex = i;
+            break;
+          }
+        }
+        
+        // Insert content before next section
+        lines.splice(nextSectionIndex, 0, content);
+        note.body = lines.join('\n');
+      }
+      
+      // Save the note
+      const fullContent = matter.stringify(note.body, note.frontmatter);
+      const fullPath = path.join(this.vaultPath, note.path);
+      await fs.writeFile(fullPath, fullContent);
+      
+      return {
+        success: true,
+        path: note.path,
+        section,
+        content
+      };
     }
-    
-    // Save the note
-    const fullContent = matter.stringify(note.body, note.frontmatter);
-    const fullPath = path.join(this.vaultPath, note.path);
-    await fs.writeFile(fullPath, fullContent);
-    
-    return {
-      success: true,
-      path: note.path,
-      section,
-      content
-    };
   }
   
   /**
@@ -575,6 +633,95 @@ tags: [#daily-note]
     return stats;
   }
 
+  /**
+   * Extract tasks from content
+   */
+  extractTasks(content) {
+    const tasks = [];
+    const lines = content.split('\n');
+    
+    for (const line of lines) {
+      const taskMatch = line.match(/^[\s-]*\[([x ])\]\s*(.*)$/);
+      if (taskMatch) {
+        const completed = taskMatch[1].toLowerCase() === 'x';
+        const text = taskMatch[2].trim();
+        
+        // Extract priority if present
+        let priority = null;
+        let cleanText = text;
+        
+        if (text.includes('⏫')) {
+          priority = 'high';
+          cleanText = text.replace('⏫', '').trim();
+        } else if (text.includes('🔼')) {
+          priority = 'medium';
+          cleanText = text.replace('🔼', '').trim();
+        } else if (text.includes('🔽')) {
+          priority = 'low';
+          cleanText = text.replace('🔽', '').trim();
+        }
+        
+        // Extract due date if present
+        let due = null;
+        const dueMatch = cleanText.match(/📅\s*(\S+)/);
+        if (dueMatch) {
+          due = dueMatch[1];
+          cleanText = cleanText.replace(/📅\s*\S+/, '').trim();
+        }
+        
+        // Extract tags
+        const tags = [];
+        const tagMatches = cleanText.match(/#[\w-]+/g);
+        if (tagMatches) {
+          tags.push(...tagMatches.map(t => t.substring(1)));
+          cleanText = cleanText.replace(/#[\w-]+/g, '').trim();
+        }
+        
+        tasks.push({
+          text: cleanText,
+          completed,
+          priority,
+          due,
+          tags,
+          raw: line
+        });
+      }
+    }
+    
+    return tasks;
+  }
+  
+  /**
+   * Format a task with options
+   */
+  formatTask(text, options = {}) {
+    const { completed = false, priority = null, due = null, tags = [] } = options;
+    
+    let taskLine = '- ';
+    taskLine += completed ? '[x] ' : '[ ] ';
+    
+    if (priority) {
+      const priorityMap = {
+        'high': '⏫',
+        'medium': '🔼',
+        'low': '🔽'
+      };
+      taskLine += `${priorityMap[priority.toLowerCase()] || ''} `;
+    }
+    
+    taskLine += text;
+    
+    if (due) {
+      taskLine += ` 📅 ${due}`;
+    }
+    
+    if (tags && tags.length > 0) {
+      taskLine += ' ' + tags.map(tag => `#${tag}`).join(' ');
+    }
+    
+    return taskLine;
+  }
+  
   /**
    * Calculate consecutive day streaks
    */

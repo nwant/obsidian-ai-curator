@@ -9,7 +9,7 @@ import path from 'path';
 import os from 'os';
 
 export class PerformanceMonitor {
-  constructor(config) {
+  constructor(config = {}) {
     this.config = config;
     this.metrics = {
       operations: new Map(), // Track individual operations
@@ -33,6 +33,9 @@ export class PerformanceMonitor {
     
     this.startTime = Date.now();
     this.samplingTimer = null;
+    this.activeOperations = new Map(); // Track active operations
+    this.thresholds = config.thresholds || {}; // Performance thresholds
+    this.operationHistory = []; // Keep history for percentile calculations
   }
 
   /**
@@ -329,5 +332,129 @@ export class PerformanceMonitor {
     report += `- Load Average: ${metrics.resources.system.loadAverage.map(l => l.toFixed(2)).join(', ')}\n`;
     
     return report;
+  }
+
+  /**
+   * Start tracking an operation
+   * @stub - Basic implementation for testing
+   */
+  startOperation(operationId, metadata = {}) {
+    this.activeOperations.set(operationId, {
+      startTime: performance.now(),
+      metadata
+    });
+  }
+
+  /**
+   * End tracking an operation
+   * @stub - Basic implementation for testing
+   */
+  endOperation(operationId, metadata = {}) {
+    const operation = this.activeOperations.get(operationId);
+    if (!operation) {
+      return null;
+    }
+    
+    const endTime = performance.now();
+    const duration = endTime - operation.startTime;
+    
+    this.activeOperations.delete(operationId);
+    
+    // Track in history
+    this.operationHistory.push({
+      id: operationId,
+      duration,
+      timestamp: Date.now(),
+      success: !metadata.error,
+      ...metadata
+    });
+    
+    // Keep history bounded
+    if (this.operationHistory.length > 1000) {
+      this.operationHistory = this.operationHistory.slice(-1000);
+    }
+    
+    return { duration, success: !metadata.error };
+  }
+
+  /**
+   * Set performance thresholds
+   * @stub - Basic implementation for testing
+   */
+  setThresholds(thresholds) {
+    this.thresholds = { ...this.thresholds, ...thresholds };
+  }
+
+  /**
+   * Check if operation exceeds threshold
+   * @stub - Basic implementation for testing
+   */
+  checkThreshold(operationName, duration) {
+    const threshold = this.thresholds[operationName];
+    if (!threshold) {
+      return { exceeded: false };
+    }
+    
+    return {
+      exceeded: duration > threshold,
+      threshold,
+      duration,
+      excess: duration > threshold ? duration - threshold : 0
+    };
+  }
+
+  /**
+   * Calculate percentiles from operation history
+   * @stub - Basic implementation for testing
+   */
+  calculatePercentiles(percentiles = [50, 95, 99]) {
+    if (this.operationHistory.length === 0) {
+      return percentiles.reduce((acc, p) => ({ ...acc, [`p${p}`]: 0 }), {});
+    }
+    
+    const durations = this.operationHistory
+      .map(op => op.duration)
+      .sort((a, b) => a - b);
+    
+    const result = {};
+    for (const percentile of percentiles) {
+      const index = Math.ceil((percentile / 100) * durations.length) - 1;
+      result[`p${percentile}`] = durations[Math.max(0, index)];
+    }
+    
+    return result;
+  }
+
+  /**
+   * Get current memory usage
+   * @stub - Basic implementation for testing
+   */
+  getMemoryUsage() {
+    const memUsage = process.memoryUsage();
+    return {
+      heapUsed: memUsage.heapUsed,
+      heapTotal: memUsage.heapTotal,
+      rss: memUsage.rss,
+      external: memUsage.external
+    };
+  }
+
+  /**
+   * Calculate success and error rates
+   * @stub - Basic implementation for testing
+   */
+  getSuccessRate() {
+    if (this.operationHistory.length === 0) {
+      return { successRate: 100, errorRate: 0, total: 0 };
+    }
+    
+    const successful = this.operationHistory.filter(op => op.success).length;
+    const total = this.operationHistory.length;
+    
+    return {
+      successRate: (successful / total) * 100,
+      errorRate: ((total - successful) / total) * 100,
+      total
+    };
   }
 }

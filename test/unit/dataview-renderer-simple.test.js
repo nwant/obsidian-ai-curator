@@ -35,7 +35,8 @@ describe('DataviewRenderer', () => {
       }
     };
     
-    renderer = new DataviewRenderer(cache);
+    const config = { vaultPath: testHarness.testVaultPath };
+    renderer = new DataviewRenderer(config, cache);
   });
   
   afterEach(async () => {

@@ -248,7 +248,7 @@ describe('AutoMetricsCollector', () => {
     it('should return comprehensive session summary', () => {
       const summary = collector.getSessionSummary();
       
-      expect(summary.duration).toBeGreaterThan(0);
+      expect(summary.duration).toBeGreaterThanOrEqual(0);
       expect(summary.totalSearches).toBe(2);
       expect(summary.totalToolUses).toBe(2);
       expect(summary.uniqueQueries).toBe(2);

@@ -74,7 +74,7 @@ export class NoteHandler {
   async writeNote({ path: notePath, content }) {
     try {
       // Validate path
-      this.pathValidator.validatePath(notePath, this.config.vaultPath);
+      validatePath(notePath, this.config.vaultPath);
       
       // Try API first for better integration
       if (this.apiClient.isConnected()) {

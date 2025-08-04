@@ -4,8 +4,88 @@ import matter from 'gray-matter';
 
 export class FrontmatterManager {
   constructor(config, obsidianAPI) {
-    this.config = config;
+    this.config = config || {};
     this.obsidianAPI = obsidianAPI;
+    
+    // Set expected properties from config
+    this.dateFields = this.config.dateFields || ['created', 'modified'];
+    this.requiredFields = this.config.requiredFields || [];
+    this.defaultValues = this.config.defaultValues || {};
+  }
+
+  /**
+   * Extract frontmatter from content
+   * @stub - Basic implementation, needs enhancement
+   */
+  extractFrontmatter(content) {
+    try {
+      const parsed = matter(content);
+      return {
+        frontmatter: parsed.data,
+        content: parsed.content,
+        original: parsed.orig
+      };
+    } catch (error) {
+      return {
+        frontmatter: {},
+        content: content,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Validate frontmatter against rules
+   * @stub - Basic implementation, needs enhancement
+   */
+  validateFrontmatter(frontmatter) {
+    const errors = [];
+    
+    // Check required fields
+    for (const field of this.requiredFields) {
+      if (!frontmatter[field]) {
+        errors.push(`Missing required field: ${field}`);
+      }
+    }
+    
+    // Validate date fields
+    for (const field of this.dateFields) {
+      if (frontmatter[field] && !Date.parse(frontmatter[field])) {
+        errors.push(`Invalid date in field: ${field}`);
+      }
+    }
+    
+    return {
+      valid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Format frontmatter consistently
+   * @stub - Basic implementation, needs enhancement
+   */
+  formatFrontmatter(frontmatter) {
+    const formatted = { ...frontmatter };
+    
+    // Apply default values
+    for (const [key, value] of Object.entries(this.defaultValues)) {
+      if (!(key in formatted)) {
+        formatted[key] = value;
+      }
+    }
+    
+    // Format date fields
+    for (const field of this.dateFields) {
+      if (formatted[field] && typeof formatted[field] === 'string') {
+        const date = new Date(formatted[field]);
+        if (!isNaN(date.getTime())) {
+          formatted[field] = date.toISOString();
+        }
+      }
+    }
+    
+    return formatted;
   }
 
   /**
