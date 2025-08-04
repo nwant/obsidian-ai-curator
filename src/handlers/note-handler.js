@@ -7,7 +7,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { format } from 'date-fns';
-import { validatePath } from '../tools/path-validator.js';
 import { LinkFormatter } from '../tools/link-formatter.js';
 import { TagFormatter } from '../tools/tag-formatter.js';
 import { FrontmatterManager } from '../tools/frontmatter-manager.js';
@@ -30,8 +29,10 @@ export class NoteHandler {
     
     for (const notePath of paths) {
       try {
-        // Validate path
-        validatePath(notePath, this.config.vaultPath);
+        // Validate path - ensure it's not absolute and within vault
+        if (path.isAbsolute(notePath) || notePath.includes('..')) {
+          throw new Error(`Invalid path: ${notePath}`);
+        }
         
         // Cache expects relative path, not full path
         const content = await this.cache.getFileContent(notePath);
@@ -75,11 +76,9 @@ export class NoteHandler {
    * Write or update a note
    */
   async writeNote({ path: notePath, content }) {
-    // Validate path - throw error for test compatibility
-    try {
-      validatePath(notePath, this.config.vaultPath);
-    } catch (error) {
-      throw error;  // Re-throw validation errors
+    // Validate path - ensure it's not absolute and within vault
+    if (path.isAbsolute(notePath) || notePath.includes('..')) {
+      throw new Error(`Invalid path: ${notePath}`);
     }
     
     try {
@@ -379,9 +378,13 @@ export class NoteHandler {
       try {
         const { from, to } = move;
         
-        // Validate paths
-        validatePath(from, this.config.vaultPath);
-        validatePath(to, this.config.vaultPath);
+        // Validate paths - ensure they're not absolute and within vault
+        if (path.isAbsolute(from) || from.includes('..')) {
+          throw new Error(`Invalid source path: ${from}`);
+        }
+        if (path.isAbsolute(to) || to.includes('..')) {
+          throw new Error(`Invalid target path: ${to}`);
+        }
         
         const sourcePath = path.join(this.config.vaultPath, from);
         const targetPath = path.join(this.config.vaultPath, to);

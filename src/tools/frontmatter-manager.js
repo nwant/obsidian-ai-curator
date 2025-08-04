@@ -11,6 +11,7 @@ export class FrontmatterManager {
     this.dateFields = this.config.dateFields || ['created', 'modified'];
     this.requiredFields = this.config.requiredFields || [];
     this.defaultValues = this.config.defaultValues || {};
+    this.customValidators = [];
   }
 
   /**
@@ -26,9 +27,29 @@ export class FrontmatterManager {
         raw: content  // Use 'raw' for test compatibility
       };
     } catch (error) {
+      // Try to extract partial frontmatter even if malformed
+      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+      let partialFrontmatter = {};
+      
+      if (frontmatterMatch) {
+        const lines = frontmatterMatch[1].split('\n');
+        for (const line of lines) {
+          const match = line.match(/^([^:]+):\s*(.*)/);
+          if (match) {
+            const key = match[1].trim();
+            const value = match[2].trim();
+            // Try to parse simple values
+            if (value === 'true') partialFrontmatter[key] = true;
+            else if (value === 'false') partialFrontmatter[key] = false;
+            else if (!isNaN(value) && value !== '') partialFrontmatter[key] = Number(value);
+            else partialFrontmatter[key] = value.replace(/^["']|["']$/g, '');
+          }
+        }
+      }
+      
       return {
-        frontmatter: {},
-        content: content,
+        frontmatter: partialFrontmatter,
+        content: content.replace(/^---\n[\s\S]*?\n---\n?/, ''),
         raw: content,
         error: error.message
       };
@@ -61,11 +82,29 @@ export class FrontmatterManager {
     // Custom validation rules
     if (rules.custom) {
       for (const [field, validator] of Object.entries(rules.custom)) {
-        if (frontmatter[field]) {
-          const result = validator(frontmatter[field]);
+        if (typeof validator === 'function') {
+          const result = validator(frontmatter, field);
           if (result !== true) {
             errors.push(result || `Invalid value for field: ${field}`);
           }
+        }
+      }
+    }
+    
+    // Custom validation function
+    if (rules.validate && typeof rules.validate === 'function') {
+      const customErrors = rules.validate(frontmatter);
+      if (customErrors && Array.isArray(customErrors)) {
+        errors.push(...customErrors);
+      }
+    }
+    
+    // Check custom validators
+    for (const validator of this.customValidators) {
+      if (typeof validator === 'function') {
+        const error = validator(frontmatter);
+        if (error) {
+          errors.push(error);
         }
       }
     }
@@ -99,7 +138,7 @@ export class FrontmatterManager {
     }
     
     // Format date fields
-    const dateFields = options.dateFields || this.dateFields;
+    const dateFields = options.dateFields || this.dateFields || [];
     const dateFormat = options.dateFormat || 'iso';
     
     for (const field of dateFields) {
@@ -123,16 +162,42 @@ export class FrontmatterManager {
       }
     }
     
-    // Handle special characters in strings
-    if (options.escapeSpecialChars) {
-      for (const [key, value] of Object.entries(formatted)) {
-        if (typeof value === 'string' && value.includes(':')) {
-          formatted[key] = `"${value}"`;
+    // Always return YAML string for test compatibility
+    return this.toYamlString(formatted);
+  }
+  
+  /**
+   * Convert frontmatter object to YAML string
+   */
+  toYamlString(frontmatter) {
+    const lines = [];
+    
+    for (const [key, value] of Object.entries(frontmatter)) {
+      if (value === null || value === undefined) {
+        continue;
+      }
+      
+      if (Array.isArray(value)) {
+        lines.push(`${key}:`);
+        for (const item of value) {
+          lines.push(`  - ${item}`);
         }
+      } else if (typeof value === 'object') {
+        lines.push(`${key}:`);
+        for (const [nestedKey, nestedValue] of Object.entries(value)) {
+          lines.push(`  ${nestedKey}: ${nestedValue}`);
+        }
+      } else if (typeof value === 'string' && value.includes(':')) {
+        lines.push(`${key}: "${value}"`);
+      } else if (typeof value === 'string' && value.includes('\n')) {
+        lines.push(`${key}: |`);
+        value.split('\n').forEach(line => lines.push(`  ${line}`));
+      } else {
+        lines.push(`${key}: ${value}`);
       }
     }
     
-    return formatted;
+    return lines.join('\n');
   }
 
   /**
@@ -211,9 +276,82 @@ export class FrontmatterManager {
   async findByFrontmatter(criteria) {
     const results = [];
     
-    // This is a stub - would need access to vault files
-    // For now, return empty results
+    try {
+      // Get all markdown files from vault
+      const vaultPath = this.config.vaultPath;
+      const files = await this.getAllMarkdownFiles(vaultPath);
+      
+      for (const file of files) {
+        const content = await fs.readFile(file, 'utf-8');
+        const parsed = matter(content);
+        const frontmatter = parsed.data;
+        
+        // Check if frontmatter matches criteria
+        if (this.matchesCriteria(frontmatter, criteria)) {
+          results.push({
+            path: path.relative(vaultPath, file),
+            frontmatter: frontmatter,
+            content: parsed.content
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error finding by frontmatter:', error);
+    }
+    
     return results;
+  }
+  
+  /**
+   * Check if frontmatter matches search criteria
+   */
+  matchesCriteria(frontmatter, criteria) {
+    for (const [key, value] of Object.entries(criteria)) {
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        // Handle operators
+        const fieldValue = frontmatter[key];
+        
+        if ('$gte' in value && !(fieldValue >= value.$gte)) return false;
+        if ('$gt' in value && !(fieldValue > value.$gt)) return false;
+        if ('$lte' in value && !(fieldValue <= value.$lte)) return false;
+        if ('$lt' in value && !(fieldValue < value.$lt)) return false;
+        if ('$ne' in value && fieldValue === value.$ne) return false;
+        if ('$in' in value && !value.$in.includes(fieldValue)) return false;
+        if ('$nin' in value && value.$nin.includes(fieldValue)) return false;
+        if ('$exists' in value) {
+          const exists = key in frontmatter;
+          if (value.$exists !== exists) return false;
+        }
+      } else {
+        // Exact match
+        if (frontmatter[key] !== value) return false;
+      }
+    }
+    
+    return true;
+  }
+  
+  /**
+   * Get all markdown files recursively
+   */
+  async getAllMarkdownFiles(dir, files = []) {
+    try {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        
+        if (entry.isDirectory() && !entry.name.startsWith('.')) {
+          await this.getAllMarkdownFiles(fullPath, files);
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          files.push(fullPath);
+        }
+      }
+    } catch (error) {
+      // Silently skip inaccessible directories
+    }
+    
+    return files;
   }
   
   /**
@@ -246,8 +384,26 @@ export class FrontmatterManager {
       const fullPath = path.join(this.config.vaultPath, notePath);
       
       // Read existing content
-      const content = await fs.readFile(fullPath, 'utf-8');
-      const parsed = matter(content);
+      let content;
+      try {
+        content = await fs.readFile(fullPath, 'utf-8');
+      } catch (error) {
+        return {
+          success: false,
+          error: `File not found: ${notePath}`
+        };
+      }
+      
+      let parsed;
+      try {
+        parsed = matter(content);
+      } catch (error) {
+        // Handle invalid YAML - try to preserve content and continue
+        parsed = {
+          data: {},
+          content: content.replace(/^---[\s\S]*?---\n?/, '')
+        };
+      }
       
       // Update frontmatter
       let newFrontmatter;

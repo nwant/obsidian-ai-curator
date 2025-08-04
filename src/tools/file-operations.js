@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
-import { validatePath } from './path-validator.js';
 
 /**
  * File operations tools (rename, move, etc.)
@@ -21,8 +20,14 @@ export async function rename_file(args) {
   const vaultPath = config.vaultPath;
   
   // Validate paths for security
-  const validatedOldPath = validatePath(oldPath, vaultPath);
-  const validatedNewPath = validatePath(newPath, vaultPath);
+  if (path.isAbsolute(oldPath) || oldPath.includes('..')) {
+    throw new Error(`Invalid source path: ${oldPath}`);
+  }
+  if (path.isAbsolute(newPath) || newPath.includes('..')) {
+    throw new Error(`Invalid target path: ${newPath}`);
+  }
+  const validatedOldPath = oldPath;
+  const validatedNewPath = newPath;
   
   const fullOldPath = path.join(vaultPath, validatedOldPath);
   const fullNewPath = path.join(vaultPath, validatedNewPath);
@@ -91,11 +96,11 @@ export async function archive_notes(args) {
   
   // Validate all paths first
   for (const move of moves) {
-    try {
-      validatePath(move.from, vaultPath);
-      validatePath(move.to, vaultPath);
-    } catch (error) {
-      throw new Error(`Invalid path in archive: ${error.message}`);
+    if (path.isAbsolute(move.from) || move.from.includes('..')) {
+      throw new Error(`Invalid source path in archive: ${move.from}`);
+    }
+    if (path.isAbsolute(move.to) || move.to.includes('..')) {
+      throw new Error(`Invalid target path in archive: ${move.to}`);
     }
   }
   
@@ -171,7 +176,8 @@ export async function archive_notes(args) {
     totalMoves: moves.length,
     successful: movedFiles.length,
     failed: failedMoves.length,
-    results
+    results,
+    errors: failedMoves.map(f => f.error) // Add errors array for test compatibility
   };
 }
 

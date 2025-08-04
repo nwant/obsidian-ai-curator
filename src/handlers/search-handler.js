@@ -52,7 +52,8 @@ export class SearchHandler {
         if (matches.length >= maxResults) break;
         
         try {
-          const content = await this.cache.getFileContent(file.path);
+          const fileData = await this.cache.getFileContent(file.path);
+          const content = fileData.content || fileData;
           const lines = content.split('\n');
           
           for (let i = 0; i < lines.length; i++) {
@@ -70,7 +71,11 @@ export class SearchHandler {
                   file: file.path,
                   line: i + 1,
                   content: line,
-                  context: context.join('\n'),
+                  context: {
+                    before: lines.slice(Math.max(0, i - contextLines), i).join('\n'),
+                    after: lines.slice(i + 1, Math.min(lines.length, i + contextLines + 1)).join('\n'),
+                    full: context.join('\n')
+                  },
                   contextRange: {
                     start: contextStart + 1,
                     end: contextEnd + 1
@@ -220,5 +225,109 @@ export class SearchHandler {
     }
     
     return true;
+  }
+  
+  /**
+   * Execute a Dataview query
+   */
+  async queryDataview({ query, contextPath, renderMode = 'smart' }) {
+    try {
+      // Parse the query type
+      const queryUpper = query.trim().toUpperCase();
+      let type = 'unknown';
+      
+      if (queryUpper.startsWith('TABLE')) {
+        type = 'table';
+      } else if (queryUpper.startsWith('LIST')) {
+        type = 'list';
+      } else if (queryUpper.startsWith('TASK')) {
+        type = 'task';
+      }
+      
+      // Get all vault files for query
+      const vaultStructure = await this.cache.getVaultStructure();
+      const files = [];
+      
+      for (const file of vaultStructure.files) {
+        try {
+          const content = await this.cache.getFileContent(file.path);
+          const parsed = matter(content.content);
+          files.push({
+            path: file.path,
+            frontmatter: parsed.data,
+            content: parsed.content
+          });
+        } catch (error) {
+          // Skip files that can't be read
+        }
+      }
+      
+      // Execute the query using the dataview renderer
+      let result;
+      if (type === 'table') {
+        result = await this.dataviewRenderer.renderTableQuery(query, files, renderMode);
+      } else {
+        result = await this.dataviewRenderer.renderQuery(query);
+      }
+      
+      // Format the response
+      if (typeof result === 'object' && result.type) {
+        // Result is already structured
+        return {
+          type: result.type,
+          renderMode: result.renderMode || renderMode,
+          headers: result.headers || [],
+          rows: result.rows || [],
+          count: result.total || (result.rows ? result.rows.length : 0)
+        };
+      } else if (typeof result === 'string') {
+        // Parse the rendered result to extract structure
+        const lines = result.split('\n');
+        const headers = [];
+        const rows = [];
+        
+        // Extract headers from table
+        if (lines[0] && lines[0].startsWith('|')) {
+          const headerLine = lines[0];
+          headers.push(...headerLine.split('|').filter(h => h.trim()).map(h => h.trim()));
+          
+          // Extract rows
+          for (let i = 2; i < lines.length; i++) {
+            if (lines[i].startsWith('|')) {
+              const values = lines[i].split('|').filter(v => v.trim()).map(v => v.trim());
+              if (values.length > 0) {
+                const row = {};
+                headers.forEach((h, idx) => {
+                  row[h] = values[idx] || '';
+                });
+                rows.push(row);
+              }
+            }
+          }
+        }
+        
+        return {
+          type,
+          renderMode,
+          headers,
+          rows,
+          rendered: result,
+          count: rows.length
+        };
+      }
+      
+      return {
+        type,
+        renderMode,
+        headers: [],
+        rows: [],
+        result
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        error: error.message
+      };
+    }
   }
 }

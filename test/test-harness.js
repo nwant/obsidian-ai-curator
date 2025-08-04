@@ -91,13 +91,11 @@ export class TestHarness {
    * Load all MCP tools
    */
   async loadTools() {
-    // Import tool modules
+    // Import tool modules (only existing modules after cleanup)
     const toolModules = [
       'vault-operations',
       'search-tools',
-      'writing-tools',
       'tag-management',
-      'file-operations',
       'daily-notes',
       'git-integration',
       'project-management'

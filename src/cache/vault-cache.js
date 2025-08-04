@@ -77,7 +77,14 @@ export class VaultCache {
       }
     };
     
-    await scanDir(this.config.vaultPath);
+    await scanDir(this.config.vaultPath).catch(err => {
+      // Handle empty vault case
+      if (err.code === 'ENOENT') {
+        console.error(`Vault path does not exist: ${this.config.vaultPath}`);
+      } else {
+        throw err;
+      }
+    });
     this.lastFullScan = Date.now();
     
     console.error(`Vault scan completed in ${Date.now() - startTime}ms, found ${this.structure.size} files`);
@@ -85,6 +92,11 @@ export class VaultCache {
 
   // Get file content with caching
   async getFileContent(relativePath, includeMetadata = false) {
+    // Ensure vault structure is loaded (always rescan if cache disabled)
+    if (this.structure.size === 0 || !this.cacheEnabled) {
+      await this.scanVault();
+    }
+    
     const cacheEntry = this.content.get(relativePath);
     const fileInfo = this.structure.get(relativePath);
     
@@ -92,11 +104,11 @@ export class VaultCache {
       throw new Error(`File not found: ${relativePath}`);
     }
     
-    // Check if cached content is still valid
-    if (cacheEntry && 
+    // Check if cached content is still valid (skip if cache disabled)
+    if (this.cacheEnabled && cacheEntry && 
         cacheEntry.mtime === fileInfo.mtime && 
         this.isCacheValid(cacheEntry.timestamp, this.contentCacheTimeout)) {
-      return cacheEntry.data;
+      return includeMetadata ? cacheEntry.data : cacheEntry.data.content;
     }
     
     // Read file and cache it
@@ -115,20 +127,23 @@ export class VaultCache {
       relativePath
     };
     
-    // Cache management - LRU style
-    if (this.content.size >= this.maxContentCacheSize) {
-      // Remove oldest entry
-      const oldestKey = this.content.keys().next().value;
-      this.content.delete(oldestKey);
+    // Cache management - LRU style (only if caching enabled)
+    if (this.cacheEnabled) {
+      if (this.content.size >= this.maxContentCacheSize) {
+        // Remove oldest entry
+        const oldestKey = this.content.keys().next().value;
+        this.content.delete(oldestKey);
+      }
+      
+      this.content.set(relativePath, {
+        data,
+        mtime: fileInfo.mtime,
+        timestamp: Date.now()
+      });
     }
     
-    this.content.set(relativePath, {
-      data,
-      mtime: fileInfo.mtime,
-      timestamp: Date.now()
-    });
-    
-    return data;
+    // Return just content string for test compatibility, unless metadata requested
+    return includeMetadata ? data : content;
   }
 
   // Get or compute context set
@@ -211,6 +226,11 @@ export class VaultCache {
     this.contexts.clear();
     this.searchIndex = null;
     this.lastFullScan = 0;
+  }
+  
+  // Alias for test compatibility
+  invalidateAll() {
+    this.clearCache();
   }
   
   // Get cache statistics

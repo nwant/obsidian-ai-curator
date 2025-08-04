@@ -114,6 +114,8 @@ export class VaultHandler {
                   words: words.length,
                   characters: parsed.content.length
                 };
+                // Add alias for test compatibility
+                enriched.wordCount = words.length;
               }
             } catch (error) {
               console.error(`Error reading file ${file.path}:`, error.message);
@@ -179,6 +181,24 @@ export class VaultHandler {
       const ext = path.extname(file.path).toLowerCase() || 'no extension';
       stats.fileTypes[ext] = (stats.fileTypes[ext] || 0) + 1;
     });
+    
+    // Add oldest and newest file for test compatibility
+    if (structure.files.length > 0) {
+      const sortedByTime = structure.files.sort((a, b) => a.mtime - b.mtime);
+      stats.oldestFile = {
+        path: sortedByTime[0].path,
+        modified: new Date(sortedByTime[0].mtime).toISOString()
+      };
+      stats.newestFile = {
+        path: sortedByTime[sortedByTime.length - 1].path,
+        modified: new Date(sortedByTime[sortedByTime.length - 1].mtime).toISOString()
+      };
+      
+      // Also add largestFile for test compatibility
+      if (stats.largestFiles.length > 0) {
+        stats.largestFile = stats.largestFiles[0];
+      }
+    }
 
     return stats;
   }

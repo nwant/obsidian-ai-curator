@@ -258,7 +258,24 @@ export async function read_notes(args) {
     
     try {
       const content = await fs.readFile(fullPath, 'utf-8');
-      const { data: frontmatter, content: body } = matter(content);
+      
+      // Try to parse frontmatter, but handle errors gracefully
+      let frontmatter = {};
+      let body = content;
+      
+      try {
+        const parsed = matter(content);
+        frontmatter = parsed.data;
+        body = parsed.content;
+      } catch (parseError) {
+        // If frontmatter parsing fails, treat entire content as body
+        console.error(`Failed to parse frontmatter for ${notePath}:`, parseError.message);
+        // Try to extract content after the frontmatter delimiters
+        const match = content.match(/^---\n[\s\S]*?\n---\n([\s\S]*)$/);
+        if (match) {
+          body = match[1];
+        }
+      }
       
       const headings = [];
       const links = [];

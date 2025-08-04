@@ -105,7 +105,9 @@ export async function get_tags(args = {}) {
     tags: tagsObject,
     tagList: Array.from(tagCounts.entries()).map(([tag, count]) => ({ tag, count })),
     totalTags: tagCounts.size,
-    hierarchy: tagHierarchy
+    hierarchy: tagHierarchy,
+    // Also expose tags as array for test compatibility
+    tagArray: Array.from(tagCounts.keys())
   };
   
   if (filePath) {
@@ -265,7 +267,10 @@ export async function analyze_tags(args = {}) {
   return {
     analysis: stats,
     totalTags: stats.totalTags,
-    recommendations: stats.recommendations
+    recommendations: stats.recommendations,
+    // Add for test compatibility
+    tags: stats.mostUsedTags.map(t => t.tag),
+    totalUsage: tagList.reduce((sum, t) => sum + t.count, 0)
   };
 }
 
@@ -302,19 +307,41 @@ export async function suggest_tags(args) {
     }
   });
   
-  // If no suggestions from existing tags, suggest based on common words
-  if (suggestions.length === 0 && content.trim()) {
+  // Add suggestions based on common words and related tags
+  if (content.trim()) {
     // Extract potential tag candidates from content
     const words = contentLower.match(/\b[a-z]+\b/g) || [];
     const commonTags = ['javascript', 'tutorial', 'programming', 'web', 'development'];
     
+    // Related tags map
+    const relatedTags = {
+      'javascript': ['programming', 'web', 'development'],
+      'python': ['programming', 'scripting'],
+      'react': ['javascript', 'web', 'frontend'],
+      'nodejs': ['javascript', 'backend'],
+      'typescript': ['javascript', 'programming']
+    };
+    
     commonTags.forEach(tag => {
-      if (words.includes(tag) && !existingTags.includes(tag)) {
+      if (words.includes(tag) && !existingTags.includes(tag) && !suggestions.find(s => s.tag === tag)) {
         suggestions.push({
           tag,
           score: 1,
           reason: 'Common keyword in content',
           usage: 0
+        });
+        
+        // Also add related tags
+        const related = relatedTags[tag] || [];
+        related.forEach(relTag => {
+          if (!existingTags.includes(relTag) && !suggestions.find(s => s.tag === relTag)) {
+            suggestions.push({
+              tag: relTag,
+              score: 0.5,
+              reason: `Related to ${tag}`,
+              usage: 0
+            });
+          }
         });
       }
     });
@@ -377,7 +404,10 @@ export async function rename_tag(args) {
     // Check inline tags
     let newBody = parsed.content;
     if (includeInline) {
-      const oldTagRegex = new RegExp(`#${cleanOld}\\b`, 'g');
+      // Escape special regex characters
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const escapedOld = escapeRegex(cleanOld);
+      const oldTagRegex = new RegExp(`#${escapedOld}\\b`, 'g');
       const matches = newBody.match(oldTagRegex);
       
       if (matches) {
@@ -389,10 +419,14 @@ export async function rename_tag(args) {
     }
     
     if (modified) {
+      // Use the same escaped regex
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const escapedOld = escapeRegex(cleanOld);
+      
       changes.push({
         path: file,
         frontmatterChanges: includeFrontmatter && parsed.data.tags ? 1 : 0,
-        inlineChanges: includeInline ? (parsed.content.match(new RegExp(`#${cleanOld}\\b`, 'g')) || []).length : 0
+        inlineChanges: includeInline ? (parsed.content.match(new RegExp(`#${escapedOld}\\b`, 'g')) || []).length : 0
       });
       
       if (!preview) {
@@ -408,6 +442,7 @@ export async function rename_tag(args) {
     newTag: cleanNew,
     filesChanged: changes.length,
     filesUpdated: changes.length, // Add alias for test compatibility
+    affectedFiles: changes.map(c => c.path), // Add for test compatibility
     changes,
     preview,
     success: !preview,

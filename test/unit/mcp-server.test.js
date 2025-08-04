@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
-import { McpServer } from '../../src/mcp-server-refactored.js';
+import { McpServer } from '../../src/mcp-server.js';
 import { testHarness } from '../test-harness.js';
 
 describe('McpServer', () => {

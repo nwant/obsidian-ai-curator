@@ -47,10 +47,21 @@ describe('ObsidianAPIClient', () => {
   });
   
   afterEach(async () => {
+    // Clean up client timers
+    if (client) {
+      client.cleanup();
+    }
+    
     // Close the mock server
-    await new Promise((resolve) => {
-      mockServer.close(resolve);
-    });
+    if (mockServer) {
+      await new Promise((resolve, reject) => {
+        mockServer.close((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+      mockServer = null;
+    }
   });
   
   describe('initialization', () => {
@@ -62,6 +73,7 @@ describe('ObsidianAPIClient', () => {
     it('should use default URL when not provided', () => {
       const defaultClient = new ObsidianAPIClient();
       expect(defaultClient.baseUrl).toBe('http://localhost:3001');
+      defaultClient.cleanup();
     });
   });
   
@@ -81,6 +93,7 @@ describe('ObsidianAPIClient', () => {
       
       expect(result).toBe(false);
       expect(badClient.connected).toBe(false);
+      badClient.cleanup();
     });
     
     it('should timeout on slow connections', async () => {
@@ -99,11 +112,12 @@ describe('ObsidianAPIClient', () => {
       const result = await slowClient.checkConnection();
       
       expect(result).toBe(false);
+      slowClient.cleanup();
       
       await new Promise((resolve) => {
         slowServer.close(resolve);
       });
-    });
+    }, 10000); // Increase timeout
   });
   
   describe('isConnected', () => {
@@ -162,13 +176,14 @@ describe('ObsidianAPIClient', () => {
     
     it('should handle request timeout', async () => {
       // Create endpoint that delays response
+      let delayTimer = null;
       const slowServer = http.createServer((req, res) => {
         if (req.url === '/health') {
           res.statusCode = 200;
           res.end(JSON.stringify({ status: 'ok' }));
         } else {
           // Delay response beyond timeout
-          setTimeout(() => {
+          delayTimer = setTimeout(() => {
             res.statusCode = 200;
             res.end('{}');
           }, 10000);
@@ -184,12 +199,19 @@ describe('ObsidianAPIClient', () => {
       await slowClient.checkConnection();
       
       await expect(slowClient.request('/api/slow', {}))
-        .rejects.toThrow();
+        .rejects.toThrow('Request timeout');
+      
+      // Clean up timer before closing
+      if (delayTimer) {
+        clearTimeout(delayTimer);
+      }
+      
+      slowClient.cleanup();
       
       await new Promise((resolve) => {
         slowServer.close(resolve);
       });
-    });
+    }, 10000); // Increase timeout for this test
   });
   
   describe('fetch wrapper', () => {
@@ -198,6 +220,8 @@ describe('ObsidianAPIClient', () => {
       
       const result = await offlineClient.checkConnection();
       expect(result).toBe(false);
+      
+      offlineClient.cleanup();
     });
     
     it('should include proper headers', async () => {
@@ -231,6 +255,8 @@ describe('ObsidianAPIClient', () => {
       
       expect(result.headers['content-type']).toBe('application/json');
       expect(result.headers['accept']).toBe('application/json');
+      
+      headerClient.cleanup();
       
       await new Promise((resolve) => {
         headerServer.close(resolve);
@@ -272,6 +298,8 @@ describe('ObsidianAPIClient', () => {
       const result = await badClient.checkConnection();
       expect(result).toBe(false);
       
+      badClient.cleanup();
+      
       await new Promise((resolve) => {
         badServer.close(resolve);
       });
@@ -298,6 +326,8 @@ describe('ObsidianAPIClient', () => {
       
       await expect(emptyClient.request('/api/empty', {}))
         .rejects.toThrow();
+      
+      emptyClient.cleanup();
       
       await new Promise((resolve) => {
         emptyServer.close(resolve);

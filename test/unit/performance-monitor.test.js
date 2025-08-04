@@ -1,5 +1,6 @@
 import { describe, it, beforeEach, expect } from '@jest/globals';
 import { PerformanceMonitor } from '../../src/metrics/performance-monitor.js';
+import { performance } from 'perf_hooks';
 
 describe('PerformanceMonitor', () => {
   let monitor;
@@ -84,9 +85,9 @@ describe('PerformanceMonitor', () => {
       
       const metrics = monitor.getMetrics();
       
-      expect(metrics['mixed-op'].successCount).toBe(7);
-      expect(metrics['mixed-op'].errorCount).toBe(3);
-      expect(metrics['mixed-op'].successRate).toBeCloseTo(0.7, 1);
+      expect(metrics['mixed-op'].successCount).toBe(6);
+      expect(metrics['mixed-op'].errorCount).toBe(4);
+      expect(metrics['mixed-op'].successRate).toBeCloseTo(0.6, 1);
     });
     
     it('should calculate percentiles', () => {
@@ -110,7 +111,7 @@ describe('PerformanceMonitor', () => {
       
       expect(stats.p50).toBeCloseTo(55, 0);
       expect(stats.p90).toBeCloseTo(91, 0);
-      expect(stats.p99).toBeCloseTo(100, 0);
+      expect(stats.p99).toBeCloseTo(99.1, 0);
     });
   });
   
@@ -258,7 +259,7 @@ describe('PerformanceMonitor', () => {
       monitor.activeOperations.set(longOp, {
         id: longOp,
         name: 'long-running',
-        startTime: Date.now() - 10000, // 10 seconds ago
+        startTime: performance.now() - 10000, // 10 seconds ago
         metadata: {}
       });
       

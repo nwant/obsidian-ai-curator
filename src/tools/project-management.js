@@ -6,6 +6,102 @@ import matter from 'gray-matter';
  * Project management tools
  */
 
+// ProjectManager class for test compatibility
+export class ProjectManager {
+  constructor(config) {
+    this.config = config;
+    this.vaultPath = config.vaultPath;
+    this.projectsFolder = config.projectsFolder || 'Projects';
+    this.templates = config.templates || {};
+  }
+
+  async initProject(args) {
+    const {
+      projectName,
+      description,
+      projectType = 'other',
+      template = 'default',
+      targetDate,
+      stakeholders = [],
+      phase = 'planning'
+    } = args;
+    
+    if (!projectName || !description) {
+      throw new Error('projectName and description are required');
+    }
+    
+    const vaultPath = this.vaultPath;
+    
+    // Create project folder
+    const projectFolder = path.join(this.projectsFolder, projectName);
+    const projectPath = path.join(vaultPath, projectFolder);
+    await fs.mkdir(projectPath, { recursive: true });
+    
+    // Use template if available
+    const selectedTemplate = this.templates[template];
+    if (selectedTemplate && selectedTemplate.structure) {
+      // Create files from template
+      for (const [filename, content] of Object.entries(selectedTemplate.structure)) {
+        const filePath = path.join(projectPath, filename);
+        const processedContent = content
+          .replace(/{{projectName}}/g, projectName)
+          .replace(/{{description}}/g, description)
+          .replace(/{{phase}}/g, phase)
+          .replace(/{{status}}/g, 'Active')
+          .replace(/{{targetDate}}/g, targetDate || 'TBD')
+          .replace(/{{#stakeholders}}[\s\S]*?{{\/stakeholders}}/g, 
+            stakeholders.map(s => `- ${s}`).join('\n') || '- TBD');
+        
+        await fs.writeFile(filePath, processedContent, 'utf-8');
+      }
+      
+      return {
+        success: true,
+        projectPath: projectFolder,
+        message: `Project "${projectName}" created successfully with ${template} template`,
+        filesCreated: Object.keys(selectedTemplate.structure).length
+      };
+    }
+    
+    // Default project creation if no template
+    const indexContent = `# ${projectName}\n\n${description}\n\n## Status\n- Phase: ${phase}\n- Created: ${new Date().toISOString().split('T')[0]}`;
+    await fs.writeFile(path.join(projectPath, 'Index.md'), indexContent, 'utf-8');
+    
+    return {
+      success: true,
+      projectPath: projectFolder,
+      message: `Project "${projectName}" created successfully`,
+      filesCreated: 1
+    };
+  }
+
+  async listTemplates() {
+    const templates = [];
+    
+    for (const [key, template] of Object.entries(this.templates)) {
+      templates.push({
+        id: key,
+        name: template.name || key,
+        description: template.description || `${key} template`,
+        structure: template.structure ? Object.keys(template.structure) : []
+      });
+    }
+    
+    return {
+      templates,
+      count: templates.length,
+      defaultTemplate: 'default'
+    };
+  }
+
+  async getWorkingContext(args) {
+    return get_working_context({
+      ...args,
+      vaultPath: this.vaultPath
+    });
+  }
+}
+
 export async function init_project(args) {
   const {
     projectName,
