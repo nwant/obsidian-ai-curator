@@ -33,15 +33,18 @@ export class NoteHandler {
         // Validate path
         validatePath(notePath, this.config.vaultPath);
         
-        const fullPath = path.join(this.config.vaultPath, notePath);
-        const content = await this.cache.getFileContent(fullPath);
+        // Cache expects relative path, not full path
+        const content = await this.cache.getFileContent(notePath);
         const parsed = matter(content);
+        const fullPath = path.join(this.config.vaultPath, notePath);
         
         const note = {
           path: notePath,
           content: parsed.content,
           frontmatter: parsed.data || {},
-          raw: content
+          raw: content,
+          headings: this.extractHeadings(parsed.content),
+          links: this.extractLinks(parsed.content)
         };
         
         // Add file stats
@@ -159,6 +162,173 @@ export class NoteHandler {
   /**
    * Archive multiple notes
    */
+  /**
+   * Extract headings from content
+   * @stub - Basic implementation for testing
+   */
+  extractHeadings(content) {
+    const headings = [];
+    const lines = content.split('\n');
+    
+    for (const line of lines) {
+      const match = line.match(/^(#{1,6})\s+(.+)$/);
+      if (match) {
+        headings.push({
+          level: match[1].length,
+          text: match[2],
+          raw: line
+        });
+      }
+    }
+    
+    return headings;
+  }
+  
+  /**
+   * Extract links from content
+   * @stub - Basic implementation for testing
+   */
+  extractLinks(content) {
+    const links = [];
+    
+    // Extract wikilinks
+    const wikilinks = content.match(/\[\[([^\]]+)\]\]/g) || [];
+    wikilinks.forEach(link => {
+      const match = link.match(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/);
+      if (match) {
+        links.push({
+          type: 'wikilink',
+          target: match[1],
+          alias: match[2] || null,
+          raw: link
+        });
+      }
+    });
+    
+    // Extract markdown links
+    const mdLinks = content.match(/\[([^\]]+)\]\(([^)]+)\)/g) || [];
+    mdLinks.forEach(link => {
+      const match = link.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      if (match) {
+        links.push({
+          type: 'markdown',
+          text: match[1],
+          url: match[2],
+          raw: link
+        });
+      }
+    });
+    
+    return links;
+  }
+  
+  /**
+   * Format links to wikilink format
+   * @stub - Basic implementation for testing
+   */
+  formatLinks(content) {
+    // Convert markdown links to wikilinks
+    return content.replace(/\[([^\]]+)\]\(([^)]+\.md)\)/g, (match, text, path) => {
+      const note = path.replace(/\.md$/, '').replace(/.*\//, '');
+      return `[[${note}|${text}]]`;
+    });
+  }
+  
+  /**
+   * Update frontmatter for a note
+   * @stub - Basic implementation for testing
+   */
+  async updateFrontmatter({ path: notePath, updates, merge = true }) {
+    try {
+      const content = await this.cache.getFileContent(notePath);
+      const parsed = matter(content);
+      
+      const newFrontmatter = merge 
+        ? { ...parsed.data, ...updates }
+        : updates;
+      
+      const newContent = matter.stringify(parsed.content, newFrontmatter);
+      
+      return this.writeNote({ 
+        path: notePath, 
+        content: newContent 
+      });
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+  
+  /**
+   * Get or create daily note
+   * @stub - Basic implementation for testing
+   */
+  async getDailyNote({ date = 'today', createIfMissing = true }) {
+    const dateStr = date === 'today' 
+      ? new Date().toISOString().split('T')[0]
+      : date;
+    
+    const dailyNotePath = `Daily/${dateStr}.md`;
+    
+    try {
+      const content = await this.cache.getFileContent(dailyNotePath);
+      return {
+        exists: true,
+        path: dailyNotePath,
+        content
+      };
+    } catch (error) {
+      if (createIfMissing) {
+        const template = `# ${dateStr}\n\n## Tasks\n- [ ] \n\n## Notes\n\n`;
+        await this.writeNote({
+          path: dailyNotePath,
+          content: template
+        });
+        return {
+          exists: false,
+          created: true,
+          path: dailyNotePath,
+          content: template
+        };
+      }
+      
+      return {
+        exists: false,
+        path: dailyNotePath,
+        error: 'Daily note not found'
+      };
+    }
+  }
+  
+  /**
+   * Append content to daily note
+   * @stub - Basic implementation for testing
+   */
+  async appendToDailyNote({ content, section = 'Notes', date = 'today' }) {
+    const dailyNote = await this.getDailyNote({ date, createIfMissing: true });
+    
+    let noteContent = dailyNote.content;
+    const sectionHeader = `## ${section}`;
+    
+    if (noteContent.includes(sectionHeader)) {
+      // Insert after section header
+      const lines = noteContent.split('\n');
+      const sectionIndex = lines.findIndex(l => l === sectionHeader);
+      lines.splice(sectionIndex + 1, 0, `- ${content}`);
+      noteContent = lines.join('\n');
+    } else {
+      // Add section at end
+      noteContent += `\n${sectionHeader}\n- ${content}\n`;
+    }
+    
+    return this.writeNote({
+      path: dailyNote.path,
+      content: noteContent
+    });
+  }
+
   async archiveNotes({ moves }) {
     const results = {
       successful: 0,
@@ -184,8 +354,8 @@ export class NoteHandler {
         const { from, to } = move;
         
         // Validate paths
-        this.pathValidator.validatePath(from, this.config.vaultPath);
-        this.pathValidator.validatePath(to, this.config.vaultPath);
+        validatePath(from, this.config.vaultPath);
+        validatePath(to, this.config.vaultPath);
         
         const sourcePath = path.join(this.config.vaultPath, from);
         const targetPath = path.join(this.config.vaultPath, to);

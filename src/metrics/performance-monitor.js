@@ -36,6 +36,7 @@ export class PerformanceMonitor {
     this.activeOperations = new Map(); // Track active operations
     this.thresholds = config.thresholds || {}; // Performance thresholds
     this.operationHistory = []; // Keep history for percentile calculations
+    this.operations = []; // Alias for test compatibility
   }
 
   /**
@@ -338,18 +339,21 @@ export class PerformanceMonitor {
    * Start tracking an operation
    * @stub - Basic implementation for testing
    */
-  startOperation(operationId, metadata = {}) {
+  startOperation(operationName, metadata = {}) {
+    const operationId = `${operationName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     this.activeOperations.set(operationId, {
+      name: operationName,
       startTime: performance.now(),
       metadata
     });
+    return operationId;
   }
 
   /**
    * End tracking an operation
    * @stub - Basic implementation for testing
    */
-  endOperation(operationId, metadata = {}) {
+  endOperation(operationId, success = true, metadata = {}) {
     const operation = this.activeOperations.get(operationId);
     if (!operation) {
       return null;
@@ -360,12 +364,45 @@ export class PerformanceMonitor {
     
     this.activeOperations.delete(operationId);
     
+    // Track metrics by operation name
+    if (!this.metrics.operations.has(operation.name)) {
+      this.metrics.operations.set(operation.name, {
+        count: 0,
+        successCount: 0,
+        errorCount: 0,
+        totalDuration: 0,
+        durations: []
+      });
+    }
+    
+    const opMetrics = this.metrics.operations.get(operation.name);
+    opMetrics.count++;
+    opMetrics.totalDuration += duration;
+    opMetrics.durations.push(duration);
+    
+    if (success) {
+      opMetrics.successCount++;
+    } else {
+      opMetrics.errorCount++;
+    }
+    
+    // Calculate averages
+    opMetrics.avgDuration = opMetrics.totalDuration / opMetrics.count;
+    opMetrics.successRate = opMetrics.successCount / opMetrics.count;
+    
+    // Update summary metrics
+    this.metrics.summary.totalCalls++;
+    if (!success) {
+      this.metrics.summary.totalErrors++;
+    }
+    
     // Track in history
     this.operationHistory.push({
       id: operationId,
+      name: operation.name,
       duration,
       timestamp: Date.now(),
-      success: !metadata.error,
+      success,
       ...metadata
     });
     
@@ -374,7 +411,21 @@ export class PerformanceMonitor {
       this.operationHistory = this.operationHistory.slice(-1000);
     }
     
-    return { duration, success: !metadata.error };
+    return { duration, success };
+  }
+  
+  /**
+   * Get metrics for all operations
+   * @stub - Basic implementation for testing
+   */
+  getMetrics() {
+    const metrics = {};
+    
+    this.metrics.operations.forEach((value, key) => {
+      metrics[key] = { ...value };
+    });
+    
+    return metrics;
   }
 
   /**
