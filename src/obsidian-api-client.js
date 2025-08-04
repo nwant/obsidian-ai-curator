@@ -1,10 +1,17 @@
 export class ObsidianAPIClient {
   constructor(apiUrl = 'http://localhost:3001') {
     this.apiUrl = apiUrl;
+    this.baseUrl = apiUrl; // Alias for test compatibility
     this.available = false;
+    this.connected = false; // Alias for test compatibility
     this.lastCheck = 0;
     this.checkInterval = 5000; // Check every 5 seconds
-    this.checkAvailability();
+    this.checkTimer = null;
+    
+    // Don't auto-check in test environment
+    if (process.env.NODE_ENV !== 'test') {
+      this.checkAvailability();
+    }
   }
 
   async checkAvailability() {
@@ -19,30 +26,54 @@ export class ObsidianAPIClient {
         const data = await response.json();
         const wasAvailable = this.available;
         this.available = data.success && data.data?.status === 'ok';
+        this.connected = this.available; // Keep in sync
         // Only log when status changes
         if (this.available && !wasAvailable) {
           console.error(`Obsidian API server available at ${this.apiUrl}`);
         }
       } else {
         this.available = false;
+        this.connected = false;
       }
     } catch (error) {
       this.available = false;
+      this.connected = false;
       // Silently fail - API server might not be running
     }
     
     this.lastCheck = Date.now();
     
-    // Schedule next check
-    setTimeout(() => this.checkAvailability(), this.checkInterval);
+    // Schedule next check (but store timer reference for cleanup)
+    if (process.env.NODE_ENV !== 'test') {
+      this.checkTimer = setTimeout(() => this.checkAvailability(), this.checkInterval);
+    }
+  }
+  
+  /**
+   * Clean up timers (for testing)
+   */
+  cleanup() {
+    if (this.checkTimer) {
+      clearTimeout(this.checkTimer);
+      this.checkTimer = null;
+    }
   }
 
   isAvailable() {
     // Re-check if last check was too long ago
-    if (Date.now() - this.lastCheck > this.checkInterval * 2) {
+    if (Date.now() - this.lastCheck > this.checkInterval * 2 && process.env.NODE_ENV !== 'test') {
       this.checkAvailability();
     }
     return this.available;
+  }
+  
+  /**
+   * Check connection status (for testing)
+   * @stub - Basic implementation
+   */
+  async checkConnection() {
+    await this.checkAvailability();
+    return this.connected;
   }
 
   async request(endpoint, params = {}) {

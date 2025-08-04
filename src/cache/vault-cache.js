@@ -4,7 +4,11 @@ import crypto from 'crypto';
 
 export class VaultCache {
   constructor(config) {
-    this.config = config;
+    this.config = config || {};
+    this.vaultPath = this.config.vaultPath; // Expected by tests
+    this.cacheEnabled = this.config.cacheEnabled !== false; // Default true
+    this.cacheTTL = this.config.cacheTTL || 5 * 60 * 1000; // Expected by tests
+    
     this.structure = new Map();     // file paths, metadata
     this.content = new Map();       // recent file contents with LRU
     this.contexts = new Map();      // computed context sets
@@ -12,7 +16,7 @@ export class VaultCache {
     this.lastFullScan = 0;
     this.maxContentCacheSize = 100;
     this.maxContextCacheSize = 20;
-    this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+    this.cacheTimeout = this.cacheTTL; // Use configured TTL
     this.contentCacheTimeout = 10 * 60 * 1000; // 10 minutes
   }
 

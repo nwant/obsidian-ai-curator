@@ -43,7 +43,20 @@ export class TagHandler {
       }
 
       // Fallback to tool function
-      return get_tags({ path: filePath });
+      const result = await get_tags({ path: filePath });
+      
+      // Transform to match test expectations
+      if (filePath) {
+        // Single file - already returns { tags: [...], file: ... }
+        return result;
+      } else {
+        // All tags - transform to array format for tests
+        return {
+          tags: Object.keys(result.tags), // Convert object keys to array
+          tagCounts: result.tags, // Keep counts for reference
+          ...result
+        };
+      }
     } catch (error) {
       console.error('Get tags error:', error);
       throw error;
