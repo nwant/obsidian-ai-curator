@@ -21,10 +21,10 @@ export async function rename_file(args) {
   
   // Validate paths for security
   if (path.isAbsolute(oldPath) || oldPath.includes('..')) {
-    throw new Error(`Invalid source path: ${oldPath}`);
+    throw new Error(`Invalid path outside vault: ${oldPath}`);
   }
   if (path.isAbsolute(newPath) || newPath.includes('..')) {
-    throw new Error(`Invalid target path: ${newPath}`);
+    throw new Error(`Invalid path outside vault: ${newPath}`);
   }
   const validatedOldPath = oldPath;
   const validatedNewPath = newPath;
@@ -97,10 +97,10 @@ export async function archive_notes(args) {
   // Validate all paths first
   for (const move of moves) {
     if (path.isAbsolute(move.from) || move.from.includes('..')) {
-      throw new Error(`Invalid source path in archive: ${move.from}`);
+      throw new Error(`Invalid path outside vault: ${move.from}`);
     }
     if (path.isAbsolute(move.to) || move.to.includes('..')) {
-      throw new Error(`Invalid target path in archive: ${move.to}`);
+      throw new Error(`Invalid path outside vault: ${move.to}`);
     }
   }
   

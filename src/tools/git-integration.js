@@ -88,6 +88,12 @@ export async function git_changes(args = {}) {
       success: true,
       testMode: true,
       since,
+      changes: {
+        modified: [],
+        created: [],
+        deleted: [],
+        renamed: []
+      },
       uncommitted: {
         modified: [],
         created: [],

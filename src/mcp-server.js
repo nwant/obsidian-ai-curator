@@ -483,6 +483,157 @@ export class McpServer {
     return { backlinks: [] }; // Placeholder
   }
 
+  // Test methods for unit testing
+  getTools() {
+    const tools = [
+      { name: 'vault_scan', description: 'Scan vault for files' },
+      { name: 'read_notes', description: 'Read notes' },
+      { name: 'write_note', description: 'Write a note' },
+      { name: 'search_content', description: 'Search content' },
+      { name: 'find_by_metadata', description: 'Find by metadata' },
+      { name: 'git_checkpoint', description: 'Create git checkpoint' },
+      { name: 'git_changes', description: 'Get git changes' },
+      { name: 'get_tags', description: 'Get tags' },
+      { name: 'analyze_tags', description: 'Analyze tags' },
+      { name: 'update_tags', description: 'Update tags' },
+      { name: 'get_daily_note', description: 'Get daily note' },
+      { name: 'append_to_daily_note', description: 'Append to daily note' },
+      { name: 'add_daily_task', description: 'Add daily task' },
+      { name: 'update_frontmatter', description: 'Update frontmatter' },
+      { name: 'init_project', description: 'Initialize project' },
+      { name: 'list_project_templates', description: 'List project templates' },
+      { name: 'move_file', description: 'Move file' },
+      { name: 'rename_file', description: 'Rename file' },
+      { name: 'archive_notes', description: 'Archive notes' }
+    ];
+    
+    // Add performance metrics tool if collector is available
+    if (this.metricsCollector) {
+      tools.push({ name: 'view_performance_metrics', description: 'View performance metrics' });
+    }
+    
+    return tools;
+  }
+
+  async handleToolCall(toolName, args) {
+    // Track performance if monitor is available
+    const startTime = Date.now();
+    
+    try {
+      let result;
+      
+      // Route to appropriate handler based on tool name
+      switch (toolName) {
+        // Vault operations
+        case 'vault_scan':
+          result = await this.vaultHandler.scanVault(args);
+          break;
+          
+        // Note operations
+        case 'read_notes':
+          if (!args.paths) throw new Error('paths parameter is required');
+          result = await this.noteHandler.readNotes(args);
+          break;
+          
+        case 'write_note':
+          if (!args.path || !args.content) {
+            throw new Error('path and content parameters are required');
+          }
+          result = await this.noteHandler.writeNote(args);
+          break;
+          
+        case 'update_frontmatter':
+          result = await this.noteHandler.updateFrontmatter(args);
+          break;
+          
+        case 'archive_notes':
+          result = await this.noteHandler.archiveNotes(args);
+          break;
+          
+        // Search operations
+        case 'search_content':
+          result = await this.searchHandler.searchContent(args);
+          break;
+          
+        case 'find_by_metadata':
+          result = await this.searchHandler.findByMetadata(args);
+          break;
+          
+        // Git operations
+        case 'git_checkpoint':
+          result = await this.gitHandler.createCheckpoint(args);
+          break;
+          
+        case 'git_changes':
+          result = await this.gitHandler.getChanges(args);
+          break;
+          
+        // Tag operations
+        case 'get_tags':
+          result = await this.tagHandler.getTags(args);
+          break;
+          
+        case 'analyze_tags':
+          result = await this.tagHandler.analyzeTags(args);
+          break;
+          
+        case 'update_tags':
+          result = await this.tagHandler.updateTags(args);
+          break;
+          
+        // Daily note operations
+        case 'get_daily_note':
+          result = await get_daily_note(args);
+          break;
+          
+        case 'append_to_daily_note':
+          result = await append_to_daily_note(args);
+          break;
+          
+        case 'add_daily_task':
+          result = await add_daily_task(args);
+          break;
+          
+        // Project operations
+        case 'init_project':
+          result = await init_project(args);
+          break;
+          
+        case 'list_project_templates':
+          result = await list_project_templates(args);
+          break;
+          
+        // File operations
+        case 'move_file':
+          result = await move_file(args);
+          break;
+          
+        case 'rename_file':
+          result = await rename_file(args);
+          break;
+          
+        default:
+          throw new Error(`Unknown tool: ${toolName}`);
+      }
+      
+      // Track performance if available
+      if (this.metricsCollector) {
+        const duration = Date.now() - startTime;
+        this.metricsCollector.trackOperation(toolName, duration, true);
+      }
+      
+      return result;
+    } catch (error) {
+      // Track error if collector available
+      if (this.metricsCollector) {
+        const duration = Date.now() - startTime;
+        this.metricsCollector.trackOperation(toolName, duration, false, error.message);
+      }
+      
+      throw error;
+    }
+  }
+
   async run() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
@@ -495,6 +646,10 @@ export class McpServer {
   }
 }
 
-// Main entry point
-const server = new McpServer();
-server.run().catch(console.error);
+// Main entry point - only run if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  loadConfig().then(() => {
+    const server = new McpServer();
+    server.run().catch(console.error);
+  }).catch(console.error);
+}

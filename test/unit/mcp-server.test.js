@@ -48,7 +48,8 @@ describe('McpServer', () => {
         cacheEnabled: false
       });
       
-      expect(noCacheServer.cache).toBeDefined(); // Still created but disabled
+      expect(noCacheServer.cache).toBeUndefined(); // Cache not created when disabled
+      expect(noCacheServer.vaultHandler).toBeDefined(); // But handlers still work
     });
   });
   
@@ -322,9 +323,12 @@ describe('McpServer', () => {
     });
     
     it('should handle invalid paths', async () => {
-      await expect(server.handleToolCall('read_notes', {
+      const result = await server.handleToolCall('read_notes', {
         paths: ['../../../etc/passwd']
-      })).rejects.toThrow();
+      });
+      
+      expect(result.notes).toHaveLength(1);
+      expect(result.notes[0].error).toContain('Invalid path');
     });
   });
   

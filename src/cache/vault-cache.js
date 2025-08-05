@@ -87,7 +87,9 @@ export class VaultCache {
     });
     this.lastFullScan = Date.now();
     
-    console.error(`Vault scan completed in ${Date.now() - startTime}ms, found ${this.structure.size} files`);
+    if (process.env.NODE_ENV !== 'test') {
+      console.error(`Vault scan completed in ${Date.now() - startTime}ms, found ${this.structure.size} files`);
+    }
   }
 
   // Get file content with caching

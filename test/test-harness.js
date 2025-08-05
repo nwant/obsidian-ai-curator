@@ -98,7 +98,9 @@ export class TestHarness {
       'tag-management',
       'daily-notes',
       'git-integration',
-      'project-management'
+      'project-management',
+      'note-operations',
+      'file-operations'
     ];
     
     for (const moduleName of toolModules) {
@@ -289,29 +291,31 @@ export class TestHarness {
    * Clean test vault (remove all files except directories)
    */
   async cleanTestVault() {
-    // Ensure test vault exists
+    try {
+      // Remove entire test vault and recreate it
+      await fs.rm(this.testVaultPath, { recursive: true, force: true });
+    } catch (error) {
+      // Directory might not exist, that's fine
+      if (error.code !== 'ENOENT') {
+        console.error(`Error removing test vault:`, error.message);
+      }
+    }
+    
+    // Recreate standard test structure
     await fs.mkdir(this.testVaultPath, { recursive: true });
     
-    const cleanDir = async (dir) => {
-      try {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory() && !entry.name.startsWith('.')) {
-            await cleanDir(fullPath);
-          } else if (!entry.isDirectory()) {
-            await fs.unlink(fullPath);
-          }
-        }
-      } catch (error) {
-        // Directory doesn't exist, that's fine
-        if (error.code !== 'ENOENT') {
-          console.error(`Error cleaning ${dir}:`, error.message);
-        }
-      }
-    };
+    const dirs = [
+      'Daily',
+      'Projects', 
+      'Archive',
+      'Templates',
+      'Attachments',
+      '.obsidian'
+    ];
     
-    await cleanDir(this.testVaultPath);
+    for (const dir of dirs) {
+      await fs.mkdir(path.join(this.testVaultPath, dir), { recursive: true });
+    }
   }
 
   /**

@@ -36,7 +36,17 @@ export class NoteHandler {
         
         // Cache expects relative path, not full path
         const content = await this.cache.getFileContent(notePath);
-        const parsed = matter(content);
+        let parsed;
+        try {
+          parsed = matter(content);
+        } catch (parseError) {
+          // If frontmatter parsing fails, treat entire content as body
+          parsed = {
+            content: content,
+            data: {}
+          };
+        }
+        
         const fullPath = path.join(this.config.vaultPath, notePath);
         
         const note = {
@@ -75,7 +85,9 @@ export class NoteHandler {
   /**
    * Write or update a note
    */
-  async writeNote({ path: notePath, content }) {
+  async writeNote(args) {
+    const { path: notePath, content } = args;
+    
     // Validate path - ensure it's not absolute and within vault
     if (path.isAbsolute(notePath) || notePath.includes('..')) {
       throw new Error(`Invalid path: ${notePath}`);
@@ -114,9 +126,19 @@ export class NoteHandler {
       
       // Check if file exists to determine action
       let action = 'created';
+      let existingFrontmatter = {};
+      let fileExists = false;
       try {
         await fs.access(fullPath);
         action = 'updated';
+        fileExists = true;
+        
+        // Read existing file to get frontmatter if preserving
+        if (args.preserveFrontmatter) {
+          const existingContent = await fs.readFile(fullPath, 'utf-8');
+          const existingParsed = matter(existingContent);
+          existingFrontmatter = existingParsed.data;
+        }
       } catch {
         // File doesn't exist, will be created
       }
@@ -130,26 +152,59 @@ export class NoteHandler {
         finalContent = this.formatLinks(finalContent);
       }
       
+      // Handle frontmatter
       if (finalContent.includes('---\n') || finalContent.startsWith('---\n')) {
         // Parse content to handle frontmatter
         const parsed = matter(finalContent);
         
-        // Format tags if present (remove # from frontmatter)
+        // Format tags if present (remove # from frontmatter, clean up)
         if (parsed.data.tags) {
           if (Array.isArray(parsed.data.tags)) {
-            parsed.data.tags = parsed.data.tags.map(tag => 
-              typeof tag === 'string' ? tag.replace(/^#/, '') : tag
-            );
+            parsed.data.tags = parsed.data.tags.map(tag => {
+              if (typeof tag === 'string') {
+                // Remove # prefix, replace spaces with hyphens, convert to lowercase
+                return tag
+                  .replace(/^#/, '')
+                  .replace(/\s+/g, '-')
+                  .toLowerCase();
+              }
+              return tag;
+            });
           }
         }
         
-        // Add modified date if frontmatter exists
-        if (Object.keys(parsed.data).length > 0) {
+        // Format any date fields to YYYY-MM-DD
+        if (parsed.data) {
+          for (const [key, value] of Object.entries(parsed.data)) {
+            if (value instanceof Date) {
+              // Convert Date objects to YYYY-MM-DD string
+              parsed.data[key] = value.toISOString().split('T')[0];
+            } else if (typeof value === 'string' && /^\d{4}[\/\-]\d{2}[\/\-]\d{2}$/.test(value)) {
+              // Convert YYYY/MM/DD or YYYY-MM-DD to YYYY-MM-DD
+              parsed.data[key] = value.replace(/\//g, '-');
+            } else if (typeof value === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(value)) {
+              // Convert MM-DD-YYYY to YYYY-MM-DD
+              const [month, day, year] = value.split('-');
+              parsed.data[key] = `${year}-${month}-${day}`;
+            }
+          }
+        }
+        
+        // Add modified date only if explicitly requested
+        if (args.addModifiedDate) {
           parsed.data.modified = new Date().toISOString().split('T')[0];
         }
         
         // Reconstruct content with frontmatter
         finalContent = matter.stringify(parsed.content, parsed.data);
+      } else if (args.preserveFrontmatter && Object.keys(existingFrontmatter).length > 0) {
+        // Content has no frontmatter but we want to preserve existing
+        existingFrontmatter.modified = new Date().toISOString().split('T')[0];
+        finalContent = matter.stringify(content, existingFrontmatter);
+      } else if (args.addModifiedDate && !finalContent.includes('---\n')) {
+        // Content has no frontmatter but we want to add modified date
+        const frontmatter = { modified: new Date().toISOString().split('T')[0] };
+        finalContent = matter.stringify(content, frontmatter);
       }
       
       // Write file
