@@ -119,7 +119,15 @@ export class TagHandler {
       
       // Compute similar tags if not provided
       let similar = result.analysis?.similar || [];
-      if (similar.length === 0) {
+      
+      // Transform similar tags to expected format
+      if (Array.isArray(similar) && similar.length > 0 && Array.isArray(similar[0])) {
+        // Convert array of pairs to expected format
+        similar = similar.map(pair => ({
+          tags: pair,
+          similarity: 0.8
+        }));
+      } else if (similar.length === 0) {
         // Simple similarity detection
         const allTags = result.analysis?.mostUsedTags?.map(t => t.tag) || [];
         const groups = [];
@@ -148,7 +156,7 @@ export class TagHandler {
       }
       
       // Format for test compatibility
-      return {
+      const returnValue = {
         tags: result.analysis?.mostUsedTags?.map(t => t.tag) || [],
         usage: result.analysis?.mostUsedTags || [],
         totalUsage: result.totalTags || 0,
@@ -156,6 +164,14 @@ export class TagHandler {
         orphaned: result.analysis?.orphaned || [],
         similar: similar,
         recommendations: result.recommendations || []
+      };
+      
+      // Return the full result object from analyze_tags to preserve all fields
+      // Make sure similar is at the top level
+      return {
+        ...result,
+        ...returnValue,
+        similar: similar || result.analysis?.similar || []
       };
     } catch (error) {
       console.error('Analyze tags error:', error);

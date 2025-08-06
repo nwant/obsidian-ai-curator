@@ -96,7 +96,12 @@ export class ProjectManager {
     await fs.mkdir(projectPath, { recursive: true });
     
     // Use template if available
-    const selectedTemplate = this.templates[template];
+    // If template is default but projectType is a valid template, use projectType
+    let templateToUse = template;
+    if (template === 'default' && this.templates[projectType]) {
+      templateToUse = projectType;
+    }
+    const selectedTemplate = this.templates[templateToUse];
     if (selectedTemplate && selectedTemplate.structure) {
       const createdFiles = [];
       
@@ -134,7 +139,7 @@ export class ProjectManager {
       return {
         success: true,
         projectPath: projectFolder,
-        message: `Project "${projectName}" created successfully with ${template} template`,
+        message: `Project "${projectName}" created successfully with ${templateToUse} template`,
         filesCreated: createdFiles.length,
         created: createdFiles
       };
