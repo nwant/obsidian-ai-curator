@@ -32,3 +32,7 @@ _archived/
 !config/project-templates.example.json
 !config/project-templates.default.json
 !data/ground-truth.example.json
+
+# AI development scripts (kept in private repo)
+scripts/ai-tasks/
+scripts/ai-tasks.sh

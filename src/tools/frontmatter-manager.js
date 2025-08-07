@@ -15,112 +15,418 @@ export class FrontmatterManager {
   }
 
   /**
-   * Extract frontmatter from content
-   * @stub - Basic implementation, needs enhancement
+   * Extract frontmatter from content with advanced parsing and error recovery
    */
   extractFrontmatter(content) {
+    // Handle empty or missing content
+    if (!content || typeof content !== 'string') {
+      return {
+        frontmatter: {},
+        content: content || '',
+        raw: content || ''
+      };
+    }
+    
     try {
+      // Use gray-matter for standard parsing
       const parsed = matter(content);
       return {
-        frontmatter: parsed.data,
+        frontmatter: parsed.data || {},
         content: parsed.content,
-        raw: content  // Use 'raw' for test compatibility
+        raw: content
       };
     } catch (error) {
-      // Try to extract partial frontmatter even if malformed
-      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-      let partialFrontmatter = {};
+      // Advanced error recovery for malformed YAML
+      const result = {
+        frontmatter: {},
+        content: content,
+        raw: content,
+        error: error.message
+      };
       
-      if (frontmatterMatch) {
-        const lines = frontmatterMatch[1].split('\n');
-        for (const line of lines) {
-          const match = line.match(/^([^:]+):\s*(.*)/);
-          if (match) {
-            const key = match[1].trim();
-            const value = match[2].trim();
-            // Try to parse simple values
-            if (value === 'true') partialFrontmatter[key] = true;
-            else if (value === 'false') partialFrontmatter[key] = false;
-            else if (!isNaN(value) && value !== '') partialFrontmatter[key] = Number(value);
-            else partialFrontmatter[key] = value.replace(/^["']|["']$/g, '');
+      // Try to extract frontmatter block
+      const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+      if (!frontmatterMatch) {
+        // No frontmatter found, return content as-is
+        return result;
+      }
+      
+      // Remove frontmatter from content
+      result.content = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
+      
+      // Parse line by line for partial recovery
+      const yamlContent = frontmatterMatch[1];
+      const lines = yamlContent.split('\n');
+      let currentKey = null;
+      let currentValue = '';
+      let inMultiline = false;
+      let multilineIndent = 0;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // Skip empty lines
+        if (!line.trim()) {
+          if (inMultiline) {
+            currentValue += '\n';
+          }
+          continue;
+        }
+        
+        // Handle multiline values
+        if (inMultiline) {
+          const lineIndent = line.match(/^(\s*)/)[1].length;
+          if (lineIndent >= multilineIndent) {
+            currentValue += (currentValue ? '\n' : '') + line.substring(multilineIndent);
+            continue;
+          } else {
+            // End of multiline value
+            if (currentKey) {
+              result.frontmatter[currentKey] = currentValue;
+            }
+            inMultiline = false;
+            currentValue = '';
+          }
+        }
+        
+        // Check for array items
+        if (line.match(/^\s*-\s+/)) {
+          const item = line.replace(/^\s*-\s+/, '').trim();
+          if (currentKey) {
+            if (!Array.isArray(result.frontmatter[currentKey])) {
+              result.frontmatter[currentKey] = [];
+            }
+            // Parse array item value
+            result.frontmatter[currentKey].push(this.parseValue(item));
+          }
+          continue;
+        }
+        
+        // Check for key-value pairs
+        const keyMatch = line.match(/^([^:]+):\s*(.*)/);
+        if (keyMatch) {
+          // Save previous key-value if exists
+          if (currentKey && !inMultiline && currentValue) {
+            result.frontmatter[currentKey] = this.parseValue(currentValue);
+          }
+          
+          currentKey = keyMatch[1].trim();
+          const rawValue = keyMatch[2].trim();
+          
+          // Check for multiline indicators
+          if (rawValue === '|' || rawValue === '>') {
+            inMultiline = true;
+            multilineIndent = lines[i + 1] ? lines[i + 1].match(/^(\s*)/)[1].length : 2;
+            currentValue = '';
+          } else if (rawValue === '' || rawValue === '[]') {
+            // Check if next line is an array or nested object
+            if (i + 1 < lines.length && lines[i + 1].match(/^\s+([-]|\w+:)/)) {
+              // Will be handled by array/nested logic
+              continue;
+            } else {
+              // Empty value
+              result.frontmatter[currentKey] = rawValue === '[]' ? [] : null;
+              currentKey = null;
+            }
+          } else {
+            // Single line value
+            result.frontmatter[currentKey] = this.parseValue(rawValue);
+            currentKey = null;
+            currentValue = '';
+          }
+        } else if (currentKey && line.match(/^\s+/)) {
+          // Continuation of previous value or nested structure
+          const trimmed = line.trim();
+          if (trimmed.startsWith('-')) {
+            // Array item
+            if (!Array.isArray(result.frontmatter[currentKey])) {
+              result.frontmatter[currentKey] = [];
+            }
+            result.frontmatter[currentKey].push(this.parseValue(trimmed.substring(1).trim()));
+          } else if (trimmed.includes(':')) {
+            // Nested object
+            if (typeof result.frontmatter[currentKey] !== 'object' || Array.isArray(result.frontmatter[currentKey])) {
+              result.frontmatter[currentKey] = {};
+            }
+            const [nestedKey, nestedValue] = trimmed.split(':').map(s => s.trim());
+            result.frontmatter[currentKey][nestedKey] = this.parseValue(nestedValue);
           }
         }
       }
       
-      return {
-        frontmatter: partialFrontmatter,
-        content: content.replace(/^---\n[\s\S]*?\n---\n?/, ''),
-        raw: content,
-        error: error.message
-      };
+      // Save last key-value if exists
+      if (currentKey && currentValue) {
+        result.frontmatter[currentKey] = currentValue;
+      }
+      
+      return result;
     }
+  }
+  
+  /**
+   * Parse a YAML value string into appropriate type
+   */
+  parseValue(value) {
+    if (typeof value !== 'string') return value;
+    
+    // Remove quotes if present
+    if ((value.startsWith('"') && value.endsWith('"')) || 
+        (value.startsWith("'") && value.endsWith("'"))) {
+      return value.slice(1, -1);
+    }
+    
+    // Handle special values
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    if (value === 'null' || value === '~') return null;
+    
+    // Handle arrays
+    if (value.startsWith('[') && value.endsWith(']')) {
+      const items = value.slice(1, -1).split(',').map(item => item.trim());
+      return items.map(item => this.parseValue(item));
+    }
+    
+    // Handle numbers
+    if (!isNaN(value) && value !== '' && !value.match(/^0\d/)) {
+      return Number(value);
+    }
+    
+    // Handle dates (ISO format)
+    if (value.match(/^\d{4}-\d{2}-\d{2}/) && !isNaN(Date.parse(value))) {
+      return value; // Keep as string for consistency
+    }
+    
+    return value;
   }
 
   /**
-   * Validate frontmatter against rules
-   * @stub - Basic implementation, needs enhancement
+   * Validate frontmatter against rules with advanced type checking
    */
   validateFrontmatter(frontmatter, rules = {}) {
     const errors = [];
+    const warnings = [];
+    
+    // Merge rules with instance configuration
+    const validationRules = {
+      required: rules.required || this.requiredFields || [],
+      dateFields: rules.dateFields || this.dateFields || [],
+      types: rules.types || {},
+      patterns: rules.patterns || {},
+      ranges: rules.ranges || {},
+      custom: rules.custom || {},
+      validate: rules.validate,
+      strict: rules.strict !== undefined ? rules.strict : false
+    };
     
     // Check required fields
-    const requiredFields = rules.required || this.requiredFields;
-    for (const field of requiredFields) {
-      if (!frontmatter[field]) {
+    for (const field of validationRules.required) {
+      if (!(field in frontmatter) || frontmatter[field] === null || frontmatter[field] === undefined) {
         errors.push(`Missing required field: ${field}`);
+      } else if (frontmatter[field] === '' || 
+                 (Array.isArray(frontmatter[field]) && frontmatter[field].length === 0)) {
+        errors.push(`Required field is empty: ${field}`);
+      }
+    }
+    
+    // Validate field types
+    for (const [field, expectedType] of Object.entries(validationRules.types)) {
+      if (field in frontmatter && frontmatter[field] !== null) {
+        const value = frontmatter[field];
+        const actualType = Array.isArray(value) ? 'array' : typeof value;
+        
+        if (expectedType === 'array' && !Array.isArray(value)) {
+          errors.push(`Field '${field}' must be an array`);
+        } else if (expectedType === 'object' && (typeof value !== 'object' || Array.isArray(value))) {
+          errors.push(`Field '${field}' must be an object`);
+        } else if (expectedType === 'string' && typeof value !== 'string') {
+          errors.push(`Field '${field}' must be a string`);
+        } else if (expectedType === 'number' && typeof value !== 'number') {
+          errors.push(`Field '${field}' must be a number`);
+        } else if (expectedType === 'boolean' && typeof value !== 'boolean') {
+          errors.push(`Field '${field}' must be a boolean`);
+        } else if (expectedType === 'date') {
+          // Special handling for date type
+          const dateValue = value instanceof Date ? value : new Date(value);
+          if (isNaN(dateValue.getTime())) {
+            errors.push(`Field '${field}' must be a valid date`);
+          }
+        }
       }
     }
     
     // Validate date fields
-    const dateFields = rules.dateFields || this.dateFields;
-    for (const field of dateFields) {
-      if (frontmatter[field] && !Date.parse(frontmatter[field])) {
-        errors.push(`Invalid date in field: ${field}`);
-      }
-    }
-    
-    // Custom validation rules
-    if (rules.custom) {
-      for (const [field, validator] of Object.entries(rules.custom)) {
-        if (typeof validator === 'function') {
-          const result = validator(frontmatter, field);
-          if (result !== true) {
-            errors.push(result || `Invalid value for field: ${field}`);
+    for (const field of validationRules.dateFields) {
+      if (field in frontmatter && frontmatter[field]) {
+        const value = frontmatter[field];
+        const dateValue = value instanceof Date ? value : new Date(value);
+        
+        if (isNaN(dateValue.getTime())) {
+          errors.push(`Invalid date in field: ${field}`);
+        } else {
+          // Check for reasonable date ranges (warn for dates too far in past/future)
+          const now = new Date();
+          const yearDiff = Math.abs(dateValue.getFullYear() - now.getFullYear());
+          if (yearDiff > 100) {
+            warnings.push(`Date in field '${field}' seems unusual: ${value}`);
           }
         }
       }
     }
     
-    // Custom validation function
-    if (rules.validate && typeof rules.validate === 'function') {
-      const customErrors = rules.validate(frontmatter);
-      if (customErrors && Array.isArray(customErrors)) {
-        errors.push(...customErrors);
+    // Validate patterns (regex)
+    for (const [field, pattern] of Object.entries(validationRules.patterns)) {
+      if (field in frontmatter && frontmatter[field]) {
+        const value = frontmatter[field];
+        const regex = pattern instanceof RegExp ? pattern : new RegExp(pattern);
+        
+        if (typeof value === 'string' && !regex.test(value)) {
+          errors.push(`Field '${field}' does not match required pattern: ${pattern}`);
+        } else if (Array.isArray(value)) {
+          const invalidItems = value.filter(item => 
+            typeof item === 'string' && !regex.test(item)
+          );
+          if (invalidItems.length > 0) {
+            errors.push(`Field '${field}' contains invalid items: ${invalidItems.join(', ')}`);
+          }
+        }
       }
     }
     
-    // Check custom validators
+    // Validate ranges (for numbers)
+    for (const [field, range] of Object.entries(validationRules.ranges)) {
+      if (field in frontmatter && frontmatter[field] !== null) {
+        const value = frontmatter[field];
+        if (typeof value === 'number') {
+          if (range.min !== undefined && value < range.min) {
+            errors.push(`Field '${field}' is below minimum value ${range.min}`);
+          }
+          if (range.max !== undefined && value > range.max) {
+            errors.push(`Field '${field}' is above maximum value ${range.max}`);
+          }
+        }
+      }
+    }
+    
+    // Custom field validators
+    for (const [field, validator] of Object.entries(validationRules.custom)) {
+      if (typeof validator === 'function') {
+        try {
+          const result = validator(frontmatter[field], frontmatter, field);
+          if (result !== true && result !== undefined && result !== null) {
+            if (typeof result === 'string') {
+              errors.push(result);
+            } else if (result === false) {
+              errors.push(`Invalid value for field: ${field}`);
+            }
+          }
+        } catch (error) {
+          errors.push(`Validation error for field '${field}': ${error.message}`);
+        }
+      } else if (typeof validator === 'object') {
+        // Handle validator objects with message
+        if (validator.test && typeof validator.test === 'function') {
+          const valid = validator.test(frontmatter[field], frontmatter);
+          if (!valid) {
+            errors.push(validator.message || `Invalid value for field: ${field}`);
+          }
+        }
+      }
+    }
+    
+    // Global validation function
+    if (validationRules.validate && typeof validationRules.validate === 'function') {
+      try {
+        const customErrors = validationRules.validate(frontmatter);
+        if (customErrors) {
+          if (Array.isArray(customErrors)) {
+            errors.push(...customErrors.filter(e => e)); // Filter out null/undefined
+          } else if (typeof customErrors === 'string') {
+            errors.push(customErrors);
+          }
+        }
+      } catch (error) {
+        errors.push(`Validation error: ${error.message}`);
+      }
+    }
+    
+    // Run instance custom validators
     for (const validator of this.customValidators) {
       if (typeof validator === 'function') {
-        const error = validator(frontmatter);
-        if (error) {
-          errors.push(error);
+        try {
+          const error = validator(frontmatter);
+          if (error) {
+            errors.push(error);
+          }
+        } catch (err) {
+          errors.push(`Custom validation error: ${err.message}`);
+        }
+      }
+    }
+    
+    // In strict mode, check for unknown fields
+    if (validationRules.strict) {
+      const knownFields = new Set([
+        ...validationRules.required,
+        ...validationRules.dateFields,
+        ...Object.keys(validationRules.types),
+        ...Object.keys(validationRules.patterns),
+        ...Object.keys(validationRules.ranges),
+        ...Object.keys(validationRules.custom)
+      ]);
+      
+      for (const field in frontmatter) {
+        if (!knownFields.has(field)) {
+          warnings.push(`Unknown field: ${field}`);
         }
       }
     }
     
     return {
       valid: errors.length === 0,
-      errors
+      errors,
+      warnings,
+      frontmatter // Return the validated frontmatter for reference
     };
   }
 
   /**
-   * Format frontmatter consistently
-   * @stub - Basic implementation, needs enhancement
+   * Format frontmatter consistently with template support and transformations
    */
   formatFrontmatter(frontmatter, options = {}) {
     const formatted = { ...frontmatter };
+    
+    // Apply template if specified
+    if (options.template) {
+      const template = typeof options.template === 'string' 
+        ? this.getTemplate(options.template) 
+        : options.template;
+      
+      if (template) {
+        // Apply template defaults first
+        for (const [key, value] of Object.entries(template)) {
+          if (!(key in formatted)) {
+            // Handle dynamic values in templates
+            if (typeof value === 'function') {
+              formatted[key] = value(formatted);
+            } else if (typeof value === 'string' && value.startsWith('{{') && value.endsWith('}}')) {
+              // Template variable substitution
+              const varName = value.slice(2, -2).trim();
+              if (varName === 'date') {
+                formatted[key] = new Date().toISOString().split('T')[0];
+              } else if (varName === 'timestamp') {
+                formatted[key] = new Date().toISOString();
+              } else if (varName === 'uuid') {
+                formatted[key] = this.generateUUID();
+              } else if (varName in formatted) {
+                formatted[key] = formatted[varName];
+              }
+            } else {
+              formatted[key] = value;
+            }
+          }
+        }
+      }
+    }
     
     // Apply default values if specified
     const defaultValues = options.defaults || this.defaultValues;
@@ -129,9 +435,23 @@ export class FrontmatterManager {
         if (!(key in formatted)) {
           // Handle dynamic defaults (functions)
           if (typeof value === 'function') {
-            formatted[key] = value();
+            formatted[key] = value(formatted);
           } else {
             formatted[key] = value;
+          }
+        }
+      }
+    }
+    
+    // Apply field transformations
+    if (options.transformations) {
+      for (const [field, transformation] of Object.entries(options.transformations)) {
+        if (field in formatted) {
+          if (typeof transformation === 'function') {
+            formatted[field] = transformation(formatted[field], formatted);
+          } else if (typeof transformation === 'string') {
+            // Built-in transformations
+            formatted[field] = this.applyTransformation(formatted[field], transformation);
           }
         }
       }
@@ -143,27 +463,236 @@ export class FrontmatterManager {
     
     for (const field of dateFields) {
       if (formatted[field]) {
-        if (typeof formatted[field] === 'string') {
-          const date = new Date(formatted[field]);
-          if (!isNaN(date.getTime())) {
-            if (dateFormat === 'iso') {
-              formatted[field] = date.toISOString().split('T')[0];
-            } else if (dateFormat === 'full') {
-              formatted[field] = date.toISOString();
-            }
-          }
-        } else if (formatted[field] instanceof Date) {
-          if (dateFormat === 'iso') {
-            formatted[field] = formatted[field].toISOString().split('T')[0];
-          } else if (dateFormat === 'full') {
-            formatted[field] = formatted[field].toISOString();
-          }
+        formatted[field] = this.formatDate(formatted[field], dateFormat);
+      }
+    }
+    
+    // Handle field ordering if specified
+    if (options.fieldOrder) {
+      const ordered = {};
+      // First add fields in specified order
+      for (const field of options.fieldOrder) {
+        if (field in formatted) {
+          ordered[field] = formatted[field];
+        }
+      }
+      // Then add remaining fields
+      for (const [key, value] of Object.entries(formatted)) {
+        if (!(key in ordered)) {
+          ordered[key] = value;
+        }
+      }
+      Object.assign(formatted, ordered);
+    }
+    
+    // Remove null/undefined fields if specified
+    if (options.removeEmpty) {
+      for (const key in formatted) {
+        if (formatted[key] === null || formatted[key] === undefined || 
+            (typeof formatted[key] === 'string' && formatted[key].trim() === '') ||
+            (Array.isArray(formatted[key]) && formatted[key].length === 0)) {
+          delete formatted[key];
         }
       }
     }
     
     // Always return YAML string for test compatibility
     return this.toYamlString(formatted);
+  }
+  
+  /**
+   * Format a date value according to the specified format
+   */
+  formatDate(value, format = 'iso') {
+    let date;
+    
+    if (value instanceof Date) {
+      date = value;
+    } else if (typeof value === 'string' || typeof value === 'number') {
+      date = new Date(value);
+    } else {
+      return value; // Return as-is if not a recognizable date
+    }
+    
+    if (isNaN(date.getTime())) {
+      return value; // Return original if invalid date
+    }
+    
+    switch (format) {
+      case 'iso':
+      case 'date':
+        return date.toISOString().split('T')[0];
+      case 'full':
+      case 'datetime':
+        return date.toISOString();
+      case 'time':
+        return date.toTimeString().split(' ')[0];
+      case 'year':
+        return date.getFullYear().toString();
+      case 'month':
+        return String(date.getMonth() + 1).padStart(2, '0');
+      case 'day':
+        return String(date.getDate()).padStart(2, '0');
+      case 'timestamp':
+        return date.getTime();
+      case 'relative':
+        return this.getRelativeTime(date);
+      default:
+        // Custom format string (e.g., "YYYY-MM-DD HH:mm")
+        if (typeof format === 'string') {
+          return this.formatDateCustom(date, format);
+        }
+        return date.toISOString().split('T')[0];
+    }
+  }
+  
+  /**
+   * Apply a built-in transformation to a value
+   */
+  applyTransformation(value, transformation) {
+    switch (transformation) {
+      case 'lowercase':
+        return typeof value === 'string' ? value.toLowerCase() : value;
+      case 'uppercase':
+        return typeof value === 'string' ? value.toUpperCase() : value;
+      case 'capitalize':
+        return typeof value === 'string' 
+          ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+          : value;
+      case 'trim':
+        return typeof value === 'string' ? value.trim() : value;
+      case 'slug':
+        return typeof value === 'string' 
+          ? value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+          : value;
+      case 'kebab':
+        return typeof value === 'string'
+          ? value.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+          : value;
+      case 'camel':
+        return typeof value === 'string'
+          ? value.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
+          : value;
+      case 'snake':
+        return typeof value === 'string'
+          ? value.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
+          : value;
+      case 'title':
+        return typeof value === 'string'
+          ? value.replace(/\w\S*/g, txt => 
+              txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
+          : value;
+      case 'sort':
+        return Array.isArray(value) ? [...value].sort() : value;
+      case 'unique':
+        return Array.isArray(value) ? [...new Set(value)] : value;
+      case 'reverse':
+        return Array.isArray(value) ? [...value].reverse() : 
+               typeof value === 'string' ? value.split('').reverse().join('') : value;
+      case 'compact':
+        return Array.isArray(value) ? value.filter(Boolean) : value;
+      default:
+        return value;
+    }
+  }
+  
+  /**
+   * Format date with custom format string
+   */
+  formatDateCustom(date, format) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return format
+      .replace('YYYY', year)
+      .replace('YY', String(year).slice(-2))
+      .replace('MM', month)
+      .replace('M', String(date.getMonth() + 1))
+      .replace('DD', day)
+      .replace('D', String(date.getDate()))
+      .replace('HH', hours)
+      .replace('H', String(date.getHours()))
+      .replace('mm', minutes)
+      .replace('m', String(date.getMinutes()))
+      .replace('ss', seconds)
+      .replace('s', String(date.getSeconds()));
+  }
+  
+  /**
+   * Get relative time string
+   */
+  getRelativeTime(date) {
+    const now = new Date();
+    const diff = now - date;
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return 'just now';
+  }
+  
+  /**
+   * Generate a UUID v4
+   */
+  generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+  /**
+   * Get a predefined template
+   */
+  getTemplate(name) {
+    // This could be extended to load from config or files
+    const templates = {
+      article: {
+        title: '',
+        author: '',
+        created: '{{date}}',
+        modified: '{{date}}',
+        status: 'draft',
+        tags: []
+      },
+      project: {
+        name: '',
+        description: '',
+        created: '{{date}}',
+        status: 'planning',
+        priority: 'medium',
+        tags: ['project']
+      },
+      meeting: {
+        title: '',
+        date: '{{date}}',
+        attendees: [],
+        agenda: [],
+        notes: '',
+        action_items: [],
+        tags: ['meeting']
+      },
+      task: {
+        title: '',
+        created: '{{timestamp}}',
+        due: null,
+        priority: 'normal',
+        status: 'todo',
+        assigned: null,
+        tags: ['task']
+      }
+    };
+    
+    return templates[name];
   }
   
   /**

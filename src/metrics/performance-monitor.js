@@ -602,8 +602,7 @@ export class PerformanceMonitor {
   }
 
   /**
-   * Check if operation exceeds threshold
-   * @stub - Basic implementation for testing
+   * Check if operation exceeds threshold with alerting and auto-scaling support
    */
   checkThreshold(operationName, duration) {
     const threshold = this.thresholds[operationName];
@@ -611,66 +610,706 @@ export class PerformanceMonitor {
       return { exceeded: false };
     }
     
-    return {
-      exceeded: duration > threshold,
+    const exceeded = duration > threshold;
+    const result = {
+      exceeded,
       threshold,
       duration,
-      excess: duration > threshold ? duration - threshold : 0
+      excess: exceeded ? duration - threshold : 0,
+      severity: this.calculateSeverity(duration, threshold)
     };
-  }
-
-  /**
-   * Calculate percentiles from operation history
-   * @stub - Basic implementation for testing
-   */
-  calculatePercentiles(percentiles = [50, 95, 99]) {
-    if (this.operationHistory.length === 0) {
-      return percentiles.reduce((acc, p) => ({ ...acc, [`p${p}`]: 0 }), {});
-    }
     
-    const durations = this.operationHistory
-      .map(op => op.duration)
-      .sort((a, b) => a - b);
-    
-    const result = {};
-    for (const percentile of percentiles) {
-      const index = Math.ceil((percentile / 100) * durations.length) - 1;
-      result[`p${percentile}`] = durations[Math.max(0, index)];
+    // Track threshold violations for alerting
+    if (exceeded) {
+      this.recordThresholdViolation(operationName, result);
+      
+      // Trigger alert if violations exceed alert threshold
+      if (this.shouldAlert(operationName)) {
+        this.triggerAlert(operationName, result);
+      }
+      
+      // Check for auto-scaling conditions
+      if (this.shouldAutoScale(operationName)) {
+        this.triggerAutoScale(operationName, result);
+      }
     }
     
     return result;
   }
+  
+  calculateSeverity(duration, threshold) {
+    const ratio = duration / threshold;
+    if (ratio < 1.2) return 'low';
+    if (ratio < 1.5) return 'medium';
+    if (ratio < 2.0) return 'high';
+    return 'critical';
+  }
+  
+  recordThresholdViolation(operationName, violation) {
+    if (!this.thresholdViolations) {
+      this.thresholdViolations = new Map();
+    }
+    
+    if (!this.thresholdViolations.has(operationName)) {
+      this.thresholdViolations.set(operationName, []);
+    }
+    
+    const violations = this.thresholdViolations.get(operationName);
+    violations.push({
+      timestamp: Date.now(),
+      ...violation
+    });
+    
+    // Keep only recent violations (last hour)
+    const cutoff = Date.now() - 3600000;
+    const recentViolations = violations.filter(v => v.timestamp > cutoff);
+    this.thresholdViolations.set(operationName, recentViolations);
+  }
+  
+  shouldAlert(operationName) {
+    const violations = this.thresholdViolations?.get(operationName) || [];
+    const recentViolations = violations.filter(
+      v => v.timestamp > Date.now() - 300000 // Last 5 minutes
+    );
+    
+    // Alert if more than 5 violations in last 5 minutes
+    return recentViolations.length > 5;
+  }
+  
+  triggerAlert(operationName, violation) {
+    if (!this.alerts) {
+      this.alerts = [];
+    }
+    
+    this.alerts.push({
+      timestamp: Date.now(),
+      operation: operationName,
+      violation,
+      type: 'threshold_exceeded'
+    });
+    
+    // Log alert (in production, this would send to monitoring service)
+    console.error(`[ALERT] Operation '${operationName}' exceeded threshold: ${violation.duration}ms > ${violation.threshold}ms (severity: ${violation.severity})`);
+  }
+  
+  shouldAutoScale(operationName) {
+    const violations = this.thresholdViolations?.get(operationName) || [];
+    const recentViolations = violations.filter(
+      v => v.timestamp > Date.now() - 600000 // Last 10 minutes
+    );
+    
+    // Auto-scale if consistent high/critical violations
+    const criticalCount = recentViolations.filter(v => 
+      v.severity === 'critical' || v.severity === 'high'
+    ).length;
+    
+    return criticalCount > 10;
+  }
+  
+  triggerAutoScale(operationName, violation) {
+    if (!this.autoScaleEvents) {
+      this.autoScaleEvents = [];
+    }
+    
+    this.autoScaleEvents.push({
+      timestamp: Date.now(),
+      operation: operationName,
+      violation,
+      action: 'scale_up'
+    });
+    
+    // Log auto-scale event (in production, this would trigger scaling)
+    console.error(`[AUTO-SCALE] Triggering scale-up for '${operationName}' due to performance degradation`);
+  }
 
   /**
-   * Get current memory usage
-   * @stub - Basic implementation for testing
+   * Calculate percentiles with sliding window and outlier detection
+   */
+  calculatePercentiles(percentiles = [50, 95, 99], windowMs = null, excludeOutliers = false) {
+    if (this.operationHistory.length === 0) {
+      return percentiles.reduce((acc, p) => ({ ...acc, [`p${p}`]: 0 }), {});
+    }
+    
+    // Apply sliding window if specified
+    let operations = this.operationHistory;
+    if (windowMs) {
+      const cutoff = Date.now() - windowMs;
+      operations = operations.filter(op => 
+        (op.endTime || op.startTime) && 
+        (op.endTime || op.startTime) > cutoff
+      );
+    }
+    
+    if (operations.length === 0) {
+      return percentiles.reduce((acc, p) => ({ ...acc, [`p${p}`]: 0 }), {});
+    }
+    
+    let durations = operations
+      .map(op => op.duration || op.latency || 0)
+      .filter(d => d > 0);
+    
+    // Outlier detection using IQR method
+    if (excludeOutliers && durations.length > 4) {
+      durations = this.removeOutliers(durations);
+    }
+    
+    durations.sort((a, b) => a - b);
+    
+    const result = {};
+    for (const percentile of percentiles) {
+      // Use linear interpolation for more accurate percentiles
+      const index = (percentile / 100) * (durations.length - 1);
+      const lower = Math.floor(index);
+      const upper = Math.ceil(index);
+      const weight = index % 1;
+      
+      if (lower === upper) {
+        result[`p${percentile}`] = durations[lower];
+      } else {
+        result[`p${percentile}`] = 
+          durations[lower] * (1 - weight) + durations[upper] * weight;
+      }
+    }
+    
+    // Add statistics about the calculation
+    result.sampleSize = durations.length;
+    result.windowMs = windowMs;
+    result.outliersExcluded = excludeOutliers;
+    
+    return result;
+  }
+  
+  removeOutliers(values) {
+    const sorted = [...values].sort((a, b) => a - b);
+    const q1Index = Math.floor(sorted.length * 0.25);
+    const q3Index = Math.floor(sorted.length * 0.75);
+    
+    const q1 = sorted[q1Index];
+    const q3 = sorted[q3Index];
+    const iqr = q3 - q1;
+    
+    // Standard IQR outlier bounds
+    const lowerBound = q1 - 1.5 * iqr;
+    const upperBound = q3 + 1.5 * iqr;
+    
+    const filtered = values.filter(v => v >= lowerBound && v <= upperBound);
+    
+    // Log outlier detection
+    const outlierCount = values.length - filtered.length;
+    if (outlierCount > 0) {
+      console.error(`[Performance Monitor] Removed ${outlierCount} outliers from percentile calculation`);
+    }
+    
+    return filtered;
+  }
+
+  /**
+   * Get memory usage with trend analysis and leak detection
    */
   getMemoryUsage() {
     const memUsage = process.memoryUsage();
-    return {
+    const current = {
       heapUsed: memUsage.heapUsed,
       heapTotal: memUsage.heapTotal,
       rss: memUsage.rss,
-      external: memUsage.external
+      external: memUsage.external,
+      timestamp: Date.now()
+    };
+    
+    // Track memory history for trend analysis
+    if (!this.memoryHistory) {
+      this.memoryHistory = [];
+    }
+    
+    this.memoryHistory.push(current);
+    
+    // Keep last 100 samples
+    if (this.memoryHistory.length > 100) {
+      this.memoryHistory.shift();
+    }
+    
+    // Calculate trends if we have enough history
+    if (this.memoryHistory.length >= 10) {
+      const trend = this.calculateMemoryTrend();
+      const leakIndicators = this.detectMemoryLeak();
+      
+      return {
+        ...current,
+        trend,
+        leakIndicators,
+        analysis: this.analyzeMemoryUsage()
+      };
+    }
+    
+    return current;
+  }
+  
+  calculateMemoryTrend() {
+    if (!this.memoryHistory || this.memoryHistory.length < 2) {
+      return { direction: 'stable', rate: 0 };
+    }
+    
+    // Calculate linear regression for heap usage
+    const samples = this.memoryHistory.slice(-20); // Last 20 samples
+    const n = samples.length;
+    
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    const startTime = samples[0].timestamp;
+    
+    samples.forEach((sample, i) => {
+      const x = (sample.timestamp - startTime) / 1000; // Convert to seconds
+      const y = sample.heapUsed / (1024 * 1024); // Convert to MB
+      
+      sumX += x;
+      sumY += y;
+      sumXY += x * y;
+      sumX2 += x * x;
+    });
+    
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const avgY = sumY / n;
+    
+    // Determine trend direction
+    let direction = 'stable';
+    if (slope > 0.5) direction = 'increasing';
+    else if (slope < -0.5) direction = 'decreasing';
+    
+    return {
+      direction,
+      rate: slope, // MB per second
+      avgMemoryMB: avgY
+    };
+  }
+  
+  detectMemoryLeak() {
+    if (!this.memoryHistory || this.memoryHistory.length < 30) {
+      return { hasLeak: false, confidence: 0 };
+    }
+    
+    const samples = this.memoryHistory.slice(-30);
+    const trend = this.calculateMemoryTrend();
+    
+    // Check for consistent memory growth
+    let increasingCount = 0;
+    for (let i = 1; i < samples.length; i++) {
+      if (samples[i].heapUsed > samples[i - 1].heapUsed) {
+        increasingCount++;
+      }
+    }
+    
+    const increasingRatio = increasingCount / (samples.length - 1);
+    
+    // Calculate garbage collection effectiveness
+    const gcEffectiveness = this.calculateGCEffectiveness();
+    
+    // Leak detection criteria
+    const hasLeak = 
+      trend.direction === 'increasing' && 
+      trend.rate > 1.0 && // Growing by more than 1MB/sec
+      increasingRatio > 0.7 && // 70% of samples show increase
+      gcEffectiveness < 0.3; // GC recovering less than 30% of memory
+    
+    const confidence = Math.min(
+      (increasingRatio * 0.4) + 
+      (Math.min(trend.rate, 5) / 5 * 0.4) + 
+      ((1 - gcEffectiveness) * 0.2),
+      1.0
+    );
+    
+    if (hasLeak && confidence > 0.7) {
+      console.error('[MEMORY LEAK] Potential memory leak detected with confidence:', (confidence * 100).toFixed(1) + '%');
+    }
+    
+    return {
+      hasLeak,
+      confidence,
+      increasingRatio,
+      gcEffectiveness
+    };
+  }
+  
+  calculateGCEffectiveness() {
+    if (!this.memoryHistory || this.memoryHistory.length < 10) {
+      return 1.0; // Assume good GC if not enough data
+    }
+    
+    const samples = this.memoryHistory.slice(-10);
+    let decreases = 0;
+    let totalDecrease = 0;
+    let totalIncrease = 0;
+    
+    for (let i = 1; i < samples.length; i++) {
+      const delta = samples[i].heapUsed - samples[i - 1].heapUsed;
+      if (delta < 0) {
+        decreases++;
+        totalDecrease += Math.abs(delta);
+      } else {
+        totalIncrease += delta;
+      }
+    }
+    
+    if (totalIncrease === 0) return 1.0;
+    
+    return Math.min(totalDecrease / totalIncrease, 1.0);
+  }
+  
+  analyzeMemoryUsage() {
+    const current = this.memoryHistory[this.memoryHistory.length - 1];
+    const heapUsagePercent = (current.heapUsed / current.heapTotal) * 100;
+    
+    let status = 'healthy';
+    let recommendation = null;
+    
+    if (heapUsagePercent > 90) {
+      status = 'critical';
+      recommendation = 'Consider increasing heap size or optimizing memory usage';
+    } else if (heapUsagePercent > 75) {
+      status = 'warning';
+      recommendation = 'Monitor memory usage closely';
+    }
+    
+    return {
+      heapUsagePercent,
+      status,
+      recommendation
     };
   }
 
   /**
-   * Calculate success and error rates
-   * @stub - Basic implementation for testing
+   * Calculate success rates with categorization and root cause analysis
    */
-  getSuccessRate() {
-    if (this.operationHistory.length === 0) {
-      return { successRate: 100, errorRate: 0, total: 0 };
+  getSuccessRate(operationName = null, windowMs = null) {
+    let operations = this.operationHistory;
+    
+    // Filter by operation name if specified
+    if (operationName) {
+      operations = operations.filter(op => op.name === operationName);
     }
     
-    const successful = this.operationHistory.filter(op => op.success).length;
-    const total = this.operationHistory.length;
+    // Apply time window if specified
+    if (windowMs) {
+      const cutoff = Date.now() - windowMs;
+      operations = operations.filter(op => 
+        (op.endTime || op.startTime) && 
+        (op.endTime || op.startTime) > cutoff
+      );
+    }
+    
+    if (operations.length === 0) {
+      return { 
+        successRate: 100, 
+        errorRate: 0, 
+        total: 0,
+        categories: {},
+        analysis: { status: 'no_data' }
+      };
+    }
+    
+    const successful = operations.filter(op => op.success).length;
+    const failed = operations.filter(op => !op.success);
+    const total = operations.length;
+    
+    // Categorize errors
+    const errorCategories = this.categorizeErrors(failed);
+    
+    // Perform root cause analysis
+    const rootCauses = this.analyzeRootCauses(failed);
+    
+    // Calculate rates by time periods for trend analysis
+    const ratesByPeriod = this.calculateRatesByPeriod(operations);
     
     return {
       successRate: (successful / total) * 100,
-      errorRate: ((total - successful) / total) * 100,
-      total
+      errorRate: (failed.length / total) * 100,
+      total,
+      successful,
+      failed: failed.length,
+      categories: errorCategories,
+      rootCauses,
+      trend: this.calculateSuccessTrend(ratesByPeriod),
+      analysis: this.analyzeSuccessRate(successful / total, errorCategories)
+    };
+  }
+  
+  categorizeErrors(failedOps) {
+    const categories = {};
+    
+    failedOps.forEach(op => {
+      // Categorize by error type from metadata or result
+      let category = 'unknown';
+      
+      if (op.result?.error) {
+        const error = op.result.error;
+        if (error.includes('timeout')) category = 'timeout';
+        else if (error.includes('permission')) category = 'permission';
+        else if (error.includes('not found')) category = 'not_found';
+        else if (error.includes('network')) category = 'network';
+        else if (error.includes('validation')) category = 'validation';
+        else if (error.includes('memory')) category = 'resource';
+        else category = 'application';
+      }
+      
+      if (!categories[category]) {
+        categories[category] = {
+          count: 0,
+          operations: [],
+          percentage: 0
+        };
+      }
+      
+      categories[category].count++;
+      categories[category].operations.push({
+        name: op.name,
+        timestamp: op.endTime || op.startTime,
+        duration: op.duration || op.latency,
+        error: op.result?.error
+      });
+    });
+    
+    // Calculate percentages
+    const totalErrors = failedOps.length;
+    Object.keys(categories).forEach(cat => {
+      categories[cat].percentage = 
+        totalErrors > 0 ? (categories[cat].count / totalErrors) * 100 : 0;
+    });
+    
+    return categories;
+  }
+  
+  analyzeRootCauses(failedOps) {
+    const causes = [];
+    
+    // Group failures by time to detect patterns
+    const timeGroups = this.groupByTimeWindow(failedOps, 60000); // 1 minute windows
+    
+    // Detect spike patterns
+    timeGroups.forEach(group => {
+      if (group.length > 5) {
+        causes.push({
+          type: 'spike',
+          timestamp: group[0].endTime || group[0].startTime,
+          count: group.length,
+          description: `Error spike detected with ${group.length} failures`,
+          operations: group.map(op => op.name)
+        });
+      }
+    });
+    
+    // Detect repeated failures
+    const opFailures = {};
+    failedOps.forEach(op => {
+      if (!opFailures[op.name]) {
+        opFailures[op.name] = 0;
+      }
+      opFailures[op.name]++;
+    });
+    
+    Object.entries(opFailures).forEach(([name, count]) => {
+      if (count > 10) {
+        causes.push({
+          type: 'repeated',
+          operation: name,
+          count,
+          description: `Operation '${name}' has high failure rate`,
+          recommendation: 'Review implementation or add retry logic'
+        });
+      }
+    });
+    
+    // Detect correlated failures
+    const correlations = this.findCorrelatedFailures(failedOps);
+    correlations.forEach(correlation => {
+      causes.push({
+        type: 'correlation',
+        ...correlation
+      });
+    });
+    
+    return causes;
+  }
+  
+  groupByTimeWindow(operations, windowMs) {
+    const groups = [];
+    let currentGroup = [];
+    let currentWindowStart = null;
+    
+    const sorted = [...operations].sort((a, b) => 
+      (a.endTime || a.startTime) - (b.endTime || b.startTime)
+    );
+    
+    sorted.forEach(op => {
+      const timestamp = op.endTime || op.startTime;
+      
+      if (!currentWindowStart || timestamp - currentWindowStart > windowMs) {
+        if (currentGroup.length > 0) {
+          groups.push(currentGroup);
+        }
+        currentGroup = [op];
+        currentWindowStart = timestamp;
+      } else {
+        currentGroup.push(op);
+      }
+    });
+    
+    if (currentGroup.length > 0) {
+      groups.push(currentGroup);
+    }
+    
+    return groups;
+  }
+  
+  findCorrelatedFailures(failedOps) {
+    const correlations = [];
+    
+    // Look for operations that frequently fail together
+    const timeThreshold = 5000; // 5 seconds
+    
+    for (let i = 0; i < failedOps.length - 1; i++) {
+      const op1 = failedOps[i];
+      const relatedOps = [];
+      
+      for (let j = i + 1; j < failedOps.length; j++) {
+        const op2 = failedOps[j];
+        const timeDiff = Math.abs(
+          (op2.endTime || op2.startTime) - (op1.endTime || op1.startTime)
+        );
+        
+        if (timeDiff < timeThreshold && op1.name !== op2.name) {
+          relatedOps.push(op2.name);
+        }
+      }
+      
+      if (relatedOps.length > 0) {
+        const uniqueOps = [...new Set(relatedOps)];
+        if (uniqueOps.length >= 2) {
+          correlations.push({
+            primaryOperation: op1.name,
+            relatedOperations: uniqueOps,
+            description: `${op1.name} failures often occur with ${uniqueOps.join(', ')}`,
+            recommendation: 'Investigate dependencies between these operations'
+          });
+        }
+      }
+    }
+    
+    // Remove duplicate correlations
+    const unique = [];
+    const seen = new Set();
+    
+    correlations.forEach(c => {
+      const key = [c.primaryOperation, ...c.relatedOperations.sort()].join(':');
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(c);
+      }
+    });
+    
+    return unique;
+  }
+  
+  calculateRatesByPeriod(operations) {
+    const periods = [];
+    const periodMs = 300000; // 5 minute periods
+    
+    if (operations.length === 0) return periods;
+    
+    const sorted = [...operations].sort((a, b) => 
+      (a.endTime || a.startTime) - (b.endTime || b.startTime)
+    );
+    
+    let periodStart = sorted[0].endTime || sorted[0].startTime;
+    let periodOps = [];
+    
+    sorted.forEach(op => {
+      const timestamp = op.endTime || op.startTime;
+      
+      if (timestamp - periodStart > periodMs) {
+        if (periodOps.length > 0) {
+          const successful = periodOps.filter(o => o.success).length;
+          periods.push({
+            start: periodStart,
+            end: periodStart + periodMs,
+            total: periodOps.length,
+            successRate: (successful / periodOps.length) * 100
+          });
+        }
+        
+        periodStart = timestamp;
+        periodOps = [op];
+      } else {
+        periodOps.push(op);
+      }
+    });
+    
+    // Add last period
+    if (periodOps.length > 0) {
+      const successful = periodOps.filter(o => o.success).length;
+      periods.push({
+        start: periodStart,
+        end: periodStart + periodMs,
+        total: periodOps.length,
+        successRate: (successful / periodOps.length) * 100
+      });
+    }
+    
+    return periods;
+  }
+  
+  calculateSuccessTrend(ratesByPeriod) {
+    if (ratesByPeriod.length < 2) {
+      return { direction: 'stable', change: 0 };
+    }
+    
+    const recent = ratesByPeriod.slice(-3); // Last 3 periods
+    const older = ratesByPeriod.slice(-6, -3); // Previous 3 periods
+    
+    if (older.length === 0) {
+      return { direction: 'stable', change: 0 };
+    }
+    
+    const recentAvg = recent.reduce((sum, p) => sum + p.successRate, 0) / recent.length;
+    const olderAvg = older.reduce((sum, p) => sum + p.successRate, 0) / older.length;
+    
+    const change = recentAvg - olderAvg;
+    
+    let direction = 'stable';
+    if (change > 5) direction = 'improving';
+    else if (change < -5) direction = 'degrading';
+    
+    return { direction, change };
+  }
+  
+  analyzeSuccessRate(rate, errorCategories) {
+    let status = 'healthy';
+    let recommendations = [];
+    
+    if (rate < 0.9) {
+      status = 'degraded';
+      recommendations.push('Success rate below 90%, investigate failures');
+    }
+    
+    if (rate < 0.8) {
+      status = 'critical';
+      recommendations.push('Critical: Success rate below 80%');
+    }
+    
+    // Check for specific error patterns
+    Object.entries(errorCategories).forEach(([category, data]) => {
+      if (data.percentage > 30) {
+        recommendations.push(`High ${category} error rate (${data.percentage.toFixed(1)}%)`);
+        
+        if (category === 'timeout') {
+          recommendations.push('Consider increasing timeout values or optimizing slow operations');
+        } else if (category === 'resource') {
+          recommendations.push('Check system resources and scaling configuration');
+        }
+      }
+    });
+    
+    return {
+      status,
+      recommendations,
+      healthScore: Math.max(0, Math.min(100, rate * 100))
     };
   }
 }

@@ -18,12 +18,8 @@
     "test:status": "node test/test-status.js",
     "test:benchmark": "node test/benchmarks/vault-scale.benchmark.js",
     "build:plugin": "cd obsidian-ai-curator-plugin && npm run build",
-    "ai:task": "bash scripts/ai-tasks.sh",
-    "ai:fix-frontmatter": "bash scripts/ai-tasks.sh fix-frontmatter-stubs",
-    "ai:fix-performance": "bash scripts/ai-tasks.sh fix-performance-stubs",
-    "ai:fix-stubs": "bash scripts/ai-tasks.sh fix-all-stubs",
-    "ai:check-paths": "bash scripts/ai-tasks.sh check-personal-paths",
-    "ai:update-docs": "bash scripts/ai-tasks.sh update-docs"
+    "dev:pre-release": "bash scripts/dev/pre-release-check.sh",
+    "dev:quality": "bash scripts/dev/code-quality-check.sh"
   },
   "keywords": [
     "obsidian",
