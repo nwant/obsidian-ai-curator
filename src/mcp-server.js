@@ -53,7 +53,10 @@ async function loadConfig() {
     config = loadedConfig;
     return config;
   } catch (error) {
-    console.error('Error loading config:', error.message);
+    // Don't log to console in production mode to avoid interfering with MCP protocol
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error loading config:', error.message);
+    }
     throw error;
   }
 }
@@ -650,6 +653,18 @@ export class McpServer {
 if (import.meta.url === `file://${process.argv[1]}`) {
   loadConfig().then(() => {
     const server = new McpServer();
-    server.run().catch(console.error);
-  }).catch(console.error);
+    server.run().catch((error) => {
+      // Log errors to stderr only in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Server error:', error);
+      }
+      process.exit(1);
+    });
+  }).catch((error) => {
+    // Log config errors to stderr only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Config error:', error);
+    }
+    process.exit(1);
+  });
 }
