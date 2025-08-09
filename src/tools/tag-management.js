@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { getVaultPath } from '../utils/config-loader.js';
 import path from 'path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
@@ -11,9 +12,7 @@ export async function get_tags(args = {}) {
   const { path: filePath } = args;
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   // Get files to scan
   let files = [];
@@ -136,9 +135,7 @@ export async function update_tags(args) {
   [...add, ...remove, ...(replace || [])].forEach(validateTag);
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   const fullPath = path.join(vaultPath, filePath);
   const content = await fs.readFile(fullPath, 'utf-8');
@@ -369,9 +366,7 @@ export async function rename_tag(args) {
   }
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   // Find all files
   const files = await glob('**/*.md', {

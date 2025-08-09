@@ -13,7 +13,7 @@ coverage/
 # Configuration files with personal paths
 config/config.json
 config/test-config.json
-config/project-templates.json
+config/project-playbooks.json
 .mcp.json
 
 # Archive folders (may contain personal notes)
@@ -29,8 +29,8 @@ _archived/
 !config/config.example.json
 !config/config.minimal.json
 !config/test-config.example.json
-!config/project-templates.example.json
-!config/project-templates.default.json
+!config/project-playbooks.example.json
+!config/project-playbooks.default.json
 !data/ground-truth.example.json
 
 # AI development scripts (kept in private repo)

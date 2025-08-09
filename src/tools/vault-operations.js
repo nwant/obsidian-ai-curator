@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { getVaultPath } from '../utils/config-loader.js';
 import path from 'path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
@@ -51,9 +52,7 @@ export async function get_working_context(args = {}) {
   }
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   let notes = [];
   let context = {};
@@ -111,9 +110,7 @@ export async function vault_scan(args) {
   } = args;
 
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
 
   // Find files matching patterns
   const files = [];
@@ -197,9 +194,7 @@ export async function get_frontmatter(args) {
   const { path: filePath } = args;
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   const fullPath = path.join(vaultPath, filePath);
   const content = await fs.readFile(fullPath, 'utf-8');
@@ -215,9 +210,7 @@ export async function update_frontmatter(args) {
   const { path: filePath, updates, merge = true } = args;
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   const fullPath = path.join(vaultPath, filePath);
   const content = await fs.readFile(fullPath, 'utf-8');
@@ -249,9 +242,7 @@ export async function read_notes(args) {
   }
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   const notes = await Promise.all(paths.map(async (notePath) => {
     const fullPath = path.join(vaultPath, notePath);

@@ -174,7 +174,7 @@ Related tags: #type/meeting #important
 
 2. **Personal configurations are gitignored**:
    - `config/config.json` - User's actual configuration
-   - `config/project-templates.json` - Custom templates
+   - `config/project-playbooks.json` - Custom playbooks
    - All files in `data/` except examples
    - Archive folders and personal notes
 
@@ -187,7 +187,7 @@ Related tags: #type/meeting #important
 - Start with minimal config: just `vaultPath`
 - Copy example files for customization:
   - `config.minimal.json` → `config.json`
-  - `project-templates.default.json` → `project-templates.json`
+  - `project-playbooks.example.json` → `project-playbooks.json`
 - All personal customizations stay local and private
 
 ### When Contributing

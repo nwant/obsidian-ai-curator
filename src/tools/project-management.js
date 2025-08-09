@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { loadConfig, getVaultPath } from '../utils/config-loader.js';
 import path from 'path';
 import matter from 'gray-matter';
 import { ProjectInitializer } from './project-init.js';
@@ -451,8 +452,7 @@ export class ProjectManager {
 
 export async function init_project(args) {
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+  const config = await loadConfig();
   
   // Create project initializer instance
   const initializer = new ProjectInitializer(config);
@@ -468,8 +468,7 @@ export async function init_project(args) {
 
 export async function list_project_templates(args = {}) {
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+  const config = await loadConfig();
   
   // Create project initializer instance
   const initializer = new ProjectInitializer(config);
@@ -503,9 +502,7 @@ export async function get_working_context(args) {
   }
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   // This is a simplified implementation
   // In reality, this would analyze project relationships and provide relevant context

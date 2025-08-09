@@ -1,4 +1,5 @@
 import simpleGit from 'simple-git';
+import { loadConfig, getVaultPath } from '../utils/config-loader.js';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -13,10 +14,9 @@ export async function git_checkpoint(args) {
     throw new Error('Commit message is required');
   }
   
-  // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  // Get vault path and config
+  const vaultPath = await getVaultPath();
+  const config = await loadConfig();
   
   // If in test mode, return mock success
   if (config.testMode) {
@@ -77,10 +77,9 @@ export async function git_checkpoint(args) {
 export async function git_changes(args = {}) {
   const { since = 'HEAD' } = args;
   
-  // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  // Get vault path and config
+  const vaultPath = await getVaultPath();
+  const config = await loadConfig();
   
   // If in test mode, return mock data
   if (config.testMode) {
@@ -151,10 +150,9 @@ export async function git_rollback(args) {
     throw new Error('Commit hash is required');
   }
   
-  // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  // Get vault path and config
+  const vaultPath = await getVaultPath();
+  const config = await loadConfig();
   
   // If in test mode, return mock success
   if (config.testMode) {

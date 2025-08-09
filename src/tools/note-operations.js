@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { loadConfig, getVaultPath } from '../utils/config-loader.js';
 import path from 'path';
 import matter from 'gray-matter';
 import { NoteHandler } from '../handlers/note-handler.js';
@@ -11,8 +12,7 @@ import { ObsidianAPIClient } from '../obsidian-api-client.js';
 
 // Get config
 async function getConfig() {
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+  const config = await loadConfig();
   return config;
 }
 
