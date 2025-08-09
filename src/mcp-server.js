@@ -8,7 +8,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -27,23 +26,20 @@ import { EnhancedMetricsCollector } from './metrics/enhanced-collector.js';
 // Import tool modules for remaining functionality
 import { get_daily_note, append_to_daily_note, add_daily_task } from './tools/daily-notes.js';
 import { rename_file, move_file } from './tools/file-operations.js';
-import { init_project, list_project_templates } from './tools/project-management.js';
+import { init_project, list_project_templates, list_playbooks } from './tools/project-management.js';
 import { get_working_context, get_research_context } from './tools/vault-operations.js';
 import { run_benchmark, view_search_metrics } from './tools/benchmark.js';
+import { ProjectInitializer } from './tools/project-init.js';
+import { loadConfig as loadConfigUtil } from './utils/config-loader.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CONFIG_PATH = path.join(__dirname, '..', 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
 
 // Default config
 let config = { vaultPath: '', ignorePatterns: [] };
 
 async function loadConfig() {
   try {
-    const configData = await fs.readFile(CONFIG_PATH, 'utf-8');
-    const loadedConfig = JSON.parse(configData);
-    
-    // Fallback to environment variable if vault path not in config
-    loadedConfig.vaultPath = loadedConfig.vaultPath || process.env.OBSIDIAN_VAULT_PATH || '';
+    const loadedConfig = await loadConfigUtil();
     
     if (!loadedConfig.vaultPath) {
       throw new Error('Vault path not configured. Please set vaultPath in config/config.json or OBSIDIAN_VAULT_PATH environment variable.');
@@ -278,7 +274,193 @@ export class McpServer {
             }
           }
         },
-        // ... (other tool definitions remain the same structure)
+        {
+          name: "init_project",
+          description: "Initialize a new project with playbook and optional repository integration",
+          inputSchema: {
+            type: "object",
+            properties: {
+              projectName: { 
+                type: "string", 
+                description: "Name of the project (e.g., 'Email Automation')" 
+              },
+              description: { 
+                type: "string", 
+                description: "Brief description of the project" 
+              },
+              playbook: {
+                type: "string",
+                description: "Project playbook to use (default: 'default'). Use list_playbooks to see available options"
+              },
+              repository: {
+                type: "string",
+                description: "GitHub repository URL (optional, e.g., https://github.com/user/repo)"
+              },
+              repositories: {
+                type: "object",
+                description: "Multiple repositories configuration (optional). Keys are repo names, values are repo configs",
+                additionalProperties: {
+                  type: "object",
+                  properties: {
+                    url: { type: "string", description: "GitHub repository URL" },
+                    local: { type: "string", description: "Local path to repository" },
+                    branch: { type: "string", description: "Default branch (default: main)" },
+                    visibility: { type: "string", enum: ["public", "private"], description: "Repository visibility" },
+                    purpose: { type: "string", description: "Repository purpose/description" }
+                  }
+                }
+              },
+              localPath: {
+                type: "string",
+                description: "Local repository path (optional, will be inferred from repo URL if not provided)"
+              },
+              targetDate: {
+                type: "string",
+                description: "Target completion date in yyyy-MM-dd format"
+              },
+              stakeholders: {
+                type: "array",
+                items: { type: "string" },
+                description: "List of stakeholders in format 'Name (Role)'"
+              },
+              phase: {
+                type: "string",
+                enum: ["planning", "active", "review", "completed", "archived"],
+                description: "Initial project phase (default: 'planning')"
+              }
+            },
+            required: ["projectName", "description"]
+          }
+        },
+        {
+          name: "list_playbooks",
+          description: "List available project playbooks and their descriptions",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          }
+        },
+        // Additional tool definitions for completeness
+        {
+          name: "analyze_tags",
+          description: "Analyze tag usage across the vault",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          }
+        },
+        {
+          name: "suggest_tags",
+          description: "Suggest tags based on note content",
+          inputSchema: {
+            type: "object",
+            properties: {
+              path: {
+                type: "string",
+                description: "Note path to analyze"
+              },
+              content: {
+                type: "string",
+                description: "Note content to analyze (if path not provided)"
+              }
+            }
+          }
+        },
+        {
+          name: "update_tags",
+          description: "Update tags for a note",
+          inputSchema: {
+            type: "object",
+            properties: {
+              path: {
+                type: "string",
+                description: "Note path"
+              },
+              tags: {
+                type: "array",
+                items: { type: "string" },
+                description: "New tags to set"
+              },
+              mode: {
+                type: "string",
+                enum: ["replace", "add", "remove"],
+                description: "How to update tags (default: replace)"
+              }
+            },
+            required: ["path", "tags"]
+          }
+        },
+        {
+          name: "get_daily_note",
+          description: "Get today's daily note",
+          inputSchema: {
+            type: "object",
+            properties: {
+              date: {
+                type: "string",
+                description: "Date in YYYY-MM-DD format (default: today)"
+              }
+            }
+          }
+        },
+        {
+          name: "append_to_daily_note",
+          description: "Append content to daily note",
+          inputSchema: {
+            type: "object",
+            properties: {
+              content: {
+                type: "string",
+                description: "Content to append"
+              },
+              date: {
+                type: "string",
+                description: "Date in YYYY-MM-DD format (default: today)"
+              },
+              section: {
+                type: "string",
+                description: "Section to append to"
+              }
+            },
+            required: ["content"]
+          }
+        },
+        {
+          name: "rename_file",
+          description: "Rename a file in the vault",
+          inputSchema: {
+            type: "object",
+            properties: {
+              sourcePath: {
+                type: "string",
+                description: "Current file path"
+              },
+              newName: {
+                type: "string",
+                description: "New file name (without path)"
+              }
+            },
+            required: ["sourcePath", "newName"]
+          }
+        },
+        {
+          name: "move_file",
+          description: "Move a file to a different location",
+          inputSchema: {
+            type: "object",
+            properties: {
+              sourcePath: {
+                type: "string",
+                description: "Current file path"
+              },
+              targetPath: {
+                type: "string",
+                description: "New file path"
+              }
+            },
+            required: ["sourcePath", "targetPath"]
+          }
+        }
       ]
     }));
 
@@ -412,6 +594,7 @@ export class McpServer {
           result = await init_project(args);
           break;
         case 'list_project_templates':
+        case 'list_playbooks':  // Support both names for backward compatibility
           result = await list_project_templates(args);
           break;
           
@@ -603,6 +786,7 @@ export class McpServer {
           break;
           
         case 'list_project_templates':
+        case 'list_playbooks':
           result = await list_project_templates(args);
           break;
           

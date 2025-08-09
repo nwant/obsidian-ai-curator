@@ -1,6 +1,6 @@
 {
-  "version": "1.0",
-  "description": "Default project templates for Obsidian AI Curator",
+  "version": "2.0",
+  "description": "Project playbooks for Obsidian AI Curator",
   
   "projectTypes": {
     "general": {
@@ -61,10 +61,10 @@
     }
   },
   
-  "templates": {
+  "playbooks": {
     "default": {
-      "name": "Standard Project",
-      "description": "A standard project structure with basic documentation",
+      "name": "Standard Project Playbook",
+      "description": "Basic project structure with documentation and task management",
       
       "directories": [
         "Documentation",
@@ -85,7 +85,7 @@
     },
     
     "minimal": {
-      "name": "Minimal Project",
+      "name": "Minimal Project Playbook",
       "description": "A minimal project structure",
       
       "directories": [],
@@ -99,7 +99,7 @@
     },
     
     "structured": {
-      "name": "Structured Project",
+      "name": "Structured Project Playbook",
       "description": "A more structured project with categories",
       
       "directories": [

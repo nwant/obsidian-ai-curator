@@ -1,69 +1,72 @@
-# Project Templates Documentation
+# Project Playbooks Documentation
 
-This guide explains how to use and customize project templates for the `init_project` tool.
+This guide explains how to use and customize project playbooks for the `init_project` tool.
+
+> **Note on Backward Compatibility**: Previous versions used "templates" terminology. The system still supports the old "templates" key in configuration files for backward compatibility, but "playbooks" is now the preferred term.
 
 ## Quick Start
 
-### Using Built-in Templates
+### Using Built-in Playbooks
 
 Ask Claude to create projects:
 
-**Default template** (comprehensive structure):
+**Default playbook** (comprehensive structure):
 - "Create a new project called 'My AI Assistant' for building a helpful AI"
 
-**Minimal template** (just essentials):
+**Minimal playbook** (just essentials):
 - "Set up a minimal project called 'Quick Experiment'"
 
-**Research template** (academic structure):
+**Research playbook** (academic structure):
 - "Initialize a research project about machine learning patterns"
 
-**See available templates**:
-- "What project templates are available?"
+**See available playbooks**:
+- "What project playbooks are available?"
 
-### Built-in Templates
+### Built-in Playbooks
 
 1. **default** - Standard project structure with README and documentation folder
 2. **minimal** - Minimal structure with just a README file
 3. **structured** - More organized structure with planning, development, and meeting folders
 
-## Creating Custom Templates
+## Creating Custom Playbooks
 
-You can create your own templates without modifying the repository:
+You can create your own playbooks without modifying the repository:
 
 ### Setup
 
 1. **Copy the example configuration**:
    ```bash
-   cp config/project-templates.example.json config/project-templates.json
+   cp config/project-playbooks.example.json config/project-playbooks.json
    ```
 
 2. **Edit your custom configuration**:
    ```bash
    # Edit with your preferred editor
-   vim config/project-templates.json
+   vim config/project-playbooks.json
    ```
 
 3. **Your custom file is gitignored** - It won't be tracked or committed
 
 ### How It Works
 
-- System tries to load `config/project-templates.json` first (your custom templates)
-- Falls back to `config/project-templates.default.json` if custom doesn't exist
-- Custom templates completely replace defaults (they don't merge)
+- System tries to load `config/project-playbooks.json` first (your custom playbooks)
+- Falls back to `config/project-playbooks.default.json` if custom doesn't exist
+- Custom playbooks completely replace defaults (they don't merge)
+- Supports graceful error recovery - if configs are invalid, falls back to minimal hardcoded playbook
 
-## Template Configuration Structure
+## Playbook Configuration Structure
 
 ### Top-Level Structure
 
 ```json
 {
-  "version": "1.0",
-  "description": "Your custom project templates",
+  "version": "2.0",
+  "description": "Your custom project playbooks",
   
   "projectTypes": { ... },      // Types of projects
   "phases": { ... },           // Project lifecycle phases  
   "validation": { ... },       // Input validation rules
-  "templates": { ... },        // Template definitions
+  "playbooks": { ... },        // Playbook definitions
   "fileTemplates": { ... }     // File content templates
 }
 ```
@@ -129,15 +132,15 @@ Set rules for project names and dates:
 }
 ```
 
-### Template Definitions
+### Playbook Definitions
 
-Define your project templates:
+Define your project playbooks:
 
 ```json
-"templates": {
-  "my-template": {
-    "name": "My Custom Template",
-    "description": "Template for my specific workflow",
+"playbooks": {
+  "my-playbook": {
+    "name": "My Custom Playbook",
+    "description": "Playbook for my specific workflow",
     
     "directories": [
       "Documentation",
@@ -166,7 +169,7 @@ Define your project templates:
 
 ### File Content Templates
 
-You can define file templates in two ways:
+File templates define the content of files created by playbooks. You can define file templates in two ways:
 
 #### Method 1: Inline Content
 Embed the template content directly in the JSON:
@@ -236,7 +239,7 @@ You can mix both methods in the same configuration:
 
 ## Template Variables
 
-Available variables for use in templates:
+Available variables for use in playbook templates:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
@@ -260,13 +263,13 @@ Available variables for use in templates:
   - `uppercase`: Converts to uppercase (`planning` → `PLANNING`)
   - `lowercase`: Converts to lowercase (`Planning` → `planning`)
 
-## Complete Example: API Microservice Template
+## Complete Example: API Microservice Playbook
 
 ```json
 {
-  "templates": {
+  "playbooks": {
     "api-microservice": {
-      "name": "API Microservice",
+      "name": "API Microservice Playbook",
       "description": "RESTful API microservice with documentation",
       
       "directories": [
@@ -330,19 +333,19 @@ Available variables for use in templates:
 
 ## Best Practices
 
-### 1. Evergreen Templates
+### 1. Evergreen Playbooks
 Follow the v2 pattern for evergreen instructions:
 - **CLAUDE.md**: Contains ALL dynamic content (dates, status, stakeholders)
 - **PROJECT_INSTRUCTIONS.md**: Contains ONLY static workflows
 - This ensures Claude Desktop instructions never need updating
 
 ### 2. Naming Conventions
-- Use descriptive template keys: `api-microservice`, `ml-experiment`, `frontend-app`
+- Use descriptive playbook keys: `api-microservice`, `ml-experiment`, `frontend-app`
 - Use consistent file template names: `component-readme`, `component-claude`
 
 ### 3. Directory Structure
 - Keep directories organized by function
-- Use consistent naming across templates
+- Use consistent naming across playbooks
 - Consider your team's conventions
 
 ### 4. Variable Usage
@@ -350,34 +353,35 @@ Follow the v2 pattern for evergreen instructions:
 - Use filters to ensure proper formatting
 - Document any custom variables you add
 
-## Sharing Templates
+## Sharing Playbooks
 
-Since custom templates are gitignored, you can share them by:
+Since custom playbooks are gitignored, you can share them by:
 
-1. **Team Repository**: Create a separate repo for shared templates
-2. **Documentation**: Add templates to your team wiki
-3. **Pull Request**: Submit useful templates to be added as built-in options
+1. **Team Repository**: Create a separate repo for shared playbooks
+2. **Documentation**: Add playbooks to your team wiki
+3. **Pull Request**: Submit useful playbooks to be added as built-in options
 
 ## Troubleshooting
 
-### Templates Not Loading
+### Playbooks Not Loading
 ```bash
 # Check if custom file exists and is valid JSON
-cat config/project-templates.json | jq .
+cat config/project-playbooks.json | jq .
 
 # Check console output when running init_project
 # Should see either:
-# - "Loaded custom project templates"
-# - "Loaded default project templates"
+# - "No custom playbooks config found, using defaults"
+# - "Using deprecated 'templates' key in config"
+# - Warnings about configuration issues
 ```
 
-### Template Not Found
+### Playbook Not Found
 
 Ask Claude:
-- "List all available project templates"
-- "What templates can I use for projects?"
+- "List all available project playbooks"
+- "What playbooks can I use for projects?"
 
-Note: Template keys are case-sensitive.
+Note: Playbook keys are case-sensitive.
 
 ### Variables Not Replaced
 - Check variable name matches exactly
@@ -387,23 +391,35 @@ Note: Template keys are case-sensitive.
 ### Validation Errors
 - Project names must match validation pattern
 - Dates must be in yyyy-MM-dd format
-- Check validation rules in your template config
+- Check validation rules in your playbook config
 
 ## Migration Guide
 
-To migrate from defaults to custom templates:
+### From Templates to Playbooks (v1.0 to v2.0)
 
-1. Copy the default configuration:
+If you have existing custom templates:
+1. Rename the "templates" key to "playbooks" in your config
+2. Update version to "2.0"
+3. The system will still accept "templates" for backward compatibility
+
+### To Create Custom Playbooks
+
+1. Copy the example configuration:
    ```bash
-   cp config/project-templates.default.json config/project-templates.json
+   cp config/project-playbooks.example.json config/project-playbooks.json
    ```
 
 2. Modify incrementally - test after each change
 
-3. Remove templates you don't need
+3. Remove playbooks you don't need
 
-4. Add your custom templates
+4. Add your custom playbooks
 
 5. Test thoroughly before using in production
 
-Remember: The system always falls back to defaults if your custom configuration fails to load.
+Remember: The system has multiple fallback levels:
+1. Custom playbooks (project-playbooks.json)
+2. Default playbooks (project-playbooks.default.json)
+3. Minimal hardcoded playbook (if all configs fail)
+
+This ensures your projects can always be created, even with configuration issues.

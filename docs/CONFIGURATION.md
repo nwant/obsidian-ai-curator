@@ -137,12 +137,12 @@ Configure AI research partner context:
 
 ## Project Templates
 
-Project templates are configured separately:
+Project playbooks are configured separately:
 
-1. **Custom Templates**: Create `config/project-templates.json`
-2. **Default Templates**: Modify `config/project-templates.default.json`
+1. **Custom Playbooks**: Create `config/project-playbooks.json`
+2. **Default Playbooks**: View `config/project-playbooks.default.json`
 
-See [Project Templates Documentation](PROJECT_TEMPLATES.md) for details.
+See [Project Playbooks Documentation](PROJECT_PLAYBOOKS.md) for details.
 
 ## Performance
 

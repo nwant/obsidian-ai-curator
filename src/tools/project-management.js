@@ -1,9 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
+import { ProjectInitializer } from './project-init.js';
 
 /**
- * Project management tools
+ * Project management tools - wrapper functions for MCP compatibility
  */
 
 // ProjectManager class for test compatibility
@@ -13,6 +14,7 @@ export class ProjectManager {
     this.vaultPath = config.vaultPath;
     this.projectsFolder = config.projectsFolder || 'Projects';
     this.templates = config.templates || this.getDefaultTemplates();
+    this.projectInitializer = new ProjectInitializer(config);
   }
 
   getDefaultTemplates() {
@@ -448,143 +450,49 @@ export class ProjectManager {
 }
 
 export async function init_project(args) {
-  const {
-    projectName,
-    description,
-    projectType = 'other',
-    template = 'default',
-    targetDate,
-    stakeholders = [],
-    phase = 'planning'
-  } = args;
-  
-  if (!projectName || !description) {
-    throw new Error('projectName and description are required');
-  }
-  
   // Get vault path from config
   const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
   const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
   
-  // Create project folder
-  const projectFolder = path.join('Projects', projectName);
-  const projectPath = path.join(vaultPath, projectFolder);
-  await fs.mkdir(projectPath, { recursive: true });
+  // Create project initializer instance
+  const initializer = new ProjectInitializer(config);
   
-  // Create project index
-  const indexContent = matter.stringify(`# ${projectName}
-
-${description}
-
-## Overview
-
-- **Type**: ${projectType}
-- **Phase**: ${phase}
-- **Target Date**: ${targetDate || 'TBD'}
-- **Created**: ${new Date().toISOString().split('T')[0]}
-
-## Stakeholders
-
-${stakeholders.map(s => `- ${s}`).join('\n') || '- TBD'}
-
-## Quick Links
-
-- [[${projectName} Planning]]
-- [[${projectName} Tasks]]
-- [[${projectName} Notes]]
-- [[${projectName} Resources]]
-
-## Status
-
-Current phase: **${phase}**
-
-### Recent Updates
-
-- ${new Date().toISOString().split('T')[0]}: Project initialized
-
-## Next Steps
-
-1. Complete project planning
-2. Define success criteria
-3. Create task breakdown
-
-`, {
-    type: 'project-index',
-    project: projectName,
-    projectType,
-    phase,
-    created: new Date().toISOString(),
-    modified: new Date().toISOString(),
-    tags: [`project/${projectType}`, 'project/active']
-  });
-  
-  await fs.writeFile(path.join(projectPath, `${projectName}.md`), indexContent);
-  
-  // Create sub-pages based on template
-  const pages = getTemplatePages(template, projectType);
-  
-  for (const page of pages) {
-    const pageContent = matter.stringify(page.content.replace(/{{PROJECT_NAME}}/g, projectName), {
-      type: page.type,
-      project: projectName,
-      created: new Date().toISOString(),
-      modified: new Date().toISOString(),
-      tags: page.tags
-    });
-    
-    await fs.writeFile(
-      path.join(projectPath, `${projectName} ${page.name}.md`),
-      pageContent
-    );
+  // Handle backward compatibility - rename 'template' to 'playbook'
+  if (args.template && !args.playbook) {
+    args.playbook = args.template;
   }
   
-  return {
-    success: true,
-    projectName,
-    projectPath: projectFolder,
-    filesCreated: pages.length + 1,
-    created: [
-      path.join(projectFolder, `${projectName}.md`),
-      ...pages.map(p => path.join(projectFolder, `${projectName} ${p.name}.md`))
-    ],
-    template,
-    structure: {
-      index: `${projectName}.md`,
-      pages: pages.map(p => `${projectName} ${p.name}.md`)
-    }
-  };
+  // Call the new initializer
+  return await initializer.initProject(args);
 }
 
 export async function list_project_templates(args = {}) {
+  // Get vault path from config
+  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
+  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+  
+  // Create project initializer instance
+  const initializer = new ProjectInitializer(config);
+  
+  // List playbooks and format for backward compatibility
+  const result = await initializer.listPlaybooks();
+  
+  // Return both old format (templates) and new format (playbooks) for compatibility
   return {
-    templates: [
-      {
-        id: 'default',
-        name: 'Default Project',
-        description: 'Basic project structure with planning, tasks, notes, and resources',
-        pages: ['Planning', 'Tasks', 'Notes', 'Resources']
-      },
-      {
-        id: 'ai-agent',
-        name: 'AI Agent Project',
-        description: 'Template for AI agent development with prompts, testing, and evaluation',
-        pages: ['Planning', 'Tasks', 'Prompts', 'Testing', 'Evaluation', 'Resources']
-      },
-      {
-        id: 'integration',
-        name: 'Integration Project',
-        description: 'Template for system integration projects with API docs and testing',
-        pages: ['Planning', 'Tasks', 'Architecture', 'API Documentation', 'Testing', 'Resources']
-      },
-      {
-        id: 'automation',
-        name: 'Automation Project',
-        description: 'Template for automation projects with workflows and monitoring',
-        pages: ['Planning', 'Tasks', 'Workflows', 'Configuration', 'Monitoring', 'Resources']
-      }
-    ]
+    playbooks: result.playbooks,
+    templates: result.playbooks.map(p => ({
+      id: p.key,
+      name: p.name,
+      description: p.description,
+      directories: p.directories,
+      files: p.files
+    }))
   };
+}
+
+// Alias for new naming convention
+export async function list_playbooks(args = {}) {
+  return list_project_templates(args);
 }
 
 export async function get_working_context(args) {

@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
+import { getVaultPath } from '../utils/config-loader.js';
 
 /**
  * Daily notes tools
@@ -13,9 +14,7 @@ export async function get_daily_note(args = {}) {
   const { date = 'today' } = args;
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   
   // Calculate date
   let targetDate = new Date();
@@ -98,9 +97,7 @@ export async function append_to_daily_note(args = {}) {
   const dailyNote = await get_daily_note({ date });
   
   // Get vault path from config
-  const configPath = path.join(process.cwd(), 'config', process.env.NODE_ENV === 'test' ? 'test-config.json' : 'config.json');
-  const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-  const vaultPath = config.vaultPath;
+  const vaultPath = await getVaultPath();
   const fullPath = path.join(vaultPath, dailyNote.path);
   
   // Read current content

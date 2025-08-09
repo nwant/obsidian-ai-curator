@@ -1,6 +1,13 @@
 {
-  "version": "1.0",
-  "description": "Default project templates for Obsidian AI Curator",
+  "__comments": [
+    "This is an EXAMPLE configuration file showing the structure for custom playbooks.",
+    "To use custom playbooks, copy this file to 'project-playbooks.json' and modify as needed.",
+    "The system will automatically fall back to 'project-playbooks.default.json' if custom config is not found.",
+    "Note: Version 2.0 uses 'playbooks' key. Version 1.0 'templates' key is still supported for backward compatibility."
+  ],
+  
+  "version": "2.0",
+  "description": "Example project playbooks configuration for Obsidian AI Curator",
   
   "projectTypes": {
     "general": {
@@ -61,10 +68,10 @@
     }
   },
   
-  "templates": {
+  "playbooks": {
     "default": {
-      "name": "Standard Project",
-      "description": "A standard project structure with basic documentation",
+      "name": "Standard Project Playbook",
+      "description": "Basic project structure with documentation and task management",
       
       "directories": [
         "Documentation",
@@ -85,7 +92,7 @@
     },
     
     "minimal": {
-      "name": "Minimal Project",
+      "name": "Minimal Project Playbook",
       "description": "A minimal project structure",
       
       "directories": [],
@@ -99,7 +106,7 @@
     },
     
     "structured": {
-      "name": "Structured Project",
+      "name": "Structured Project Playbook",
       "description": "A more structured project with categories",
       
       "directories": [

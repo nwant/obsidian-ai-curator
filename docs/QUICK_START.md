@@ -149,4 +149,4 @@ Claude will automatically follow these Obsidian conventions:
 
 - Read the [Configuration Guide](CONFIGURATION.md) to customize settings
 - Explore [MCP Tools](MCP_TOOLS.md) to see all available commands
-- Set up [Project Templates](PROJECT_TEMPLATES.md) for your workflow
+- Set up [Project Playbooks](PROJECT_PLAYBOOKS.md) for your workflow

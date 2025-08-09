@@ -85,7 +85,7 @@ See [Quick Start Guide](docs/QUICK_START.md) for detailed instructions and optio
 - **Smart Writing**: Auto-formats links, validates tags, manages frontmatter
 - **File Management**: Rename/move files with automatic link updates
 - **Tag Intelligence**: Analyze usage, suggest tags, rename globally
-- **Project Templates**: Customizable structures for different project types
+- **Project Playbooks**: Customizable structures for different project types
 - **Git Integration**: Checkpoint and rollback capabilities
 - **Daily Notes**: Quick capture and task management
 
@@ -98,7 +98,7 @@ See [Examples](docs/EXAMPLES.md) for detailed use cases.
 - [Configuration Guide](docs/CONFIGURATION.md) - All configuration options
 - [MCP Tools Reference](docs/MCP_TOOLS.md) - Complete tool API documentation  
 - [Examples](docs/EXAMPLES.md) - Common use cases and workflows
-- [Project Templates](docs/PROJECT_TEMPLATES.md) - Creating custom project templates
+- [Project Playbooks](docs/PROJECT_PLAYBOOKS.md) - Creating custom project playbooks
 - [Obsidian Plugin Guide](docs/OBSIDIAN_PLUGIN.md) - Plugin features and setup
 - [Formatting Rules](docs/FORMATTING_RULES.md) - Important Obsidian formatting guidelines
 
