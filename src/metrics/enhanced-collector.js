@@ -2,7 +2,6 @@
  * Enhanced metrics collector that combines auto-collection with performance monitoring
  */
 
-import { performance } from 'perf_hooks';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -100,6 +99,16 @@ export class EnhancedMetricsCollector {
       
       const errorCount = this.sessionMetrics.errors.get(toolName) || 0;
       this.sessionMetrics.errors.set(toolName, errorCount + 1);
+      
+      // Log error details for debugging
+      console.error(`[Enhanced Metrics] Tool error in ${toolName}:`, error.message);
+      
+      // Export metrics immediately on error for better tracking
+      if (this.config.exportOnError !== false) {
+        this.exportSessionMetrics().catch(e => 
+          console.error('[Enhanced Metrics] Failed to export on error:', e.message)
+        );
+      }
       
       throw error;
     }
@@ -208,23 +217,73 @@ export class EnhancedMetricsCollector {
    * Export session metrics to vault
    */
   async exportSessionMetrics() {
-    if (!this.config.vaultPath || !this.server) return;
-    
     try {
-      const report = await this.generateReport('markdown');
       const date = new Date();
       const dateStr = date.toISOString().split('T')[0];
       
-      // Write to file system instead of using server to avoid circular dependency
-      const metricsDir = path.join(this.config.vaultPath, 'Metrics');
-      await fs.mkdir(metricsDir, { recursive: true });
+      // Export to vault if configured
+      if (this.config.vaultPath && this.server) {
+        const report = await this.generateReport('markdown');
+        // Write to file system instead of using server to avoid circular dependency
+        const metricsDir = path.join(this.config.vaultPath, 'Metrics');
+        await fs.mkdir(metricsDir, { recursive: true });
+        
+        const metricsPath = path.join(metricsDir, `${dateStr}-session.md`);
+        await fs.writeFile(metricsPath, report, 'utf-8');
+        
+        console.error(`[Enhanced Metrics] Exported session metrics to ${metricsPath}`);
+      }
       
-      const metricsPath = path.join(metricsDir, `${dateStr}-session.md`);
-      await fs.writeFile(metricsPath, report, 'utf-8');
-      
-      console.error(`[Enhanced Metrics] Exported session metrics to ${metricsPath}`);
+      // Also export JSON metrics to data/metrics directory
+      await this.exportJSONMetrics(dateStr);
     } catch (error) {
       console.error('[Enhanced Metrics] Failed to export session metrics:', error.message);
+    }
+  }
+  
+  /**
+   * Export JSON metrics to data/metrics directory
+   */
+  async exportJSONMetrics(dateStr) {
+    try {
+      const metricsData = {
+        date: dateStr,
+        timestamp: Date.now(),
+        session: this.getSessionMetrics(),
+        errors: Array.from(this.sessionMetrics.errors.entries()).map(([tool, count]) => ({
+          tool,
+          count
+        })),
+        toolCalls: Array.from(this.sessionMetrics.toolCalls.entries()).map(([tool, metrics]) => ({
+          tool,
+          ...metrics
+        })),
+        performance: this.performanceMonitor.getMetrics()
+      };
+      
+      // Save to data/metrics directory
+      const dataMetricsDir = path.join(__dirname, '..', '..', 'data', 'metrics');
+      await fs.mkdir(dataMetricsDir, { recursive: true });
+      
+      const jsonPath = path.join(dataMetricsDir, `${dateStr}-metrics.json`);
+      
+      // Load existing data if file exists
+      let existingData = { sessions: [] };
+      try {
+        const existing = await fs.readFile(jsonPath, 'utf-8');
+        existingData = JSON.parse(existing);
+      } catch (e) {
+        // File doesn't exist yet, that's fine
+      }
+      
+      // Append current session
+      existingData.sessions.push(metricsData);
+      
+      // Write back
+      await fs.writeFile(jsonPath, JSON.stringify(existingData, null, 2));
+      console.error(`[Enhanced Metrics] Exported JSON metrics to ${jsonPath}`);
+    } catch (error) {
+      console.error('[Enhanced Metrics] Failed to export JSON metrics:', error.message);
     }
   }
 

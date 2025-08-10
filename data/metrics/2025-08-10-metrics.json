@@ -1,0 +1,230 @@
+{
+  "sessions": [
+    {
+      "date": "2025-08-10",
+      "timestamp": 1754856902334,
+      "session": {
+        "duration": 6,
+        "totalCalls": 1,
+        "totalErrors": 1,
+        "toolStats": {
+          "vault_scan": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "move_file": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:vault_scan": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 0.0915419999999969,
+            "durations": [
+              0.0915419999999969
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.0915419999999969,
+            "successRate": 1,
+            "p50": 0.0915419999999969,
+            "p90": 0.0915419999999969,
+            "p95": 0.0915419999999969,
+            "p99": 0.0915419999999969
+          },
+          "tool:move_file": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.034499999999997755,
+            "durations": [
+              0.034499999999997755
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.034499999999997755,
+            "successRate": 0,
+            "p50": 0.034499999999997755,
+            "p90": 0.034499999999997755,
+            "p95": 0.034499999999997755,
+            "p99": 0.034499999999997755
+          }
+        }
+      },
+      "errors": [
+        {
+          "tool": "move_file",
+          "count": 1
+        }
+      ],
+      "toolCalls": [
+        {
+          "tool": "vault_scan",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "move_file",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        }
+      ],
+      "performance": {
+        "tool:vault_scan": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 0.0915419999999969,
+          "durations": [
+            0.0915419999999969
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.0915419999999969,
+          "successRate": 1,
+          "p50": 0.0915419999999969,
+          "p90": 0.0915419999999969,
+          "p95": 0.0915419999999969,
+          "p99": 0.0915419999999969
+        },
+        "tool:move_file": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.034499999999997755,
+          "durations": [
+            0.034499999999997755
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.034499999999997755,
+          "successRate": 0,
+          "p50": 0.034499999999997755,
+          "p90": 0.034499999999997755,
+          "p95": 0.034499999999997755,
+          "p99": 0.034499999999997755
+        }
+      }
+    },
+    {
+      "date": "2025-08-10",
+      "timestamp": 1754856902437,
+      "session": {
+        "duration": 109,
+        "totalCalls": 1,
+        "totalErrors": 1,
+        "toolStats": {
+          "vault_scan": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "move_file": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:vault_scan": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 0.0915419999999969,
+            "durations": [
+              0.0915419999999969
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.0915419999999969,
+            "successRate": 1,
+            "p50": 0.0915419999999969,
+            "p90": 0.0915419999999969,
+            "p95": 0.0915419999999969,
+            "p99": 0.0915419999999969
+          },
+          "tool:move_file": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.034499999999997755,
+            "durations": [
+              0.034499999999997755
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.034499999999997755,
+            "successRate": 0,
+            "p50": 0.034499999999997755,
+            "p90": 0.034499999999997755,
+            "p95": 0.034499999999997755,
+            "p99": 0.034499999999997755
+          }
+        }
+      },
+      "errors": [
+        {
+          "tool": "move_file",
+          "count": 1
+        }
+      ],
+      "toolCalls": [
+        {
+          "tool": "vault_scan",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "move_file",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        }
+      ],
+      "performance": {
+        "tool:vault_scan": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 0.0915419999999969,
+          "durations": [
+            0.0915419999999969
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.0915419999999969,
+          "successRate": 1,
+          "p50": 0.0915419999999969,
+          "p90": 0.0915419999999969,
+          "p95": 0.0915419999999969,
+          "p99": 0.0915419999999969
+        },
+        "tool:move_file": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.034499999999997755,
+          "durations": [
+            0.034499999999997755
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.034499999999997755,
+          "successRate": 0,
+          "p50": 0.034499999999997755,
+          "p90": 0.034499999999997755,
+          "p95": 0.034499999999997755,
+          "p99": 0.034499999999997755
+        }
+      }
+    }
+  ]
+}

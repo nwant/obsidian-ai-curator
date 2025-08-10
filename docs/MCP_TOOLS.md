@@ -345,3 +345,167 @@ Run performance benchmarks.
 - list: Show available benchmark scenarios
 - Specific scenarios: vault scan, search, metadata queries, etc.
 
+## GitHub Integration Tools
+
+### create_github_issue
+Create a GitHub issue that can trigger Claude Code automation.
+
+**Parameters:**
+- `title` (required): Issue title
+- `body` (required): Issue description
+- `labels`: Array of labels (e.g., ["bug", "enhancement"])
+- `assignees`: Array of GitHub usernames
+- `milestone`: Milestone name
+
+**Examples:**
+- "Create an issue for the search performance bug"
+- "File a feature request for smart tag suggestions"
+- "Create an issue with the claude-fix label to trigger automation"
+
+**Note:** Issues with `claude-fix` or `claude-feature` labels will automatically trigger Claude Code to work on them.
+
+### create_bug_report
+Automatically create a bug report from an error.
+
+**Parameters:**
+- `error`: The error object or message
+- `context`: Additional context about when the error occurred
+- `toolName`: Which tool failed
+- `args`: Arguments that were passed to the tool
+- `stackTrace`: Full stack trace
+
+**Examples:**
+- "Create a bug report for the error that just occurred"
+- "File an automated bug report with full stack trace"
+
+**Note:** This tool is typically called automatically when errors occur.
+
+### create_feature_request
+Create a feature request with design documentation.
+
+**Parameters:**
+- `featureName` (required): Name of the feature
+- `description` (required): Feature description
+- `specifications`: Detailed specifications
+- `designDecisions`: Array of design decisions made
+- `acceptanceCriteria`: Array of acceptance criteria
+- `technicalRequirements`: Array of technical requirements
+- `userStory`: User story format description
+- `priority`: "low", "medium", or "high"
+
+**Examples:**
+- "Create a feature request for AI-powered tag suggestions"
+- "Document and request implementation of the smart merge feature"
+- "File a high-priority feature for real-time collaboration"
+
+**Note:** This creates both a design document in your vault and a GitHub issue.
+
+### document_design_decision
+Document a design decision in the vault.
+
+**Parameters:**
+- `feature` (required): Feature name
+- `decisions`: Array of decisions made
+- `rationale`: Why these decisions were made
+- `technicalDetails`: Object with technical specifications
+- `alternatives`: Array of alternatives considered
+- `consequences`: Array of expected consequences
+
+**Examples:**
+- "Document our design decisions for the new search algorithm"
+- "Create a design doc for the tag intelligence feature"
+- "Record the architecture decisions for the MCP server refactor"
+
+**Note:** Design documents are stored in `docs/design-decisions/` in your vault.
+
+### check_issue_status
+Check the status of a GitHub issue.
+
+**Parameters:**
+- `issueNumber` (required): Issue number to check
+
+**Examples:**
+- "Check the status of issue #42"
+- "Is issue 15 still open?"
+- "Show me details about issue number 23"
+
+## Claude Code Local Execution Tools
+
+### check_claude_code_status
+Verify Claude Code CLI is installed and configured.
+
+**Returns:**
+- Installation status
+- Version information  
+- Authentication status
+- Available models
+- GitHub CLI status
+
+**Examples:**
+- "Check if Claude Code is installed and ready"
+- "Verify Claude Code setup"
+- "Is Claude Code authenticated?"
+
+### execute_claude_code_fix
+Run Claude Code locally to fix a bug.
+
+**Parameters:**
+- `issueNumber` (required): Issue number to reference
+- `issueTitle` (required): Title describing the issue
+- `issueBody` (required): Detailed issue description
+- `errorDetails`: Error information if available
+- `customPrompt`: Override the default prompt
+
+**Examples:**
+- "Use Claude Code to fix the search bug we just discussed"
+- "Run Claude Code locally to fix issue #42"
+- "Fix the tag formatting error using Claude Code"
+
+**How it works:**
+1. Clones repo to temporary directory
+2. Runs Claude Code with fix prompt
+3. Runs tests to verify fix
+4. Creates branch and commits changes
+5. Pushes branch and creates PR
+6. Returns PR URL
+
+### execute_claude_code_feature  
+Run Claude Code locally to implement a feature.
+
+**Parameters:**
+- `featureName` (required): Name of the feature
+- `description` (required): Feature description
+- `specifications`: Detailed specifications
+- `designDecisions`: Array of design decisions
+- `acceptanceCriteria`: Array of success criteria
+- `technicalRequirements`: Array of technical constraints
+- `customPrompt`: Override the default prompt
+
+**Examples:**
+- "Use Claude Code to implement the smart tag suggestion feature"
+- "Run Claude Code to build the auto-archive functionality"
+- "Implement the search improvements we designed"
+
+**How it works:**
+1. Documents design decisions in vault
+2. Clones repo to temporary directory
+3. Runs Claude Code with feature specifications
+4. Implements feature with tests and docs
+5. Creates branch and commits changes
+6. Pushes branch and creates draft PR
+7. Returns PR URL for review
+
+### cleanup_temp_directories
+Clean up temporary directories created by Claude Code.
+
+**Returns:**
+- Number of directories cleaned
+- Total directories found
+
+**Examples:**
+- "Clean up Claude Code temp directories"
+- "Remove temporary work folders"
+- "Clear Claude Code workspace"
+
+**Note:** Temp directories are created in your system's temp folder and named `claude-code-*`.
+

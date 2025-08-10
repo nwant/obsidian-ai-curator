@@ -1,0 +1,162 @@
+name: Claude Auto Fix
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  claude-fix:
+    # Only run when issue has claude-fix or claude-feature label
+    if: |
+      (github.event.action == 'opened' && 
+       (contains(github.event.issue.labels.*.name, 'claude-fix') || 
+        contains(github.event.issue.labels.*.name, 'claude-feature'))) ||
+      (github.event.action == 'labeled' && 
+       (github.event.label.name == 'claude-fix' || 
+        github.event.label.name == 'claude-feature'))
+    
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better context
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          # Install Obsidian plugin dependencies if needed
+          if [ -d "obsidian-ai-curator-plugin" ]; then
+            cd obsidian-ai-curator-plugin && npm ci && cd ..
+          fi
+
+      - name: Determine Fix Type
+        id: fix-type
+        run: |
+          if [[ "${{ contains(github.event.issue.labels.*.name, 'claude-fix') }}" == "true" ]]; then
+            echo "type=bug" >> $GITHUB_OUTPUT
+            echo "Fix type: Bug fix"
+          else
+            echo "type=feature" >> $GITHUB_OUTPUT
+            echo "Fix type: Feature implementation"
+          fi
+
+      - name: Run Claude Code in Headless Mode
+        id: claude-fix
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          model: "claude-opus-4-1-20250805"  # Use the most capable model for fixes
+          
+          # Direct execution without waiting for @claude mention
+          direct_prompt: |
+            You are fixing issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+            
+            ## Issue Description
+            ${{ github.event.issue.body }}
+            
+            ## Your Task
+            ${{ steps.fix-type.outputs.type == 'bug' && 
+            'This is a bug fix. Please:
+            1. Analyze the error and identify the root cause
+            2. Implement a robust fix that handles edge cases
+            3. Add or update tests to prevent regression
+            4. Ensure all existing tests still pass
+            5. Update any affected documentation' || 
+            'This is a feature implementation. Please:
+            1. Review the specifications and design decisions
+            2. Implement the feature following existing code patterns
+            3. Create comprehensive tests for the new functionality
+            4. Update documentation including README if needed
+            5. Ensure backward compatibility' }}
+            
+            ## Important Guidelines
+            - Follow the existing code style and patterns in the project
+            - Use the error handling wrapper for new tools
+            - Ensure all changes are well-documented with JSDoc comments
+            - Run tests frequently during development: `npm test`
+            - If tests fail, fix them before proceeding
+            - Consider edge cases and error scenarios
+            
+            ## Creating the Pull Request
+            After implementing and testing your changes:
+            1. Create a descriptive commit message
+            2. Create a pull request that references this issue
+            3. Include a summary of changes in the PR description
+            4. List any breaking changes or migration steps if applicable
+            
+            ## Project Context
+            This is the Obsidian AI Curator MCP server project. Key areas:
+            - `/src/tools/` - MCP tool implementations
+            - `/src/tools/github/` - GitHub integration tools
+            - `/test/` - Test files
+            - `/docs/` - Documentation
+            
+            Remember: This is an open-source tool for others to use, so code quality and documentation are critical.
+          
+          # Give Claude Code access to necessary tools
+          allowed_tools: |
+            Bash(npm install)
+            Bash(npm test)
+            Bash(npm run test:unit)
+            Bash(npm run test:integration)
+            Bash(npm run test:coverage)
+            Bash(git status)
+            Bash(git diff)
+            Bash(git add *)
+            Bash(git commit -m "*)
+            Bash(git checkout -b *)
+            Bash(gh pr create --title "* --body "* --base main --assignee nwant)
+          
+          # Additional permissions for reading CI results
+          additional_permissions: |
+            actions: read
+
+      - name: Comment on Issue
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.issue.number;
+            const fixType = '${{ steps.fix-type.outputs.type }}';
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `✅ Claude Code has successfully addressed this ${fixType === 'bug' ? 'bug' : 'feature request'}.\n\nA pull request has been created with the necessary changes. Please review and merge when ready.\n\n*Automated by Claude Code Headless Mode*`
+            });
+
+      - name: Handle Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.issue.number;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `⚠️ Claude Code encountered an issue while attempting to fix this automatically.\n\nThe automated fix process failed. This might require manual intervention.\n\nYou can:\n1. Check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details\n2. Attempt to fix manually\n3. Re-run the workflow by adding the label again\n\n*Automated by Claude Code Headless Mode*`
+            });
+            
+            // Add a label to indicate manual intervention needed
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['needs-manual-fix']
+            });

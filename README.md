@@ -88,12 +88,59 @@ See [Quick Start Guide](docs/QUICK_START.md) for detailed instructions and optio
 - **Project Playbooks**: Customizable structures for different project types
 - **Git Integration**: Checkpoint and rollback capabilities
 - **Daily Notes**: Quick capture and task management
+- **🚀 Automated Workflow**: Claude Desktop → GitHub Issues → Claude Code → Pull Requests
 
 See [Examples](docs/EXAMPLES.md) for detailed use cases.
+
+## 🚀 NEW: Automated Claude Code Integration
+
+**Turn errors into fixes and ideas into features - automatically!**
+
+This project now includes TWO ways to automate development with Claude Code:
+
+### Option 1: Local Execution (Recommended)
+**Run Claude Code on your machine - no GitHub Actions needed!**
+
+```bash
+# Quick setup
+bash scripts/setup-local-claude.sh
+
+# Requirements:
+# 1. Install Claude Code CLI from https://claude.ai/code
+# 2. Install GitHub CLI: brew install gh
+# 3. Authenticate both tools
+```
+
+**Benefits:**
+- ✅ No GitHub Actions costs
+- ✅ Runs immediately on your machine  
+- ✅ Full control and visibility
+- ✅ Easy debugging
+
+See [Local Claude Code Guide](docs/LOCAL_CLAUDE_CODE.md) for setup.
+
+### Option 2: GitHub Actions Automation
+**Use GitHub Actions to run Claude Code in the cloud**
+
+```bash
+# Setup GitHub Actions workflow
+bash scripts/setup-automation.sh
+
+# Requires Claude Code OAuth token in GitHub Secrets
+```
+
+**Benefits:**
+- ✅ Runs in cloud, not on your machine
+- ✅ Triggered automatically by issues
+- ✅ Works even when you're offline
+
+See [GitHub Actions Workflow Guide](docs/AUTOMATED_WORKFLOW.md) for setup.
 
 ## Documentation
 
 - [Quick Start Guide](docs/QUICK_START.md) - Get running in 5 minutes
+- [**Local Claude Code**](docs/LOCAL_CLAUDE_CODE.md) - Run Claude Code locally (recommended)
+- [**GitHub Actions Workflow**](docs/AUTOMATED_WORKFLOW.md) - Cloud-based automation
 - [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
 - [Configuration Guide](docs/CONFIGURATION.md) - All configuration options
 - [MCP Tools Reference](docs/MCP_TOOLS.md) - Complete tool API documentation  
