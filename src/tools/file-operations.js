@@ -56,7 +56,7 @@ export async function rename_file(args) {
   await fs.rename(fullOldPath, fullNewPath);
   
   // Update all links in vault
-  const updatedFiles = await updateLinksInVault(oldPath, newPath, vaultPath, config);
+  const updatedFiles = await updateLinksInVault(oldPath, newPath, vaultPath);
   
   return {
     oldPath,
@@ -312,7 +312,7 @@ export async function get_backlinks(args) {
   // Find all markdown files
   const files = await glob('**/*.md', {
     cwd: vaultPath,
-    ignore: config.ignorePatterns || ['.obsidian/**', '.git/**', '.trash/**']
+    ignore: ['.obsidian/**', '.git/**', '.trash/**']
   });
   
   const backlinks = [];
@@ -352,10 +352,10 @@ export async function get_backlinks(args) {
 }
 
 // Helper function to update links throughout the vault
-async function updateLinksInVault(oldPath, newPath, vaultPath, config) {
+async function updateLinksInVault(oldPath, newPath, vaultPath) {
   const files = await glob('**/*.md', {
     cwd: vaultPath,
-    ignore: config.ignorePatterns || ['.obsidian/**', '.git/**', '.trash/**']
+    ignore: ['.obsidian/**', '.git/**', '.trash/**']
   });
   
   const updatedFiles = [];
