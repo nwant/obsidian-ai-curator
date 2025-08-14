@@ -1,3 +1,5 @@
+[![MSeeP.ai Security Assessment Badge](https://mseep.net/pr/nwant-obsidian-ai-curator-badge.png)](https://mseep.ai/app/nwant-obsidian-ai-curator)
+
 # Obsidian AI Curator
 
 [![Obsidian Plugin](https://img.shields.io/badge/Obsidian-Plugin-7c3aed)](https://obsidian.md)
