@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { getVaultPath } from '../utils/config-loader.js';
+import { getVaultPath, loadConfig } from '../utils/config-loader.js';
 import path from 'path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
@@ -109,8 +109,9 @@ export async function vault_scan(args) {
     useCache = true
   } = args;
 
-  // Get vault path from config
+  // Get vault path and config
   const vaultPath = await getVaultPath();
+  const config = await loadConfig();
 
   // Find files matching patterns
   const files = [];

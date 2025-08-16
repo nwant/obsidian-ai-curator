@@ -8370,6 +8370,1498 @@
           "p99": 3.0056669999612495
         }
       }
+    },
+    {
+      "date": "2025-08-16",
+      "timestamp": 1755355112491,
+      "session": {
+        "duration": 1200014,
+        "totalCalls": 7,
+        "totalErrors": 2,
+        "toolStats": {
+          "read_notes": {
+            "count": 2,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "vault_scan": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "analyze_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "search_content": {
+            "count": 3,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_daily_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 2,
+            "successCount": 2,
+            "errorCount": 0,
+            "totalDuration": 29.57145899994066,
+            "durations": [
+              28.445166999998037,
+              1.126291999942623
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 14.78572949997033,
+            "successRate": 1,
+            "p50": 28.445166999998037,
+            "p90": 28.445166999998037,
+            "p95": 28.445166999998037,
+            "p99": 28.445166999998037
+          },
+          "tool:vault_scan": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 30.120999999984633,
+            "durations": [
+              30.120999999984633
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 30.120999999984633,
+            "successRate": 1,
+            "p50": 30.120999999984633,
+            "p90": 30.120999999984633,
+            "p95": 30.120999999984633,
+            "p99": 30.120999999984633
+          },
+          "tool:analyze_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 1.7691660000709817,
+            "durations": [
+              1.7691660000709817
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.7691660000709817,
+            "successRate": 0,
+            "p50": 1.7691660000709817,
+            "p90": 1.7691660000709817,
+            "p95": 1.7691660000709817,
+            "p99": 1.7691660000709817
+          },
+          "tool:get_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.4171250000363216,
+            "durations": [
+              0.4171250000363216
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.4171250000363216,
+            "successRate": 0,
+            "p50": 0.4171250000363216,
+            "p90": 0.4171250000363216,
+            "p95": 0.4171250000363216,
+            "p99": 0.4171250000363216
+          },
+          "tool:search_content": {
+            "count": 3,
+            "successCount": 3,
+            "errorCount": 0,
+            "totalDuration": 103.2459169998765,
+            "durations": [
+              41.73649999999907,
+              35.97099999990314,
+              25.538416999974288
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 34.4153056666255,
+            "successRate": 1,
+            "p50": 35.97099999990314,
+            "p90": 41.73649999999907,
+            "p95": 41.73649999999907,
+            "p99": 41.73649999999907
+          },
+          "tool:get_daily_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 3.0056669999612495,
+            "durations": [
+              3.0056669999612495
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 3.0056669999612495,
+            "successRate": 1,
+            "p50": 3.0056669999612495,
+            "p90": 3.0056669999612495,
+            "p95": 3.0056669999612495,
+            "p99": 3.0056669999612495
+          }
+        }
+      },
+      "errors": [
+        {
+          "tool": "analyze_tags",
+          "count": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 1
+        }
+      ],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 2,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "vault_scan",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "analyze_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "search_content",
+          "count": 3,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "get_daily_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 2,
+          "successCount": 2,
+          "errorCount": 0,
+          "totalDuration": 29.57145899994066,
+          "durations": [
+            28.445166999998037,
+            1.126291999942623
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 14.78572949997033,
+          "successRate": 1,
+          "p50": 28.445166999998037,
+          "p90": 28.445166999998037,
+          "p95": 28.445166999998037,
+          "p99": 28.445166999998037
+        },
+        "tool:vault_scan": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 30.120999999984633,
+          "durations": [
+            30.120999999984633
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 30.120999999984633,
+          "successRate": 1,
+          "p50": 30.120999999984633,
+          "p90": 30.120999999984633,
+          "p95": 30.120999999984633,
+          "p99": 30.120999999984633
+        },
+        "tool:analyze_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 1.7691660000709817,
+          "durations": [
+            1.7691660000709817
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.7691660000709817,
+          "successRate": 0,
+          "p50": 1.7691660000709817,
+          "p90": 1.7691660000709817,
+          "p95": 1.7691660000709817,
+          "p99": 1.7691660000709817
+        },
+        "tool:get_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.4171250000363216,
+          "durations": [
+            0.4171250000363216
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.4171250000363216,
+          "successRate": 0,
+          "p50": 0.4171250000363216,
+          "p90": 0.4171250000363216,
+          "p95": 0.4171250000363216,
+          "p99": 0.4171250000363216
+        },
+        "tool:search_content": {
+          "count": 3,
+          "successCount": 3,
+          "errorCount": 0,
+          "totalDuration": 103.2459169998765,
+          "durations": [
+            41.73649999999907,
+            35.97099999990314,
+            25.538416999974288
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 34.4153056666255,
+          "successRate": 1,
+          "p50": 35.97099999990314,
+          "p90": 41.73649999999907,
+          "p95": 41.73649999999907,
+          "p99": 41.73649999999907
+        },
+        "tool:get_daily_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 3.0056669999612495,
+          "durations": [
+            3.0056669999612495
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 3.0056669999612495,
+          "successRate": 1,
+          "p50": 3.0056669999612495,
+          "p90": 3.0056669999612495,
+          "p95": 3.0056669999612495,
+          "p99": 3.0056669999612495
+        }
+      }
+    },
+    {
+      "date": "2025-08-16",
+      "timestamp": 1755355412490,
+      "session": {
+        "duration": 1500013,
+        "totalCalls": 8,
+        "totalErrors": 2,
+        "toolStats": {
+          "read_notes": {
+            "count": 2,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "vault_scan": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "analyze_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "search_content": {
+            "count": 3,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_daily_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "append_to_daily_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 2,
+            "successCount": 2,
+            "errorCount": 0,
+            "totalDuration": 29.57145899994066,
+            "durations": [
+              28.445166999998037,
+              1.126291999942623
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 14.78572949997033,
+            "successRate": 1,
+            "p50": 28.445166999998037,
+            "p90": 28.445166999998037,
+            "p95": 28.445166999998037,
+            "p99": 28.445166999998037
+          },
+          "tool:vault_scan": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 30.120999999984633,
+            "durations": [
+              30.120999999984633
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 30.120999999984633,
+            "successRate": 1,
+            "p50": 30.120999999984633,
+            "p90": 30.120999999984633,
+            "p95": 30.120999999984633,
+            "p99": 30.120999999984633
+          },
+          "tool:analyze_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 1.7691660000709817,
+            "durations": [
+              1.7691660000709817
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.7691660000709817,
+            "successRate": 0,
+            "p50": 1.7691660000709817,
+            "p90": 1.7691660000709817,
+            "p95": 1.7691660000709817,
+            "p99": 1.7691660000709817
+          },
+          "tool:get_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.4171250000363216,
+            "durations": [
+              0.4171250000363216
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.4171250000363216,
+            "successRate": 0,
+            "p50": 0.4171250000363216,
+            "p90": 0.4171250000363216,
+            "p95": 0.4171250000363216,
+            "p99": 0.4171250000363216
+          },
+          "tool:search_content": {
+            "count": 3,
+            "successCount": 3,
+            "errorCount": 0,
+            "totalDuration": 103.2459169998765,
+            "durations": [
+              41.73649999999907,
+              35.97099999990314,
+              25.538416999974288
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 34.4153056666255,
+            "successRate": 1,
+            "p50": 35.97099999990314,
+            "p90": 41.73649999999907,
+            "p95": 41.73649999999907,
+            "p99": 41.73649999999907
+          },
+          "tool:get_daily_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 3.0056669999612495,
+            "durations": [
+              3.0056669999612495
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 3.0056669999612495,
+            "successRate": 1,
+            "p50": 3.0056669999612495,
+            "p90": 3.0056669999612495,
+            "p95": 3.0056669999612495,
+            "p99": 3.0056669999612495
+          },
+          "tool:append_to_daily_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 1.7296670000068843,
+            "durations": [
+              1.7296670000068843
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.7296670000068843,
+            "successRate": 1,
+            "p50": 1.7296670000068843,
+            "p90": 1.7296670000068843,
+            "p95": 1.7296670000068843,
+            "p99": 1.7296670000068843
+          }
+        }
+      },
+      "errors": [
+        {
+          "tool": "analyze_tags",
+          "count": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 1
+        }
+      ],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 2,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "vault_scan",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "analyze_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "search_content",
+          "count": 3,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "get_daily_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "append_to_daily_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 2,
+          "successCount": 2,
+          "errorCount": 0,
+          "totalDuration": 29.57145899994066,
+          "durations": [
+            28.445166999998037,
+            1.126291999942623
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 14.78572949997033,
+          "successRate": 1,
+          "p50": 28.445166999998037,
+          "p90": 28.445166999998037,
+          "p95": 28.445166999998037,
+          "p99": 28.445166999998037
+        },
+        "tool:vault_scan": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 30.120999999984633,
+          "durations": [
+            30.120999999984633
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 30.120999999984633,
+          "successRate": 1,
+          "p50": 30.120999999984633,
+          "p90": 30.120999999984633,
+          "p95": 30.120999999984633,
+          "p99": 30.120999999984633
+        },
+        "tool:analyze_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 1.7691660000709817,
+          "durations": [
+            1.7691660000709817
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.7691660000709817,
+          "successRate": 0,
+          "p50": 1.7691660000709817,
+          "p90": 1.7691660000709817,
+          "p95": 1.7691660000709817,
+          "p99": 1.7691660000709817
+        },
+        "tool:get_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.4171250000363216,
+          "durations": [
+            0.4171250000363216
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.4171250000363216,
+          "successRate": 0,
+          "p50": 0.4171250000363216,
+          "p90": 0.4171250000363216,
+          "p95": 0.4171250000363216,
+          "p99": 0.4171250000363216
+        },
+        "tool:search_content": {
+          "count": 3,
+          "successCount": 3,
+          "errorCount": 0,
+          "totalDuration": 103.2459169998765,
+          "durations": [
+            41.73649999999907,
+            35.97099999990314,
+            25.538416999974288
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 34.4153056666255,
+          "successRate": 1,
+          "p50": 35.97099999990314,
+          "p90": 41.73649999999907,
+          "p95": 41.73649999999907,
+          "p99": 41.73649999999907
+        },
+        "tool:get_daily_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 3.0056669999612495,
+          "durations": [
+            3.0056669999612495
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 3.0056669999612495,
+          "successRate": 1,
+          "p50": 3.0056669999612495,
+          "p90": 3.0056669999612495,
+          "p95": 3.0056669999612495,
+          "p99": 3.0056669999612495
+        },
+        "tool:append_to_daily_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 1.7296670000068843,
+          "durations": [
+            1.7296670000068843
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.7296670000068843,
+          "successRate": 1,
+          "p50": 1.7296670000068843,
+          "p90": 1.7296670000068843,
+          "p95": 1.7296670000068843,
+          "p99": 1.7296670000068843
+        }
+      }
+    },
+    {
+      "date": "2025-08-16",
+      "timestamp": 1755355419687,
+      "session": {
+        "duration": 1507210,
+        "totalCalls": 8,
+        "totalErrors": 3,
+        "toolStats": {
+          "read_notes": {
+            "count": 2,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "vault_scan": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "analyze_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "search_content": {
+            "count": 3,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_daily_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "append_to_daily_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "create_bug_report": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 2,
+            "successCount": 2,
+            "errorCount": 0,
+            "totalDuration": 29.57145899994066,
+            "durations": [
+              28.445166999998037,
+              1.126291999942623
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 14.78572949997033,
+            "successRate": 1,
+            "p50": 28.445166999998037,
+            "p90": 28.445166999998037,
+            "p95": 28.445166999998037,
+            "p99": 28.445166999998037
+          },
+          "tool:vault_scan": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 30.120999999984633,
+            "durations": [
+              30.120999999984633
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 30.120999999984633,
+            "successRate": 1,
+            "p50": 30.120999999984633,
+            "p90": 30.120999999984633,
+            "p95": 30.120999999984633,
+            "p99": 30.120999999984633
+          },
+          "tool:analyze_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 1.7691660000709817,
+            "durations": [
+              1.7691660000709817
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.7691660000709817,
+            "successRate": 0,
+            "p50": 1.7691660000709817,
+            "p90": 1.7691660000709817,
+            "p95": 1.7691660000709817,
+            "p99": 1.7691660000709817
+          },
+          "tool:get_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.4171250000363216,
+            "durations": [
+              0.4171250000363216
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.4171250000363216,
+            "successRate": 0,
+            "p50": 0.4171250000363216,
+            "p90": 0.4171250000363216,
+            "p95": 0.4171250000363216,
+            "p99": 0.4171250000363216
+          },
+          "tool:search_content": {
+            "count": 3,
+            "successCount": 3,
+            "errorCount": 0,
+            "totalDuration": 103.2459169998765,
+            "durations": [
+              41.73649999999907,
+              35.97099999990314,
+              25.538416999974288
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 34.4153056666255,
+            "successRate": 1,
+            "p50": 35.97099999990314,
+            "p90": 41.73649999999907,
+            "p95": 41.73649999999907,
+            "p99": 41.73649999999907
+          },
+          "tool:get_daily_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 3.0056669999612495,
+            "durations": [
+              3.0056669999612495
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 3.0056669999612495,
+            "successRate": 1,
+            "p50": 3.0056669999612495,
+            "p90": 3.0056669999612495,
+            "p95": 3.0056669999612495,
+            "p99": 3.0056669999612495
+          },
+          "tool:append_to_daily_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 1.7296670000068843,
+            "durations": [
+              1.7296670000068843
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.7296670000068843,
+            "successRate": 1,
+            "p50": 1.7296670000068843,
+            "p90": 1.7296670000068843,
+            "p95": 1.7296670000068843,
+            "p99": 1.7296670000068843
+          },
+          "tool:create_bug_report": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.07279199990443885,
+            "durations": [
+              0.07279199990443885
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.07279199990443885,
+            "successRate": 0,
+            "p50": 0.07279199990443885,
+            "p90": 0.07279199990443885,
+            "p95": 0.07279199990443885,
+            "p99": 0.07279199990443885
+          }
+        }
+      },
+      "errors": [
+        {
+          "tool": "analyze_tags",
+          "count": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 1
+        },
+        {
+          "tool": "create_bug_report",
+          "count": 1
+        }
+      ],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 2,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "vault_scan",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "analyze_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "search_content",
+          "count": 3,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "get_daily_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "append_to_daily_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "create_bug_report",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 2,
+          "successCount": 2,
+          "errorCount": 0,
+          "totalDuration": 29.57145899994066,
+          "durations": [
+            28.445166999998037,
+            1.126291999942623
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 14.78572949997033,
+          "successRate": 1,
+          "p50": 28.445166999998037,
+          "p90": 28.445166999998037,
+          "p95": 28.445166999998037,
+          "p99": 28.445166999998037
+        },
+        "tool:vault_scan": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 30.120999999984633,
+          "durations": [
+            30.120999999984633
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 30.120999999984633,
+          "successRate": 1,
+          "p50": 30.120999999984633,
+          "p90": 30.120999999984633,
+          "p95": 30.120999999984633,
+          "p99": 30.120999999984633
+        },
+        "tool:analyze_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 1.7691660000709817,
+          "durations": [
+            1.7691660000709817
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.7691660000709817,
+          "successRate": 0,
+          "p50": 1.7691660000709817,
+          "p90": 1.7691660000709817,
+          "p95": 1.7691660000709817,
+          "p99": 1.7691660000709817
+        },
+        "tool:get_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.4171250000363216,
+          "durations": [
+            0.4171250000363216
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.4171250000363216,
+          "successRate": 0,
+          "p50": 0.4171250000363216,
+          "p90": 0.4171250000363216,
+          "p95": 0.4171250000363216,
+          "p99": 0.4171250000363216
+        },
+        "tool:search_content": {
+          "count": 3,
+          "successCount": 3,
+          "errorCount": 0,
+          "totalDuration": 103.2459169998765,
+          "durations": [
+            41.73649999999907,
+            35.97099999990314,
+            25.538416999974288
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 34.4153056666255,
+          "successRate": 1,
+          "p50": 35.97099999990314,
+          "p90": 41.73649999999907,
+          "p95": 41.73649999999907,
+          "p99": 41.73649999999907
+        },
+        "tool:get_daily_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 3.0056669999612495,
+          "durations": [
+            3.0056669999612495
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 3.0056669999612495,
+          "successRate": 1,
+          "p50": 3.0056669999612495,
+          "p90": 3.0056669999612495,
+          "p95": 3.0056669999612495,
+          "p99": 3.0056669999612495
+        },
+        "tool:append_to_daily_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 1.7296670000068843,
+          "durations": [
+            1.7296670000068843
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.7296670000068843,
+          "successRate": 1,
+          "p50": 1.7296670000068843,
+          "p90": 1.7296670000068843,
+          "p95": 1.7296670000068843,
+          "p99": 1.7296670000068843
+        },
+        "tool:create_bug_report": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.07279199990443885,
+          "durations": [
+            0.07279199990443885
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.07279199990443885,
+          "successRate": 0,
+          "p50": 0.07279199990443885,
+          "p90": 0.07279199990443885,
+          "p95": 0.07279199990443885,
+          "p99": 0.07279199990443885
+        }
+      }
+    },
+    {
+      "date": "2025-08-16",
+      "timestamp": 1755355712489,
+      "session": {
+        "duration": 1800012,
+        "totalCalls": 10,
+        "totalErrors": 3,
+        "toolStats": {
+          "read_notes": {
+            "count": 2,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "vault_scan": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "analyze_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_tags": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "search_content": {
+            "count": 3,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "get_daily_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "append_to_daily_note": {
+            "count": 2,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "create_bug_report": {
+            "count": 0,
+            "totalTime": 0,
+            "errors": 1,
+            "avgTime": 0,
+            "errorRate": 0
+          },
+          "write_note": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 2,
+            "successCount": 2,
+            "errorCount": 0,
+            "totalDuration": 29.57145899994066,
+            "durations": [
+              28.445166999998037,
+              1.126291999942623
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 14.78572949997033,
+            "successRate": 1,
+            "p50": 28.445166999998037,
+            "p90": 28.445166999998037,
+            "p95": 28.445166999998037,
+            "p99": 28.445166999998037
+          },
+          "tool:vault_scan": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 30.120999999984633,
+            "durations": [
+              30.120999999984633
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 30.120999999984633,
+            "successRate": 1,
+            "p50": 30.120999999984633,
+            "p90": 30.120999999984633,
+            "p95": 30.120999999984633,
+            "p99": 30.120999999984633
+          },
+          "tool:analyze_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 1.7691660000709817,
+            "durations": [
+              1.7691660000709817
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.7691660000709817,
+            "successRate": 0,
+            "p50": 1.7691660000709817,
+            "p90": 1.7691660000709817,
+            "p95": 1.7691660000709817,
+            "p99": 1.7691660000709817
+          },
+          "tool:get_tags": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.4171250000363216,
+            "durations": [
+              0.4171250000363216
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.4171250000363216,
+            "successRate": 0,
+            "p50": 0.4171250000363216,
+            "p90": 0.4171250000363216,
+            "p95": 0.4171250000363216,
+            "p99": 0.4171250000363216
+          },
+          "tool:search_content": {
+            "count": 3,
+            "successCount": 3,
+            "errorCount": 0,
+            "totalDuration": 103.2459169998765,
+            "durations": [
+              41.73649999999907,
+              35.97099999990314,
+              25.538416999974288
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 34.4153056666255,
+            "successRate": 1,
+            "p50": 35.97099999990314,
+            "p90": 41.73649999999907,
+            "p95": 41.73649999999907,
+            "p99": 41.73649999999907
+          },
+          "tool:get_daily_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 3.0056669999612495,
+            "durations": [
+              3.0056669999612495
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 3.0056669999612495,
+            "successRate": 1,
+            "p50": 3.0056669999612495,
+            "p90": 3.0056669999612495,
+            "p95": 3.0056669999612495,
+            "p99": 3.0056669999612495
+          },
+          "tool:append_to_daily_note": {
+            "count": 2,
+            "successCount": 2,
+            "errorCount": 0,
+            "totalDuration": 2.9449170001316816,
+            "durations": [
+              1.7296670000068843,
+              1.2152500001247972
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.4724585000658408,
+            "successRate": 1,
+            "p50": 1.7296670000068843,
+            "p90": 1.7296670000068843,
+            "p95": 1.7296670000068843,
+            "p99": 1.7296670000068843
+          },
+          "tool:create_bug_report": {
+            "count": 1,
+            "successCount": 0,
+            "errorCount": 1,
+            "totalDuration": 0.07279199990443885,
+            "durations": [
+              0.07279199990443885
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 0.07279199990443885,
+            "successRate": 0,
+            "p50": 0.07279199990443885,
+            "p90": 0.07279199990443885,
+            "p95": 0.07279199990443885,
+            "p99": 0.07279199990443885
+          },
+          "tool:write_note": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 1.8924579999875277,
+            "durations": [
+              1.8924579999875277
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 1.8924579999875277,
+            "successRate": 1,
+            "p50": 1.8924579999875277,
+            "p90": 1.8924579999875277,
+            "p95": 1.8924579999875277,
+            "p99": 1.8924579999875277
+          }
+        }
+      },
+      "errors": [
+        {
+          "tool": "analyze_tags",
+          "count": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 1
+        },
+        {
+          "tool": "create_bug_report",
+          "count": 1
+        }
+      ],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 2,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "vault_scan",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "analyze_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "get_tags",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "search_content",
+          "count": 3,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "get_daily_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "append_to_daily_note",
+          "count": 2,
+          "totalTime": 0,
+          "errors": 0
+        },
+        {
+          "tool": "create_bug_report",
+          "count": 0,
+          "totalTime": 0,
+          "errors": 1
+        },
+        {
+          "tool": "write_note",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 2,
+          "successCount": 2,
+          "errorCount": 0,
+          "totalDuration": 29.57145899994066,
+          "durations": [
+            28.445166999998037,
+            1.126291999942623
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 14.78572949997033,
+          "successRate": 1,
+          "p50": 28.445166999998037,
+          "p90": 28.445166999998037,
+          "p95": 28.445166999998037,
+          "p99": 28.445166999998037
+        },
+        "tool:vault_scan": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 30.120999999984633,
+          "durations": [
+            30.120999999984633
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 30.120999999984633,
+          "successRate": 1,
+          "p50": 30.120999999984633,
+          "p90": 30.120999999984633,
+          "p95": 30.120999999984633,
+          "p99": 30.120999999984633
+        },
+        "tool:analyze_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 1.7691660000709817,
+          "durations": [
+            1.7691660000709817
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.7691660000709817,
+          "successRate": 0,
+          "p50": 1.7691660000709817,
+          "p90": 1.7691660000709817,
+          "p95": 1.7691660000709817,
+          "p99": 1.7691660000709817
+        },
+        "tool:get_tags": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.4171250000363216,
+          "durations": [
+            0.4171250000363216
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.4171250000363216,
+          "successRate": 0,
+          "p50": 0.4171250000363216,
+          "p90": 0.4171250000363216,
+          "p95": 0.4171250000363216,
+          "p99": 0.4171250000363216
+        },
+        "tool:search_content": {
+          "count": 3,
+          "successCount": 3,
+          "errorCount": 0,
+          "totalDuration": 103.2459169998765,
+          "durations": [
+            41.73649999999907,
+            35.97099999990314,
+            25.538416999974288
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 34.4153056666255,
+          "successRate": 1,
+          "p50": 35.97099999990314,
+          "p90": 41.73649999999907,
+          "p95": 41.73649999999907,
+          "p99": 41.73649999999907
+        },
+        "tool:get_daily_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 3.0056669999612495,
+          "durations": [
+            3.0056669999612495
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 3.0056669999612495,
+          "successRate": 1,
+          "p50": 3.0056669999612495,
+          "p90": 3.0056669999612495,
+          "p95": 3.0056669999612495,
+          "p99": 3.0056669999612495
+        },
+        "tool:append_to_daily_note": {
+          "count": 2,
+          "successCount": 2,
+          "errorCount": 0,
+          "totalDuration": 2.9449170001316816,
+          "durations": [
+            1.7296670000068843,
+            1.2152500001247972
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.4724585000658408,
+          "successRate": 1,
+          "p50": 1.7296670000068843,
+          "p90": 1.7296670000068843,
+          "p95": 1.7296670000068843,
+          "p99": 1.7296670000068843
+        },
+        "tool:create_bug_report": {
+          "count": 1,
+          "successCount": 0,
+          "errorCount": 1,
+          "totalDuration": 0.07279199990443885,
+          "durations": [
+            0.07279199990443885
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 0.07279199990443885,
+          "successRate": 0,
+          "p50": 0.07279199990443885,
+          "p90": 0.07279199990443885,
+          "p95": 0.07279199990443885,
+          "p99": 0.07279199990443885
+        },
+        "tool:write_note": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 1.8924579999875277,
+          "durations": [
+            1.8924579999875277
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 1.8924579999875277,
+          "successRate": 1,
+          "p50": 1.8924579999875277,
+          "p90": 1.8924579999875277,
+          "p95": 1.8924579999875277,
+          "p99": 1.8924579999875277
+        }
+      }
     }
   ]
 }

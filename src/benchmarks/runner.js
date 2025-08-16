@@ -20,7 +20,7 @@ export class BenchmarkRunner {
       throw new Error(`Unknown scenario: ${scenarioName}`);
     }
 
-    console.log(`Running benchmark scenario: ${scenarioName}`);
+    console.error(`Running benchmark scenario: ${scenarioName}`);
     
     const startTime = performance.now();
     const toolCalls = [];
