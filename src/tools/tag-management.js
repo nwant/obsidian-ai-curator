@@ -15,6 +15,59 @@ export async function get_tags(args = {}) {
   const vaultPath = await getVaultPath();
   const config = await loadConfig();
   
+  // Try to use Obsidian API if available (but not in test mode)
+  if (config.useObsidianAPI !== false && process.env.NODE_ENV !== 'test') {
+    try {
+      const endpoint = filePath ? `/api/tags/file?path=${encodeURIComponent(filePath)}` : '/api/tags';
+      const response = await fetch(`http://localhost:3001${endpoint}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(1000)
+      });
+      
+      if (response.ok) {
+        const apiData = await response.json();
+        if (apiData.success && apiData.data) {
+          // For single file, return the tags array
+          if (filePath) {
+            return {
+              tags: apiData.data.tags || [],
+              file: filePath
+            };
+          }
+          
+          // For all tags, convert to our format
+          // IMPORTANT: Obsidian API returns tags WITH hashtags (e.g., #example)
+          // We need to clean them for consistency
+          const tags = apiData.data.tags || {};
+          const cleanedTags = {};
+          const tagList = [];
+          
+          Object.entries(tags).forEach(([tag, count]) => {
+            // Remove hashtag prefix from Obsidian API tags
+            const cleanTag = tag.replace(/^#/, '');
+            cleanedTags[cleanTag] = count;
+            tagList.push({ tag: cleanTag, count });
+          });
+          
+          const tagHierarchy = apiData.data.hierarchy || buildHierarchy(tagList);
+          
+          return {
+            tags: Object.keys(cleanedTags),  // Array of clean tag names
+            tagCounts: cleanedTags,  // Object mapping clean tag to count
+            tagList: tagList,  // Array of {tag, count} with clean tags
+            totalTags: tagList.length,
+            hierarchy: tagHierarchy,
+            tagArray: Object.keys(cleanedTags)  // Array of clean tag names
+          };
+        }
+      }
+    } catch (apiError) {
+      // Fall back to file-based scanning
+      console.error('API not available for getting tags:', apiError.message);
+    }
+  }
+  
   // Get files to scan
   let files = [];
   if (filePath) {
@@ -42,7 +95,25 @@ export async function get_tags(args = {}) {
     }
     
     const content = await fs.readFile(fullPath, 'utf-8');
-    const { data, content: body } = matter(content);
+    
+    let data = {};
+    let body = content;
+    
+    // Try to parse frontmatter, but handle malformed YAML gracefully
+    try {
+      const parsed = matter(content);
+      data = parsed.data;
+      body = parsed.content;
+    } catch (yamlError) {
+      // If YAML parsing fails, try to extract content after frontmatter delimiter
+      console.warn(`Warning: Skipping malformed frontmatter in ${file}`);
+      if (content.startsWith('---\n')) {
+        const endIndex = content.indexOf('\n---\n', 4);
+        if (endIndex > 0) {
+          body = content.substring(endIndex + 5);
+        }
+      }
+    }
     
     const fileTags = new Set();
     
@@ -50,9 +121,11 @@ export async function get_tags(args = {}) {
     if (data.tags) {
       const frontmatterTags = Array.isArray(data.tags) ? data.tags : [data.tags];
       frontmatterTags.forEach(tag => {
-        const cleanTag = tag.replace(/^#/, '');
-        fileTags.add(cleanTag);
-        tagCounts.set(cleanTag, (tagCounts.get(cleanTag) || 0) + 1);
+        if (tag && typeof tag === 'string') {
+          const cleanTag = tag.replace(/^#/, '');
+          fileTags.add(cleanTag);
+          tagCounts.set(cleanTag, (tagCounts.get(cleanTag) || 0) + 1);
+        }
       });
     }
     
@@ -102,12 +175,16 @@ export async function get_tags(args = {}) {
   });
   
   const result = {
-    tags: tagsObject,
-    tagList: Array.from(tagCounts.entries()).map(([tag, count]) => ({ tag, count })),
+    tags: Array.from(tagCounts.keys()).map(tag => tag.replace(/^#/, '')),  // Array of tag names for test compatibility
+    tagCounts: tagsObject,  // Object mapping tag to count
+    tagList: Array.from(tagCounts.entries()).map(([tag, count]) => ({ 
+      tag: tag.replace(/^#/, ''),  // Remove hashtag prefix if present
+      count 
+    })),
     totalTags: tagCounts.size,
     hierarchy: tagHierarchy,
     // Also expose tags as array for test compatibility
-    tagArray: Array.from(tagCounts.keys())
+    tagArray: Array.from(tagCounts.keys()).map(tag => tag.replace(/^#/, ''))  // Remove hashtag prefix
   };
   
   if (filePath) {
@@ -135,12 +212,50 @@ export async function update_tags(args) {
   // Validate all tags
   [...add, ...remove, ...(replace || [])].forEach(validateTag);
   
+  // Try to use Obsidian API if available
+  const config = await loadConfig();
+  if (config.useObsidianAPI !== false && process.env.NODE_ENV !== 'test') {
+    try {
+      const response = await fetch('http://localhost:3001/api/tags/update', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ path: filePath, add, remove, replace }),
+        signal: AbortSignal.timeout(2000)
+      });
+      
+      if (response.ok) {
+        const apiData = await response.json();
+        if (apiData.success) {
+          // The API should handle tag updates properly
+          // Ensure we return cleaned tags
+          const result = apiData.data;
+          if (result.tags && Array.isArray(result.tags)) {
+            result.tags = result.tags.map(t => t.replace(/^#/, ''));
+          }
+          return result;
+        }
+      }
+    } catch (apiError) {
+      // Fall back to file-based update
+      console.error('API not available for tag update:', apiError.message);
+    }
+  }
+  
   // Get vault path from config
   const vaultPath = await getVaultPath();
   
   const fullPath = path.join(vaultPath, filePath);
   const content = await fs.readFile(fullPath, 'utf-8');
-  const parsed = matter(content);
+  
+  let parsed;
+  try {
+    parsed = matter(content);
+  } catch (yamlError) {
+    throw new Error(`Cannot update tags: file has malformed frontmatter - ${yamlError.message}`);
+  }
   
   // Get current tags
   let currentTags = [];
@@ -199,8 +314,57 @@ export async function update_tags(args) {
   };
 }
 
-export async function analyze_tags(args = {}) {
-  // Get all tags
+export async function analyze_tags() {
+  // Try to use Obsidian API if available
+  const config = await loadConfig();
+  
+  // Check if we can use the Obsidian API (but not in test mode)
+  if (config.useObsidianAPI !== false && process.env.NODE_ENV !== 'test') {
+    try {
+      const response = await fetch('http://localhost:3001/api/tags', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(1000)
+      });
+      
+      if (response.ok) {
+        const apiData = await response.json();
+        if (apiData.success && apiData.data) {
+          // Process API data into our format
+          // IMPORTANT: Obsidian API returns tags WITH hashtags
+          const tags = apiData.data.tags || {};
+          const tagList = Object.entries(tags).map(([tag, count]) => ({ 
+            tag: tag.replace(/^#/, ''),  // Remove hashtag prefix
+            count 
+          }));
+          
+          // Build similar tags from API data if available
+          const similarTags = findSimilarTagsFromList(tagList);
+          
+          return {
+            analysis: {
+              totalTags: tagList.length,
+              mostUsedTags: tagList.sort((a, b) => b.count - a.count).slice(0, 10),
+              leastUsedTags: tagList.filter(t => t.count === 1),
+              similar: similarTags,
+              orphaned: tagList.filter(t => t.count === 1).map(t => t.tag),
+              hierarchy: apiData.data.hierarchy || {}
+            },
+            totalTags: tagList.length,
+            recommendations: generateRecommendations(tagList, similarTags),
+            tags: tagList.sort((a, b) => b.count - a.count).slice(0, 10).map(t => t.tag),
+            totalUsage: tagList.reduce((sum, t) => sum + t.count, 0),
+            similar: similarTags
+          };
+        }
+      }
+    } catch (apiError) {
+      // Fall back to file-based scanning
+      console.error('API not available, using file scan:', apiError.message);
+    }
+  }
+  
+  // Get all tags from file system
   const tagData = await get_tags();
   const tagList = tagData.tagList || [];
   
@@ -234,21 +398,7 @@ export async function analyze_tags(args = {}) {
   }
   
   // Check for similar tags
-  const similarTags = [];
-  for (let i = 0; i < tagList.length; i++) {
-    for (let j = i + 1; j < tagList.length; j++) {
-      const tag1 = tagList[i].tag.toLowerCase();
-      const tag2 = tagList[j].tag.toLowerCase();
-      
-      // Simple similarity check
-      if (Math.abs(tag1.length - tag2.length) <= 2) {
-        const distance = levenshteinDistance(tag1, tag2);
-        if (distance <= 2) {
-          similarTags.push([tagList[i].tag, tagList[j].tag]);
-        }
-      }
-    }
-  }
+  const similarTags = findSimilarTagsFromList(tagList);
   
   if (similarTags.length > 0) {
     stats.recommendations.push({
@@ -268,15 +418,49 @@ export async function analyze_tags(args = {}) {
     recommendations: stats.recommendations,
     // Add for test compatibility
     tags: stats.mostUsedTags.map(t => t.tag),
-    totalUsage: tagList.reduce((sum, t) => sum + t.count, 0)
+    totalUsage: tagList.reduce((sum, t) => sum + t.count, 0),
+    similar: stats.similar // Ensure similar is included at top level
   };
 }
 
 export async function suggest_tags(args) {
   const { content, existingTags = [] } = args;
   
-  // Get all tags from vault
-  const { tagList } = await get_tags();
+  // Try to use Obsidian API if available
+  const config = await loadConfig();
+  let tagList = [];
+  
+  // Check if we can use the Obsidian API for tag data (but not in test mode)
+  if (config.useObsidianAPI !== false && process.env.NODE_ENV !== 'test') {
+    try {
+      const response = await fetch('http://localhost:3001/api/tags', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(1000)
+      });
+      
+      if (response.ok) {
+        const apiData = await response.json();
+        if (apiData.success && apiData.data && apiData.data.tags) {
+          // Convert API tags object to our tagList format
+          // Clean hashtags from Obsidian API tags
+          tagList = Object.entries(apiData.data.tags).map(([tag, count]) => ({ 
+            tag: tag.replace(/^#/, ''),  // Remove hashtag
+            count 
+          }));
+        }
+      }
+    } catch (apiError) {
+      // Fall back to file-based tags
+      console.error('API not available for tag suggestions:', apiError.message);
+    }
+  }
+  
+  // If we didn't get tags from API, get them from file system
+  if (tagList.length === 0) {
+    const tagData = await get_tags();
+    tagList = tagData.tagList || [];
+  }
   
   // Simple keyword-based suggestion
   const suggestions = [];
@@ -284,9 +468,11 @@ export async function suggest_tags(args) {
   
   // Check each existing tag
   tagList.forEach(({ tag, count }) => {
-    if (existingTags.includes(tag)) return;
+    // Clean the tag of any hashtag prefix
+    const cleanTag = tag.replace(/^#/, '');
+    if (existingTags.includes(cleanTag)) return;
     
-    const tagLower = tag.toLowerCase();
+    const tagLower = cleanTag.toLowerCase();
     const keywords = tagLower.split(/[-_\/]/).filter(k => k.length > 2); // Lowered threshold
     
     // Check if any keyword appears in content as a whole word
@@ -297,7 +483,7 @@ export async function suggest_tags(args) {
     
     if (matches.length > 0) {
       suggestions.push({
-        tag,
+        tag: cleanTag,  // Use cleaned tag without hashtag
         score: matches.length * Math.log(count + 1),
         reason: `Content contains: ${matches.join(', ')}`,
         usage: count
@@ -348,9 +534,13 @@ export async function suggest_tags(args) {
   // Sort by score
   suggestions.sort((a, b) => b.score - a.score);
   
+  // Return format expected by tests and TagHandler
+  const topSuggestions = suggestions.slice(0, 10);
   return {
-    suggestions: suggestions.slice(0, 10),
-    basedOn: 'content-analysis'
+    suggestions: topSuggestions.map(s => s.tag),  // Array of tag names for compatibility
+    confidence: topSuggestions,  // Full objects with scores
+    basedOn: 'content-analysis',
+    reason: topSuggestions.length > 0 ? topSuggestions[0].reason : 'No matching tags found'
   };
 }
 
@@ -381,7 +571,14 @@ export async function rename_tag(args) {
   for (const file of files) {
     const fullPath = path.join(vaultPath, file);
     const content = await fs.readFile(fullPath, 'utf-8');
-    const parsed = matter(content);
+    
+    let parsed;
+    try {
+      parsed = matter(content);
+    } catch (yamlError) {
+      console.warn(`Warning: Skipping file with malformed frontmatter: ${file}`);
+      continue; // Skip this file
+    }
     
     let modified = false;
     
@@ -404,7 +601,8 @@ export async function rename_tag(args) {
       // Escape special regex characters
       const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const escapedOld = escapeRegex(cleanOld);
-      const oldTagRegex = new RegExp(`#${escapedOld}\\b`, 'g');
+      // Use negative lookahead to ensure tag ends properly (not followed by word char or hyphen or slash)
+      const oldTagRegex = new RegExp(`#${escapedOld}(?![\\w-/])`, 'g');
       const matches = newBody.match(oldTagRegex);
       
       if (matches) {
@@ -445,6 +643,78 @@ export async function rename_tag(args) {
     success: !preview,
     merged: merge && changes.length > 0
   };
+}
+
+// Helper function to build hierarchy from tag list
+function buildHierarchy(tagList) {
+  const hierarchy = {};
+  
+  tagList.forEach(({ tag }) => {
+    const parts = tag.split('/');
+    let current = hierarchy;
+    
+    parts.forEach((part, index) => {
+      if (!current[part]) {
+        current[part] = {
+          count: 0,
+          children: {}
+        };
+      }
+      
+      // Only count at the exact level
+      if (index === parts.length - 1) {
+        const tagItem = tagList.find(t => t.tag === tag);
+        current[part].count = tagItem ? tagItem.count : 0;
+      }
+      
+      current = current[part].children;
+    });
+  });
+  
+  return hierarchy;
+}
+
+// Helper function to find similar tags from a list
+function findSimilarTagsFromList(tagList) {
+  const similarTags = [];
+  for (let i = 0; i < tagList.length; i++) {
+    for (let j = i + 1; j < tagList.length; j++) {
+      const tag1 = tagList[i].tag.toLowerCase();
+      const tag2 = tagList[j].tag.toLowerCase();
+      
+      // Simple similarity check
+      if (Math.abs(tag1.length - tag2.length) <= 2) {
+        const distance = levenshteinDistance(tag1, tag2);
+        if (distance <= 2) {
+          similarTags.push([tagList[i].tag, tagList[j].tag]);
+        }
+      }
+    }
+  }
+  return similarTags;
+}
+
+// Helper function to generate recommendations
+function generateRecommendations(tagList, similarTags) {
+  const recommendations = [];
+  
+  const leastUsedTags = tagList.filter(t => t.count === 1);
+  if (leastUsedTags.length > 20) {
+    recommendations.push({
+      type: 'cleanup',
+      message: `You have ${leastUsedTags.length} tags used only once. Consider consolidating or removing them.`
+    });
+  }
+  
+  if (similarTags.length > 0) {
+    recommendations.push({
+      type: 'merge',
+      message: `Found ${similarTags.length} pairs of similar tags that might be duplicates`,
+      tags: similarTags
+    });
+  }
+  
+  return recommendations;
 }
 
 // Helper function for tag similarity

@@ -26,7 +26,7 @@ export async function search_content(args) {
   // Find all markdown files
   const files = await glob('**/*.md', {
     cwd: vaultPath,
-    ignore: config.ignorePatterns || ['.obsidian/**', '.git/**', '.trash/**']
+    ignore: ['.obsidian/**', '.git/**', '.trash/**']
   });
   
   // Validate inputs
@@ -171,7 +171,7 @@ export async function find_by_metadata(args) {
   // Find all markdown files
   const files = await glob('**/*.md', {
     cwd: vaultPath,
-    ignore: config.ignorePatterns || ['.obsidian/**', '.git/**', '.trash/**']
+    ignore: ['.obsidian/**', '.git/**', '.trash/**']
   });
   
   const results = [];

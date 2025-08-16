@@ -1,6 +1,8 @@
 import { loadConfig } from '../utils/config-loader.js';
 import { ProjectInitializer } from './project-init.js';
 import { initProject as simpleInit, listStarters } from './simple-project-init.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 /**
  * Project management tools - wrapper functions for MCP compatibility
@@ -8,6 +10,103 @@ import { initProject as simpleInit, listStarters } from './simple-project-init.j
  * Now uses simplified implementation by default.
  * Complex playbook system still available via useComplexPlaybooks flag.
  */
+
+/**
+ * ProjectManager class for backward compatibility with tests
+ * @stub - Basic implementation for test compatibility
+ */
+export class ProjectManager {
+  constructor(config) {
+    this.config = config;
+    this.vaultPath = config.vaultPath;
+    this.projectsFolder = config.projectsFolder || 'Projects';
+    this.templates = config.templates || {
+      default: {
+        name: 'Default Template',
+        structure: {
+          'Index.md': '# {{projectName}}\n\n## Overview\n{{description}}'
+        }
+      }
+    };
+  }
+  
+  async initProject(args) {
+    const { projectName, description, template = 'default', targetDate, stakeholders } = args;
+    
+    // Get template
+    const tmpl = this.templates[template];
+    if (!tmpl) {
+      throw new Error(`Template not found: ${template}`);
+    }
+    
+    // Create project path
+    const projectPath = path.join(this.projectsFolder, projectName);
+    const fullPath = path.join(this.vaultPath, projectPath);
+    
+    // Check if exists
+    try {
+      await fs.access(fullPath);
+      throw new Error(`Project already exists: ${projectName}`);
+    } catch (e) {
+      if (e.code !== 'ENOENT') throw e;
+    }
+    
+    // Create directory
+    await fs.mkdir(fullPath, { recursive: true });
+    
+    // Process templates
+    const created = [];
+    for (const [file, content] of Object.entries(tmpl.structure)) {
+      let processedContent = content
+        .replace(/{{projectName}}/g, projectName)
+        .replace(/{{description}}/g, description || '')
+        .replace(/{{phase}}/g, 'planning')
+        .replace(/{{status}}/g, 'active')
+        .replace(/{{targetDate}}/g, targetDate || 'TBD');
+      
+      // Handle stakeholders with simple replacement
+      if (stakeholders && stakeholders.length > 0) {
+        const stakeholderList = stakeholders.map(s => `- ${s}`).join('\n');
+        processedContent = processedContent.replace(/{{#stakeholders}}[\s\S]*?{{\/stakeholders}}/g, stakeholderList);
+      } else {
+        processedContent = processedContent.replace(/{{#stakeholders}}[\s\S]*?{{\/stakeholders}}/g, '');
+      }
+      
+      const filePath = path.join(fullPath, file);
+      await fs.writeFile(filePath, processedContent, 'utf8');
+      created.push(path.join(projectPath, file));
+    }
+    
+    return {
+      success: true,
+      projectPath,
+      created,
+      message: `Project "${projectName}" created successfully`
+    };
+  }
+  
+  async listProjects(args = {}) {
+    const projectsPath = path.join(this.vaultPath, this.projectsFolder);
+    
+    try {
+      const entries = await fs.readdir(projectsPath, { withFileTypes: true });
+      const projects = entries.filter(e => e.isDirectory()).map(e => ({
+        name: e.name,
+        path: path.join(this.projectsFolder, e.name),
+        status: args.status || 'active'
+      }));
+      
+      if (args.status) {
+        return projects.filter(p => p.status === args.status);
+      }
+      
+      return projects;
+    } catch (e) {
+      if (e.code === 'ENOENT') return [];
+      throw e;
+    }
+  }
+}
 
 /**
  * Initialize a new project

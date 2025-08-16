@@ -431,3 +431,4 @@ If your tool doesn't appear in Claude Desktop:
 9. **Missing verification**: Always include "how to test it works" steps
 10. **Hardcoded paths**: All examples must use generic placeholders
 11. **Personal information**: No real vault paths, usernames (except `nwant`), or personal data
+- "always favor obsidian apis as much as possible for the obsidian-ai-curator project"

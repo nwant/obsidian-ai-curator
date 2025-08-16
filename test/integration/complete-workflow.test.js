@@ -202,6 +202,10 @@ describe('Complete User Workflows - Integration Tests', () => {
         t.toLowerCase().includes('management')
       );
       
+      console.log('DEBUG: Final tags:', finalTags.tags);
+      console.log('DEBUG: PM tags:', pmTags);
+      console.log('DEBUG: PM tags length:', pmTags.length);
+      
       expect(pmTags.length).toBeLessThanOrEqual(2); // project-management and maybe project/management
     });
   });

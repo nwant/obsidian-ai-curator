@@ -1,4 +1,4 @@
-import { App, TFile, Notice, MetadataCache } from 'obsidian';
+import { App, TFile, Notice, MetadataCache, getAllTags } from 'obsidian';
 import * as http from 'http';
 import { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
@@ -157,6 +157,10 @@ export class ObsidianAPIServer {
           await this.handleFindTag(url.searchParams, res);
           break;
 
+        case '/api/tags/update':
+          await this.handleUpdateTags(url.searchParams, res);
+          break;
+
         default:
           this.sendResponse(res, 404, { 
             success: false, 
@@ -250,17 +254,26 @@ export class ObsidianAPIServer {
       }
 
       const metadata = metadataCache.getFileCache(file);
-      const tags: Record<string, number> = {};
-
+      
+      // Use getAllTags function to get all tags from the file (frontmatter + inline)
+      const allTags = getAllTags(metadata);
+      const tags: string[] = allTags || [];
+      
+      // Also get tag counts for consistency
+      const tagCounts: Record<string, number> = {};
       if (metadata?.tags) {
         metadata.tags.forEach(tag => {
-          tags[tag.tag] = (tags[tag.tag] || 0) + 1;
+          tagCounts[tag.tag] = (tagCounts[tag.tag] || 0) + 1;
         });
       }
 
       this.sendResponse(res, 200, { 
         success: true, 
-        data: { path, tags } 
+        data: { 
+          path, 
+          tags: tags,  // Array of all tags (includes frontmatter and inline)
+          tagCounts: tagCounts  // Object with tag counts
+        } 
       });
     } else {
       // Get all tags in vault
@@ -734,25 +747,25 @@ export class ObsidianAPIServer {
         let frontmatterChanges = 0;
         let inlineChanges = 0;
 
-        // Process frontmatter
+        // Process frontmatter using processFrontMatter API
         if (includeFrontmatter) {
           const metadata = this.app.metadataCache.getFileCache(file);
           if (metadata?.frontmatter?.tags) {
             const tags = metadata.frontmatter.tags;
             if (Array.isArray(tags) && tags.includes(oldTagClean)) {
-              // Update frontmatter
-              content = content.replace(
-                /^---\s*\n([\s\S]*?)\n---/,
-                (match, frontmatter) => {
-                  const updatedFrontmatter = frontmatter.replace(
-                    new RegExp(`^(\\s*-\\s*)${this.escapeRegex(oldTagClean)}\\s*$`, 'gm'),
-                    `$1${newTagClean}`
-                  );
-                  frontmatterChanges = (frontmatter.match(new RegExp(`^\\s*-\\s*${this.escapeRegex(oldTagClean)}\\s*$`, 'gm')) || []).length;
-                  modified = frontmatterChanges > 0;
-                  return `---\n${updatedFrontmatter}\n---`;
+              // Use processFrontMatter for atomic update
+              await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+                if (frontmatter.tags && Array.isArray(frontmatter.tags)) {
+                  const index = frontmatter.tags.indexOf(oldTagClean);
+                  if (index !== -1) {
+                    frontmatter.tags[index] = newTagClean;
+                    frontmatterChanges++;
+                    modified = true;
+                  }
                 }
-              );
+              });
+              // Re-read content after frontmatter update
+              content = await this.app.vault.read(file);
             }
           }
         }
@@ -802,6 +815,90 @@ export class ObsidianAPIServer {
 
   private escapeRegex(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private async handleUpdateTags(params: URLSearchParams, res: ServerResponse) {
+    const path = params.get('path');
+    const add = params.get('add')?.split(',').filter(t => t.trim()) || [];
+    const remove = params.get('remove')?.split(',').filter(t => t.trim()) || [];
+    const replace = params.get('replace')?.split(',').filter(t => t.trim());
+
+    if (!path) {
+      this.sendResponse(res, 400, { 
+        success: false, 
+        error: 'Missing path parameter' 
+      });
+      return;
+    }
+
+    try {
+      const file = this.app.vault.getAbstractFileByPath(path);
+      if (!(file instanceof TFile)) {
+        this.sendResponse(res, 404, { 
+          success: false, 
+          error: 'File not found' 
+        });
+        return;
+      }
+
+      // Clean input tags (remove hashtags)
+      const cleanAdd = add.map(t => t.startsWith('#') ? t.substring(1) : t);
+      const cleanRemove = remove.map(t => t.startsWith('#') ? t.substring(1) : t);
+      const cleanReplace = replace?.map(t => t.startsWith('#') ? t.substring(1) : t);
+      
+      let finalTags: string[] = [];
+      
+      // Use Obsidian's processFrontMatter API for atomic frontmatter updates
+      await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+        // Get current tags from frontmatter
+        const currentTags = frontmatter.tags || [];
+        const cleanCurrentTags = Array.isArray(currentTags) 
+          ? currentTags.map(t => typeof t === 'string' && t.startsWith('#') ? t.substring(1) : t)
+          : [currentTags].map(t => typeof t === 'string' && t.startsWith('#') ? t.substring(1) : t);
+        
+        // Calculate new tags
+        if (cleanReplace !== undefined) {
+          finalTags = cleanReplace;
+        } else {
+          finalTags = [...cleanCurrentTags];
+          // Remove tags
+          finalTags = finalTags.filter(tag => !cleanRemove.includes(tag));
+          // Add tags
+          cleanAdd.forEach(tag => {
+            if (!finalTags.includes(tag)) {
+              finalTags.push(tag);
+            }
+          });
+        }
+        
+        // Update frontmatter object
+        if (finalTags.length > 0) {
+          frontmatter.tags = finalTags;
+        } else {
+          // Remove tags field if empty
+          delete frontmatter.tags;
+        }
+        
+        // Add modified timestamp
+        frontmatter.modified = new Date().toISOString();
+      });
+      
+      this.sendResponse(res, 200, { 
+        success: true, 
+        data: {
+          path,
+          tags: finalTags,
+          added: cleanAdd,
+          removed: cleanRemove,
+          method: 'obsidian-processFrontMatter'
+        }
+      });
+    } catch (error) {
+      this.sendResponse(res, 500, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to update tags' 
+      });
+    }
   }
 
   private async handleFindTag(params: URLSearchParams, res: ServerResponse) {
