@@ -18,6 +18,7 @@
     "test:status": "node test/test-status.js",
     "test:benchmark": "node test/benchmarks/vault-scale.benchmark.js",
     "test:github": "node scripts/test-github-integration.js",
+    "test:local-claude": "node scripts/test-local-claude.js",
     "build:plugin": "cd obsidian-ai-curator-plugin && npm run build",
     "dev:pre-release": "bash scripts/dev/pre-release-check.sh",
     "dev:quality": "bash scripts/dev/code-quality-check.sh",

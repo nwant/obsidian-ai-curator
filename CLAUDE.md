@@ -289,6 +289,132 @@ These methods have basic implementations that need enhancement:
 - Some tests expect APIs that may differ from Obsidian plugin capabilities
 - Performance tests need real-world calibration
 
+## Adding New MCP Tools - CRITICAL GUIDANCE
+
+### ⚠️ IMPORTANT: Tools Must Be Registered in THREE Places
+
+When adding new tools to the MCP server, they MUST be registered in all three locations or they won't appear in Claude Desktop:
+
+1. **Tool Capabilities** (lines ~89-131 in `src/mcp-server.js`)
+   ```javascript
+   capabilities: {
+     tools: {
+       "your_new_tool": true,  // Add here
+     }
+   }
+   ```
+
+2. **Tool Definitions with Input Schemas** (in `ListToolsRequestSchema` handler, lines ~185-711)
+   ```javascript
+   this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
+     tools: [
+       // ... existing tools ...
+       {
+         name: "your_new_tool",
+         description: "Clear description of what the tool does",
+         inputSchema: {
+           type: "object",
+           properties: {
+             // Define ALL parameters here
+           },
+           required: ["param1", "param2"]  // List required params
+         }
+       }
+     ]
+   }));
+   ```
+
+3. **Tool Implementation** (in `handleToolCall` or `callTool` method switch statement)
+   ```javascript
+   case 'your_new_tool':
+     result = await yourToolFunction(args);
+     break;
+   ```
+
+### Common Tool Registration Mistakes
+
+❌ **WRONG - Only adding to simplified array:**
+```javascript
+// In getTools() method - this is NOT enough!
+tools.push({ name: 'my_tool', description: 'My tool' });
+```
+
+❌ **WRONG - Missing input schema:**
+```javascript
+// Missing inputSchema property entirely
+{ name: 'my_tool', description: 'My tool' }
+```
+
+❌ **WRONG - Forgetting capabilities:**
+```javascript
+// Tool defined in ListToolsRequestSchema but not in capabilities
+// This will cause the tool to be invisible to Claude Desktop
+```
+
+✅ **CORRECT - Complete registration:**
+```javascript
+// 1. In capabilities
+"my_tool": true,
+
+// 2. In ListToolsRequestSchema with full schema
+{
+  name: "my_tool",
+  description: "What this tool does",
+  inputSchema: {
+    type: "object",
+    properties: {
+      param1: { type: "string", description: "What param1 is for" },
+      param2: { type: "number", description: "What param2 is for" }
+    },
+    required: ["param1"]
+  }
+}
+
+// 3. In handleToolCall switch
+case 'my_tool':
+  result = await this.myToolHandler.myTool(args);
+  break;
+```
+
+### Tool Registration Checklist
+
+When adding a new tool, verify ALL of these:
+
+- [ ] Added to `capabilities.tools` object with value `true`
+- [ ] Added complete tool definition in `ListToolsRequestSchema` handler
+- [ ] Includes `name` property matching the capability key
+- [ ] Includes `description` property explaining what it does
+- [ ] Includes `inputSchema` with `type: "object"`
+- [ ] All parameters defined in `inputSchema.properties`
+- [ ] Required parameters listed in `inputSchema.required` array
+- [ ] Implementation added to switch statement in `handleToolCall`/`callTool`
+- [ ] Tool function imported if in external module
+- [ ] Tested that tool appears in Claude Desktop after restart
+- [ ] Verified tool executes without errors
+
+### Testing Tool Registration
+
+Use this script to verify your tools are registered:
+```bash
+node scripts/test-tool-registration.js
+```
+
+This will show:
+- Total number of registered tools
+- Which specific tools are found/missing
+- Complete list of all available tools
+
+### Debugging Missing Tools
+
+If your tool doesn't appear in Claude Desktop:
+
+1. **Check all three registration points** (see checklist above)
+2. **Restart Claude Desktop completely** (not just reload)
+3. **Run syntax check**: `node -c src/mcp-server.js`
+4. **Test imports**: `node -e "import('./src/mcp-server.js')"`
+5. **Check for typos** - tool name must match EXACTLY in all three places
+6. **Verify input schema** - must have valid JSON Schema format
+
 ## Common Pitfalls to Avoid
 
 ### Technical Issues
@@ -297,10 +423,11 @@ These methods have basic implementations that need enhancement:
 3. **Missing restart instructions**: Users must restart Claude completely
 4. **Tag formatting**: Remember - no hashtags in frontmatter YAML
 5. **Breaking changes**: Test thoroughly with both plugin enabled and disabled
+6. **Incomplete tool registration**: Tools MUST be registered in all THREE places (see above)
 
 ### Documentation Issues
-6. **JavaScript examples for user interactions**: Users speak to Claude in natural language
-7. **Redundant sections**: Don't repeat the same information in multiple places
-8. **Missing verification**: Always include "how to test it works" steps
-9. **Hardcoded paths**: All examples must use generic placeholders
-10. **Personal information**: No real vault paths, usernames (except `nwant`), or personal data
+7. **JavaScript examples for user interactions**: Users speak to Claude in natural language
+8. **Redundant sections**: Don't repeat the same information in multiple places
+9. **Missing verification**: Always include "how to test it works" steps
+10. **Hardcoded paths**: All examples must use generic placeholders
+11. **Personal information**: No real vault paths, usernames (except `nwant`), or personal data

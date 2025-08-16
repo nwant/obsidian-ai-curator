@@ -1,0 +1,7249 @@
+{
+  "sessions": [
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755130022695,
+      "session": {
+        "duration": 26064772,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755131023848,
+      "session": {
+        "duration": 27065925,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755132136531,
+      "session": {
+        "duration": 28178608,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755133085759,
+      "session": {
+        "duration": 29127836,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755133679775,
+      "session": {
+        "duration": 29721852,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755134171933,
+      "session": {
+        "duration": 30214010,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755134882559,
+      "session": {
+        "duration": 30924636,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755135557117,
+      "session": {
+        "duration": 31599194,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755136590863,
+      "session": {
+        "duration": 32632940,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755137285140,
+      "session": {
+        "duration": 33327217,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755138103460,
+      "session": {
+        "duration": 34145537,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755138613378,
+      "session": {
+        "duration": 34655455,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755139668336,
+      "session": {
+        "duration": 35710413,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755140421610,
+      "session": {
+        "duration": 36463687,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755140946210,
+      "session": {
+        "duration": 36988287,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755141908709,
+      "session": {
+        "duration": 37950786,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755142208692,
+      "session": {
+        "duration": 38250769,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755143166670,
+      "session": {
+        "duration": 39208747,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755144174234,
+      "session": {
+        "duration": 40216311,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755144604706,
+      "session": {
+        "duration": 40646783,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755144904590,
+      "session": {
+        "duration": 40946667,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755145836690,
+      "session": {
+        "duration": 41878767,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755146948373,
+      "session": {
+        "duration": 42990450,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755148044766,
+      "session": {
+        "duration": 44086843,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755149227742,
+      "session": {
+        "duration": 45269819,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755150264679,
+      "session": {
+        "duration": 46306756,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755150564678,
+      "session": {
+        "duration": 46606755,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755151530521,
+      "session": {
+        "duration": 47572598,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755151926446,
+      "session": {
+        "duration": 47968523,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755152914703,
+      "session": {
+        "duration": 48956780,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755153214702,
+      "session": {
+        "duration": 49256779,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755153514702,
+      "session": {
+        "duration": 49556779,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755153814702,
+      "session": {
+        "duration": 49856779,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755154114702,
+      "session": {
+        "duration": 50156779,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755154414700,
+      "session": {
+        "duration": 50456777,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755154714689,
+      "session": {
+        "duration": 50756766,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755155014688,
+      "session": {
+        "duration": 51056765,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755155314687,
+      "session": {
+        "duration": 51356764,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755155614685,
+      "session": {
+        "duration": 51656762,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755155914684,
+      "session": {
+        "duration": 51956761,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755156214698,
+      "session": {
+        "duration": 52256775,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755156514697,
+      "session": {
+        "duration": 52556774,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755157509032,
+      "session": {
+        "duration": 53551109,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755158475612,
+      "session": {
+        "duration": 54517689,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755159184649,
+      "session": {
+        "duration": 55226726,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755159691801,
+      "session": {
+        "duration": 55733878,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755160692795,
+      "session": {
+        "duration": 56734872,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755161654609,
+      "session": {
+        "duration": 57696686,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755162689174,
+      "session": {
+        "duration": 58731251,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755163803609,
+      "session": {
+        "duration": 59845686,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755164755673,
+      "session": {
+        "duration": 60797750,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755165719341,
+      "session": {
+        "duration": 61761418,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755166506360,
+      "session": {
+        "duration": 62548437,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755167568655,
+      "session": {
+        "duration": 63610732,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755168597585,
+      "session": {
+        "duration": 64639662,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755169579433,
+      "session": {
+        "duration": 65621510,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755169949802,
+      "session": {
+        "duration": 65991879,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755171004959,
+      "session": {
+        "duration": 67047036,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755171674483,
+      "session": {
+        "duration": 67716560,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755172677583,
+      "session": {
+        "duration": 68719660,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755173825797,
+      "session": {
+        "duration": 69867874,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755175018718,
+      "session": {
+        "duration": 71060795,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755175511787,
+      "session": {
+        "duration": 71553864,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755176175802,
+      "session": {
+        "duration": 72217879,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755176475892,
+      "session": {
+        "duration": 72517969,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755176775893,
+      "session": {
+        "duration": 72817970,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755177085192,
+      "session": {
+        "duration": 73127269,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755177484554,
+      "session": {
+        "duration": 73526631,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755178215108,
+      "session": {
+        "duration": 74257185,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755178515108,
+      "session": {
+        "duration": 74557185,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755179466525,
+      "session": {
+        "duration": 75508602,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755180516022,
+      "session": {
+        "duration": 76558099,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755181144546,
+      "session": {
+        "duration": 77186623,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755182130056,
+      "session": {
+        "duration": 78172133,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755182957544,
+      "session": {
+        "duration": 78999621,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755183530877,
+      "session": {
+        "duration": 79572954,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755184510788,
+      "session": {
+        "duration": 80552865,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755184810718,
+      "session": {
+        "duration": 80852795,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755185194248,
+      "session": {
+        "duration": 81236325,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755185494243,
+      "session": {
+        "duration": 81536320,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755185794241,
+      "session": {
+        "duration": 81836318,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755186094257,
+      "session": {
+        "duration": 82136334,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755186394258,
+      "session": {
+        "duration": 82436335,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755186694258,
+      "session": {
+        "duration": 82736335,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755186994260,
+      "session": {
+        "duration": 83036337,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755187294261,
+      "session": {
+        "duration": 83336338,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755187594261,
+      "session": {
+        "duration": 83636338,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755187894281,
+      "session": {
+        "duration": 83936358,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755188194282,
+      "session": {
+        "duration": 84236359,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755188494285,
+      "session": {
+        "duration": 84536362,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755188794293,
+      "session": {
+        "duration": 84836370,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755189094292,
+      "session": {
+        "duration": 85136369,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755189394300,
+      "session": {
+        "duration": 85436377,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755189694303,
+      "session": {
+        "duration": 85736380,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755190271644,
+      "session": {
+        "duration": 86313721,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755190920213,
+      "session": {
+        "duration": 86962290,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755192020545,
+      "session": {
+        "duration": 88062622,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755193061520,
+      "session": {
+        "duration": 89103597,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755193611986,
+      "session": {
+        "duration": 89654063,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755193911983,
+      "session": {
+        "duration": 89954060,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755194920583,
+      "session": {
+        "duration": 90962660,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755196015558,
+      "session": {
+        "duration": 92057635,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755196993555,
+      "session": {
+        "duration": 93035632,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755198009740,
+      "session": {
+        "duration": 94051817,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755199069782,
+      "session": {
+        "duration": 95111859,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755199459439,
+      "session": {
+        "duration": 95501516,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755199926029,
+      "session": {
+        "duration": 95968106,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755200882577,
+      "session": {
+        "duration": 96924654,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755201182451,
+      "session": {
+        "duration": 97224528,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755201482454,
+      "session": {
+        "duration": 97524531,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755201782459,
+      "session": {
+        "duration": 97824536,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755202082464,
+      "session": {
+        "duration": 98124541,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755202382469,
+      "session": {
+        "duration": 98424546,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755202682401,
+      "session": {
+        "duration": 98724478,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "timestamp": 1755202982401,
+      "session": {
+        "duration": 99024478,
+        "totalCalls": 1,
+        "totalErrors": 0,
+        "toolStats": {
+          "read_notes": {
+            "count": 1,
+            "totalTime": 0,
+            "errors": 0,
+            "avgTime": 0,
+            "errorRate": 0
+          }
+        },
+        "performance": {
+          "tool:read_notes": {
+            "count": 1,
+            "successCount": 1,
+            "errorCount": 0,
+            "totalDuration": 20.587167000005138,
+            "durations": [
+              20.587167000005138
+            ],
+            "thresholdViolations": 0,
+            "avgDuration": 20.587167000005138,
+            "successRate": 1,
+            "p50": 20.587167000005138,
+            "p90": 20.587167000005138,
+            "p95": 20.587167000005138,
+            "p99": 20.587167000005138
+          }
+        }
+      },
+      "errors": [],
+      "toolCalls": [
+        {
+          "tool": "read_notes",
+          "count": 1,
+          "totalTime": 0,
+          "errors": 0
+        }
+      ],
+      "performance": {
+        "tool:read_notes": {
+          "count": 1,
+          "successCount": 1,
+          "errorCount": 0,
+          "totalDuration": 20.587167000005138,
+          "durations": [
+            20.587167000005138
+          ],
+          "thresholdViolations": 0,
+          "avgDuration": 20.587167000005138,
+          "successRate": 1,
+          "p50": 20.587167000005138,
+          "p90": 20.587167000005138,
+          "p95": 20.587167000005138,
+          "p99": 20.587167000005138
+        }
+      }
+    }
+  ]
+}

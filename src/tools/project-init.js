@@ -244,6 +244,18 @@ export class ProjectInitializer {
     // Create project folder structure
     const projectFolder = path.join(this.projectsFolder, projectName);
     const projectPath = path.join(this.vaultPath, projectFolder);
+    
+    // Check if project already exists
+    try {
+      await fs.access(projectPath);
+      throw new Error(`Project "${projectName}" already exists`);
+    } catch (error) {
+      if (error.message.includes('already exists')) {
+        throw error;
+      }
+      // Path doesn't exist, which is what we want - continue
+    }
+    
     await fs.mkdir(projectPath, { recursive: true });
 
     // Create directories from playbook

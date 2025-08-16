@@ -463,7 +463,7 @@ Run Claude Code locally to fix a bug.
 
 **How it works:**
 1. Clones repo to temporary directory
-2. Runs Claude Code with fix prompt
+2. Runs `claude -p "fix prompt"` with issue details
 3. Runs tests to verify fix
 4. Creates branch and commits changes
 5. Pushes branch and creates PR
@@ -489,7 +489,7 @@ Run Claude Code locally to implement a feature.
 **How it works:**
 1. Documents design decisions in vault
 2. Clones repo to temporary directory
-3. Runs Claude Code with feature specifications
+3. Runs `claude -p "feature prompt"` with specifications
 4. Implements feature with tests and docs
 5. Creates branch and commits changes
 6. Pushes branch and creates draft PR

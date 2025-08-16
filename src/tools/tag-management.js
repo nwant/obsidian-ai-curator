@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { getVaultPath } from '../utils/config-loader.js';
+import { getVaultPath, loadConfig } from '../utils/config-loader.js';
 import path from 'path';
 import { glob } from 'glob';
 import matter from 'gray-matter';
@@ -11,8 +11,9 @@ import matter from 'gray-matter';
 export async function get_tags(args = {}) {
   const { path: filePath } = args;
   
-  // Get vault path from config
+  // Get vault path and config
   const vaultPath = await getVaultPath();
+  const config = await loadConfig();
   
   // Get files to scan
   let files = [];
@@ -365,8 +366,9 @@ export async function rename_tag(args) {
     throw new Error('Invalid tag name: spaces not allowed');
   }
   
-  // Get vault path from config
+  // Get vault path and config
   const vaultPath = await getVaultPath();
+  const config = await loadConfig();
   
   // Find all files
   const files = await glob('**/*.md', {

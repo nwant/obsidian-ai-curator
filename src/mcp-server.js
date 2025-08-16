@@ -35,8 +35,8 @@ import { loadConfig as loadConfigUtil } from './utils/config-loader.js';
 // Import GitHub integration and error handling
 import { githubTools } from './tools/github/github-integration.js';
 import { ErrorReporter, setupGlobalErrorHandlers } from './tools/error-handler.js';
-// Removed incorrect Claude Code executor - Claude Code is an interactive tool, not a headless CLI
-// import { claudeCodeTools } from './tools/claude-code-executor.js';
+// Claude Code supports headless mode with -p flag for automation
+import { claudeCodeTools } from './tools/claude-code-executor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -119,11 +119,11 @@ export class McpServer {
             "create_feature_request": true,
             "document_design_decision": true,
             "check_issue_status": true,
-            // Removed - Claude Code doesn't support headless/automated execution
-            // "execute_claude_code_fix": true,
-            // "execute_claude_code_feature": true,
-            // "check_claude_code_status": true,
-            // "cleanup_temp_directories": true,
+            // Claude Code headless automation tools
+            "execute_claude_code_fix": true,
+            "execute_claude_code_feature": true,
+            "check_claude_code_status": true,
+            "cleanup_temp_directories": true,
             "move_file": true,
             "rename_tag": true,
             "init_project": true,
@@ -486,6 +486,227 @@ export class McpServer {
             },
             required: ["sourcePath", "targetPath"]
           }
+        },
+        // GitHub integration tools
+        {
+          name: "create_github_issue",
+          description: "Create a GitHub issue (can trigger Claude Code)",
+          inputSchema: {
+            type: "object",
+            properties: {
+              title: {
+                type: "string",
+                description: "Issue title"
+              },
+              body: {
+                type: "string",
+                description: "Issue body/description"
+              },
+              labels: {
+                type: "array",
+                items: { type: "string" },
+                description: "Labels to add to the issue"
+              },
+              assignees: {
+                type: "array",
+                items: { type: "string" },
+                description: "GitHub usernames to assign"
+              },
+              milestone: {
+                type: "string",
+                description: "Milestone name"
+              }
+            },
+            required: ["title", "body"]
+          }
+        },
+        {
+          name: "create_bug_report",
+          description: "Create an automated bug report from an error",
+          inputSchema: {
+            type: "object",
+            properties: {
+              error: {
+                type: "string",
+                description: "Error message or object"
+              },
+              context: {
+                type: "string",
+                description: "Additional context about when the error occurred"
+              },
+              toolName: {
+                type: "string",
+                description: "Name of the tool that failed"
+              },
+              args: {
+                type: "object",
+                description: "Arguments that were passed to the tool"
+              },
+              stackTrace: {
+                type: "string",
+                description: "Stack trace if available"
+              }
+            },
+            required: ["error"]
+          }
+        },
+        {
+          name: "create_feature_request",
+          description: "Create a feature request with design documentation",
+          inputSchema: {
+            type: "object",
+            properties: {
+              featureName: {
+                type: "string",
+                description: "Name of the feature"
+              },
+              description: {
+                type: "string",
+                description: "Detailed description of the feature"
+              },
+              specifications: {
+                type: "string",
+                description: "Technical specifications"
+              },
+              designDecisions: {
+                type: "array",
+                items: { type: "string" },
+                description: "Design decisions made"
+              },
+              acceptanceCriteria: {
+                type: "array",
+                items: { type: "string" },
+                description: "Acceptance criteria for the feature"
+              },
+              technicalRequirements: {
+                type: "array",
+                items: { type: "string" },
+                description: "Technical requirements"
+              },
+              userStory: {
+                type: "string",
+                description: "User story for the feature"
+              },
+              priority: {
+                type: "string",
+                enum: ["low", "medium", "high"],
+                description: "Priority level"
+              }
+            },
+            required: ["featureName", "description"]
+          }
+        },
+        {
+          name: "check_issue_status",
+          description: "Check the status of a GitHub issue",
+          inputSchema: {
+            type: "object",
+            properties: {
+              issueNumber: {
+                type: "number",
+                description: "GitHub issue number"
+              }
+            },
+            required: ["issueNumber"]
+          }
+        },
+        // Claude Code headless automation tools
+        {
+          name: "execute_claude_code_fix",
+          description: "Execute Claude Code in headless mode to fix an issue",
+          inputSchema: {
+            type: "object",
+            properties: {
+              issueNumber: {
+                type: "number",
+                description: "GitHub issue number to fix"
+              },
+              issueTitle: {
+                type: "string",
+                description: "Title of the issue"
+              },
+              issueBody: {
+                type: "string",
+                description: "Body/description of the issue"
+              },
+              errorDetails: {
+                type: "object",
+                description: "Additional error details if available"
+              },
+              customPrompt: {
+                type: "string",
+                description: "Custom prompt to override default fix instructions"
+              },
+              skipPermissions: {
+                type: "boolean",
+                description: "Skip permission checks (use with caution)",
+                default: true
+              }
+            },
+            required: ["issueNumber", "issueTitle", "issueBody"]
+          }
+        },
+        {
+          name: "execute_claude_code_feature",
+          description: "Execute Claude Code in headless mode to implement a feature",
+          inputSchema: {
+            type: "object",
+            properties: {
+              featureName: {
+                type: "string",
+                description: "Name of the feature to implement"
+              },
+              description: {
+                type: "string",
+                description: "Detailed description of the feature"
+              },
+              specifications: {
+                type: "string",
+                description: "Technical specifications"
+              },
+              designDecisions: {
+                type: "array",
+                items: { type: "string" },
+                description: "Design decisions for implementation"
+              },
+              acceptanceCriteria: {
+                type: "array",
+                items: { type: "string" },
+                description: "Acceptance criteria"
+              },
+              technicalRequirements: {
+                type: "array",
+                items: { type: "string" },
+                description: "Technical requirements"
+              },
+              customPrompt: {
+                type: "string",
+                description: "Custom prompt to override default implementation instructions"
+              },
+              skipPermissions: {
+                type: "boolean",
+                description: "Skip permission checks (use with caution)",
+                default: true
+              }
+            },
+            required: ["featureName", "description"]
+          }
+        },
+        {
+          name: "check_claude_code_status",
+          description: "Check if Claude Code CLI is installed and configured",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          }
+        },
+        {
+          name: "cleanup_temp_directories",
+          description: "Clean up temporary directories created by Claude Code",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          }
         }
       ]
     }));
@@ -723,8 +944,11 @@ export class McpServer {
       { name: 'create_feature_request', description: 'Create a feature request with design documentation' },
       { name: 'document_design_decision', description: 'Document a design decision in the vault' },
       { name: 'check_issue_status', description: 'Check the status of a GitHub issue' },
-      // Claude Code tools removed - Claude Code is an interactive terminal tool,
-      // not a headless CLI that can be automated
+      // Claude Code headless automation tools
+      { name: 'execute_claude_code_fix', description: 'Execute Claude Code in headless mode to fix an issue' },
+      { name: 'execute_claude_code_feature', description: 'Execute Claude Code in headless mode to implement a feature' },
+      { name: 'check_claude_code_status', description: 'Check if Claude Code CLI is installed and configured' },
+      { name: 'cleanup_temp_directories', description: 'Clean up temporary directories created by Claude Code' }
     ];
     
     // Add performance metrics tool if collector is available
@@ -857,7 +1081,22 @@ export class McpServer {
           result = await githubTools.check_issue_status(args);
           break;
           
-        // Claude Code tools removed - not supported for automation
+        // Claude Code headless automation tools
+        case 'execute_claude_code_fix':
+          result = await claudeCodeTools.execute_claude_code_fix(args);
+          break;
+          
+        case 'execute_claude_code_feature':
+          result = await claudeCodeTools.execute_claude_code_feature(args);
+          break;
+          
+        case 'check_claude_code_status':
+          result = await claudeCodeTools.check_claude_code_status(args);
+          break;
+          
+        case 'cleanup_temp_directories':
+          result = await claudeCodeTools.cleanup_temp_directories(args);
+          break;
         
         default:
           throw new Error(`Unknown tool: ${toolName}`);
