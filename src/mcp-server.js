@@ -707,6 +707,43 @@ export class McpServer {
             type: "object",
             properties: {}
           }
+        },
+        // Git integration tools
+        {
+          name: "git_checkpoint",
+          description: "Create a git checkpoint with a commit message",
+          inputSchema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                description: "Commit message for the checkpoint"
+              }
+            },
+            required: ["message"]
+          }
+        },
+        {
+          name: "git_changes",
+          description: "Get current git changes and status",
+          inputSchema: {
+            type: "object",
+            properties: {}
+          }
+        },
+        {
+          name: "git_rollback",
+          description: "Rollback to a previous git commit",
+          inputSchema: {
+            type: "object",
+            properties: {
+              commit: {
+                type: "string",
+                description: "Commit hash to rollback to (use 'HEAD~1' for previous commit)"
+              }
+            },
+            required: ["commit"]
+          }
         }
       ]
     }));
