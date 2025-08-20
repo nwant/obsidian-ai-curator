@@ -167,15 +167,7 @@ describe('Complete User Workflows - Integration Tests', () => {
       expect(analysis.similar).toBeDefined();
       expect(analysis.similar.length).toBeGreaterThan(0);
       
-      // Step 3: Get tag suggestions for consolidation
-      const suggestions = await testHarness.executeTool('suggest_tags', {
-        content: 'This is about project management and planning',
-        existingTags: []
-      });
-      
-      expect(suggestions.suggestions).toContain('project-management');
-      
-      // Step 4: Rename tags to consolidate
+      // Step 3: Rename tags to consolidate
       const renameOps = [
         { oldTag: 'project-mgmt', newTag: 'project-management' },
         { oldTag: 'projectmanagement', newTag: 'project-management' },

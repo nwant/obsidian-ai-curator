@@ -91,23 +91,107 @@ export class TestHarness {
    * Load all MCP tools
    */
   async loadTools() {
-    // Import tool modules (only existing modules after cleanup)
+    // Initialize FrontmatterManager first (used by other modules)
+    const { FrontmatterManager } = await import('../src/tools/frontmatter-manager.js');
+    const frontmatterManager = new FrontmatterManager();
+    
+    // Initialize DateManager
+    const { DateManager } = await import('../src/tools/date-manager.js');
+    
+    // Initialize config for the tools
+    const config = {
+      vaultPath: this.testVaultPath,
+      dateFormat: 'yyyy-MM-dd',
+      ignorePatterns: ['.obsidian', '.git', '.trash'],
+      testMode: true
+    };
+    
+    // Initialize classes with dependencies
+    const { 
+      TagManagement, 
+      initTagManagement,
+      get_tags,
+      suggest_tags,
+      update_tags,
+      analyze_tags,
+      find_by_tags,
+      cleanup_tags,
+      rename_tag,
+      migrate_inline_tags
+    } = await import('../src/tools/tag-management.js');
+    initTagManagement(config, frontmatterManager);
+    
+    const { 
+      VaultOperations,
+      initVaultOperations,
+      vault_scan,
+      read_notes,
+      write_note,
+      update_frontmatter,
+      find_by_metadata,
+      archive_notes
+    } = await import('../src/tools/vault-operations.js');
+    initVaultOperations(config, frontmatterManager);
+    
+    const {
+      DailyNotes,
+      initDailyNotes,
+      get_daily_note,
+      append_to_daily_note,
+      add_daily_task,
+      get_weekly_summary,
+      get_daily_tasks
+    } = await import('../src/tools/daily-notes.js');
+    initDailyNotes(config, frontmatterManager, DateManager);
+    
+    const {
+      FileOperations,
+      initFileOperations,
+      rename_file,
+      move_file
+    } = await import('../src/tools/file-operations.js');
+    initFileOperations(config, frontmatterManager);
+    
+    // Import other tool modules that haven't been refactored yet
     const toolModules = [
-      'vault-operations',
       'search-tools',
-      'tag-management',
-      'daily-notes',
       'git-integration',
       'project-management',
-      'note-operations',
-      'file-operations'
+      'note-operations'
     ];
     
+    // Map the initialized functions
+    this.tools.set('get_tags', get_tags);
+    this.tools.set('suggest_tags', suggest_tags);
+    this.tools.set('update_tags', update_tags);
+    this.tools.set('analyze_tags', analyze_tags);
+    this.tools.set('find_by_tags', find_by_tags);
+    this.tools.set('cleanup_tags', cleanup_tags);
+    this.tools.set('rename_tag', rename_tag);
+    this.tools.set('migrate_inline_tags', migrate_inline_tags);
+    
+    this.tools.set('vault_scan', vault_scan);
+    this.tools.set('read_notes', read_notes);
+    this.tools.set('write_note', write_note);
+    this.tools.set('update_frontmatter', update_frontmatter);
+    this.tools.set('find_by_metadata', find_by_metadata);
+    this.tools.set('archive_notes', archive_notes);
+    
+    this.tools.set('get_daily_note', get_daily_note);
+    this.tools.set('append_to_daily_note', append_to_daily_note);
+    this.tools.set('add_daily_task', add_daily_task);
+    this.tools.set('get_weekly_summary', get_weekly_summary);
+    this.tools.set('get_daily_tasks', get_daily_tasks);
+    
+    this.tools.set('rename_file', rename_file);
+    this.tools.set('move_file', move_file);
+    
+    // Load remaining modules
     for (const moduleName of toolModules) {
       try {
         const module = await import(`../src/tools/${moduleName}.js`);
         Object.entries(module).forEach(([name, tool]) => {
-          if (typeof tool === 'function') {
+          if (typeof tool === 'function' && !this.tools.has(name)) {
             this.tools.set(name, tool);
           }
         });

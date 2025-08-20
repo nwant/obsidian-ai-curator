@@ -14,6 +14,7 @@ coverage/
 config/config.json
 config/test-config.json
 config/project-playbooks.json
+config/tag-taxonomy.json
 .mcp.json
 
 # Archive folders (may contain personal notes)

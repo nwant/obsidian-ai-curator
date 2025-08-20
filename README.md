@@ -84,7 +84,7 @@ See [Quick Start Guide](docs/QUICK_START.md) for detailed instructions and optio
 - **Search & Query**: Natural language search, metadata queries, Dataview integration
 - **Smart Writing**: Auto-formats links, validates tags, manages frontmatter
 - **File Management**: Rename/move files with automatic link updates
-- **Tag Intelligence**: Analyze usage, suggest tags, rename globally
+- **Tag Management**: Analyze usage, validate tags, rename globally
 - **Project Playbooks**: Customizable structures for different project types
 - **Git Integration**: Checkpoint and rollback capabilities
 - **Daily Notes**: Quick capture and task management

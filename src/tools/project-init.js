@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 import { fileURLToPath } from 'url';
+import { getTagTaxonomy } from './tag-taxonomy.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -343,13 +344,19 @@ Add implementation notes and code references here.
           // Ensure directory exists
           await fs.mkdir(path.dirname(fullPath), { recursive: true });
           
+          // Get tags from taxonomy configuration (if any are configured)
+          const taxonomy = getTagTaxonomy();
+          const docTags = taxonomy.getTagsForNewProject();
+          
+          // Tags are optional - empty array is fine
+          
           // Write file with frontmatter
           const fileContent = matter.stringify(content, {
             type: 'project-document',
             project: projectName,
             created: currentDate,
             modified: currentDate,
-            tags: [`project/${projectName.toLowerCase().replace(/\s+/g, '-')}`]
+            tags: docTags
           });
           
           await fs.writeFile(fullPath, fileContent);
@@ -553,6 +560,12 @@ ${vars.targetDate}
    * Generate project index content
    */
   generateProjectIndex(vars) {
+    // Get tags from taxonomy configuration (if any are configured)
+    const taxonomy = getTagTaxonomy();
+    const indexTags = taxonomy.getTagsForNewProject();
+    
+    // Tags are optional - empty array is fine
+    
     return matter.stringify(`# ${vars.projectName}
 
 ${vars.description}
@@ -598,7 +611,7 @@ ${vars.hasRepositories ? '4. Configure repository access' : ''}
       created: vars.currentDate,
       modified: vars.currentDate,
       tags: ['project/active', `project/${vars.phase}`]
-    });
+    }, true); // Pass true to validate tags
   }
 
   /**

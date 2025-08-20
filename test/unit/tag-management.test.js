@@ -110,68 +110,6 @@ describe('Tag Management Tools', () => {
     });
   });
   
-  describe('suggest_tags tool', () => {
-    it('should suggest tags based on content', async () => {
-      const content = `# JavaScript Tutorial
-
-This tutorial covers JavaScript programming, including ES6 features,
-async/await, and modern web development practices.`;
-      
-      const result = await testHarness.executeTool('suggest_tags', {
-        content: content
-      });
-      
-      expect(Array.isArray(result.suggestions)).toBe(true);
-      expect(result.suggestions.length).toBeGreaterThan(0);
-      // Might suggest: programming, javascript, tutorial, web-development
-    });
-    
-    it('should not suggest existing tags', async () => {
-      const content = 'Content about projects';
-      
-      const result = await testHarness.executeTool('suggest_tags', {
-        content: content,
-        existingTags: ['project']
-      });
-      
-      expect(result.suggestions.includes('project')).toBe(false);
-    });
-    
-    it('should consider vault tag taxonomy', async () => {
-      // Create taxonomy document and some notes using those tags
-      await testHarness.createNote('Meta/Tags.md', `# Tag Taxonomy
-
-- project
-  - project/active
-  - project/completed
-- status
-  - status/draft
-  - status/review`);
-      
-      // Create a note with the project/active tag so it exists in the vault
-      await testHarness.createNote('Projects/CurrentProject.md', 
-        'This is an active project', 
-        { tags: ['project/active'] }
-      );
-      
-      const content = 'Working on an active project';
-      const result = await testHarness.executeTool('suggest_tags', {
-        content: content
-      });
-      
-      // Should prefer tags from taxonomy
-      expect(result.suggestions.some(suggestion => suggestion.tag.startsWith('project/'))).toBe(true);
-    });
-    
-    it('should handle empty content', async () => {
-      const result = await testHarness.executeTool('suggest_tags', {
-        content: ''
-      });
-      
-      expect(Array.isArray(result.suggestions)).toBe(true);
-      expect(result.suggestions.length).toBe(0);
-    });
-  });
   
   describe('update_tags tool', () => {
     it('should add tags to a note', async () => {
@@ -328,19 +266,6 @@ async/await, and modern web development practices.`;
   });
   
   describe('Tag hierarchy operations', () => {
-    it('should respect tag hierarchy when suggesting', async () => {
-      const content = 'Working on a child component of the parent system';
-      
-      const result = await testHarness.executeTool('suggest_tags', {
-        content: content,
-        respectHierarchy: true
-      });
-      
-      // If suggesting parent/child, should also suggest parent
-      if (result.suggestions.includes('parent/child')) {
-        expect(result.suggestions.includes('parent')).toBe(true);
-      }
-    });
     
     it('should analyze tag hierarchy depth', async () => {
       const result = await testHarness.executeTool('analyze_tags');

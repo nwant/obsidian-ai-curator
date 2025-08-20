@@ -153,16 +153,6 @@ Comprehensive tag analysis with recommendations.
 - Similar tags that might be consolidated
 - Improvement recommendations
 
-### suggest_tags
-Get AI-powered tag suggestions based on content.
-
-**Examples:**
-- "Suggest tags for this note about machine learning and Python"
-- "What tags should I add to my meeting notes from today?"
-- "Analyze this content and recommend appropriate tags"
-
-**Note:** Claude will analyze the content and suggest relevant tags based on your vault's existing tag taxonomy.
-
 ### update_tags
 Efficiently update tags without rewriting files.
 

@@ -1,6 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
+import { getTagTaxonomy } from './tag-taxonomy.js';
+import { DateManager } from './date-manager.js';
 
 export class FrontmatterManager {
   constructor(config, obsidianAPI) {
@@ -909,34 +911,25 @@ export class FrontmatterManager {
   async updateFrontmatter(notePath, updates, options = {}) {
     const { merge = true, preserveBody = true } = options;
     
+    const fullPath = path.join(this.config.vaultPath, notePath);
+    
+    // Read existing content
+    const content = await fs.readFile(fullPath, 'utf-8');
+    
+    let parsed;
     try {
-      const fullPath = path.join(this.config.vaultPath, notePath);
-      
-      // Read existing content
-      let content;
-      try {
-        content = await fs.readFile(fullPath, 'utf-8');
-      } catch (error) {
-        return {
-          success: false,
-          error: `File not found: ${notePath}`
-        };
-      }
-      
-      let parsed;
-      try {
-        parsed = matter(content);
-      } catch (error) {
-        // Handle invalid YAML - try to preserve content and continue
-        parsed = {
-          data: {},
-          content: content.replace(/^---[\s\S]*?---\n?/, '')
-        };
-      }
-      
-      // Update frontmatter
-      let newFrontmatter;
-      if (merge) {
+      parsed = matter(content);
+    } catch (error) {
+      // Handle invalid YAML - try to preserve content and continue
+      parsed = {
+        data: {},
+        content: content.replace(/^---[\s\S]*?---\n?/, '')
+      };
+    }
+    
+    // Update frontmatter
+    let newFrontmatter;
+    if (merge) {
         // Merge with existing frontmatter
         newFrontmatter = { ...parsed.data, ...updates };
         
@@ -963,38 +956,48 @@ export class FrontmatterManager {
         newFrontmatter = updates;
       }
       
-      // Reconstruct the file
-      const newContent = matter.stringify(
+      // Clean and validate tags if present in the updates
+      if (newFrontmatter.tags) {
+        const taxonomy = getTagTaxonomy();
+        
+        // Handle both array and string tags
+        const tagsArray = Array.isArray(newFrontmatter.tags) 
+          ? newFrontmatter.tags 
+          : [newFrontmatter.tags];
+        
+        // Clean and validate - will throw if invalid
+        newFrontmatter.tags = taxonomy.cleanAndValidateTags(tagsArray);
+        
+        // Remove tags field if empty after cleaning
+        if (newFrontmatter.tags.length === 0) {
+          delete newFrontmatter.tags;
+        }
+      }
+      
+      // Reconstruct the file using our validated method
+      const newContent = this.buildContentWithFrontmatter(
         preserveBody ? parsed.content : '', 
         newFrontmatter
       );
       
-      // Write back
-      await fs.writeFile(fullPath, newContent, 'utf-8');
-      
-      // Notify Obsidian API if available (for cache invalidation)
-      if (this.obsidianAPI && this.obsidianAPI.isAvailable()) {
-        try {
-          // This would trigger Obsidian to refresh its metadata cache
-          // The endpoint might not exist yet, so we catch any errors
-          await this.obsidianAPI.request('/api/refresh', { path: notePath });
-        } catch (error) {
-          // Silently ignore if refresh endpoint doesn't exist
-        }
+    // Write back
+    await fs.writeFile(fullPath, newContent, 'utf-8');
+    
+    // Notify Obsidian API if available (for cache invalidation)
+    if (this.obsidianAPI && this.obsidianAPI.isAvailable()) {
+      try {
+        // This would trigger Obsidian to refresh its metadata cache
+        // The endpoint might not exist yet, so we catch any errors
+        await this.obsidianAPI.request('/api/refresh', { path: notePath });
+      } catch (error) {
+        // Silently ignore if refresh endpoint doesn't exist
       }
-      
-      return {
-        success: true,
-        frontmatter: newFrontmatter,
-        path: notePath
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-        path: notePath
-      };
     }
+    
+    return {
+      frontmatter: newFrontmatter,
+      path: notePath
+    };
   }
 
   /**
@@ -1106,5 +1109,101 @@ export class FrontmatterManager {
       fields: results,
       frontmatter: current.frontmatter
     };
+  }
+
+  /**
+   * Get default frontmatter for daily notes
+   * @param {string} dateStr - The date string for the daily note
+   * @returns {Object} Frontmatter object with appropriate defaults
+   */
+  getDailyNoteFrontmatter(dateStr) {
+    const frontmatter = {
+      created: DateManager.getCurrentDate(),
+      modified: DateManager.getCurrentDate(),
+      date: dateStr
+    };
+    
+    // Add any daily note specific defaults from config
+    const dailyDefaults = this.config.frontmatterDefaults?.daily || {};
+    
+    return { ...frontmatter, ...dailyDefaults };
+  }
+
+  /**
+   * Get default frontmatter for a new note
+   * @param {string} noteType - Type of note (optional)
+   * @returns {Object} Frontmatter object with appropriate defaults
+   */
+  getDefaultFrontmatter(noteType = 'note') {
+    const frontmatter = {
+      created: DateManager.getCurrentDate(),
+      modified: DateManager.getCurrentDate()
+    };
+    
+    // Add type-specific defaults from config
+    const typeDefaults = this.config.frontmatterDefaults?.[noteType] || {};
+    
+    return { ...frontmatter, ...typeDefaults };
+  }
+
+  /**
+   * Build content with frontmatter - THE single source of truth for this operation
+   * Everyone should use this instead of matter.stringify
+   * @param {string} content - The markdown content
+   * @param {Object} frontmatter - The frontmatter object
+   * @returns {string} Combined content with validated frontmatter
+   */
+  buildContentWithFrontmatter(content, frontmatter) {
+    let processedFrontmatter = { ...frontmatter };
+    
+    // Clean and validate tags if present
+    if (processedFrontmatter.tags) {
+      const taxonomy = getTagTaxonomy();
+      
+      // Handle both array and string tags
+      const tagsArray = Array.isArray(processedFrontmatter.tags) 
+        ? processedFrontmatter.tags 
+        : [processedFrontmatter.tags];
+      
+      // Clean and validate - will throw if invalid
+      processedFrontmatter.tags = taxonomy.cleanAndValidateTags(tagsArray);
+      
+      // Remove tags field if empty after cleaning
+      if (processedFrontmatter.tags.length === 0) {
+        delete processedFrontmatter.tags;
+      }
+    }
+    
+    // Format date fields consistently using DateManager
+    for (const field of this.dateFields) {
+      if (processedFrontmatter[field]) {
+        try {
+          processedFrontmatter[field] = DateManager.formatDate(processedFrontmatter[field]);
+        } catch (error) {
+          // Log warning but don't fail the entire operation
+          console.warn(`Warning: Could not format date field '${field}': ${error.message}`);
+          // Keep the original value
+        }
+      }
+    }
+    
+    // Try to use Obsidian API if available for better formatting
+    if (this.obsidianAPI && this.obsidianAPI.isAvailable()) {
+      try {
+        // This would use Obsidian's native formatting if available
+        const result = this.obsidianAPI.request('/api/format/frontmatter', {
+          content,
+          frontmatter: processedFrontmatter
+        });
+        if (result && result.success) {
+          return result.data;
+        }
+      } catch {
+        // Fall back to matter.stringify
+      }
+    }
+    
+    // Use matter.stringify as fallback
+    return matter.stringify(content, processedFrontmatter);
   }
 }

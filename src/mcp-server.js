@@ -16,7 +16,11 @@ import { VaultHandler } from './handlers/vault-handler.js';
 import { NoteHandler } from './handlers/note-handler.js';
 import { SearchHandler } from './handlers/search-handler.js';
 import { GitHandler } from './handlers/git-handler.js';
-import { TagHandler } from './handlers/tag-handler.js';
+import { FrontmatterManager } from './tools/frontmatter-manager.js';
+
+// Import shared services
+import { getTagTaxonomy } from './tools/tag-taxonomy.js';
+import { DateManager } from './tools/date-manager.js';
 
 // Import existing components
 import { VaultCache } from './cache/vault-cache.js';
@@ -24,10 +28,33 @@ import { ObsidianAPIClient } from './obsidian-api-client.js';
 import { EnhancedMetricsCollector } from './metrics/enhanced-collector.js';
 
 // Import tool modules for remaining functionality
-import { get_daily_note, append_to_daily_note, add_daily_task } from './tools/daily-notes.js';
-import { rename_file, move_file } from './tools/file-operations.js';
+import { 
+  initDailyNotes, 
+  get_daily_note, 
+  append_to_daily_note, 
+  add_daily_task 
+} from './tools/daily-notes.js';
+import { 
+  initFileOperations,
+  rename_file, 
+  move_file 
+} from './tools/file-operations.js';
+import { 
+  initVaultOperations,
+  get_working_context, 
+  get_research_context 
+} from './tools/vault-operations.js';
+import { 
+  initTagManagement,
+  get_tags as get_tags_fn,
+  analyze_tags as analyze_tags_fn,
+  suggest_tags as suggest_tags_fn,
+  update_tags as update_tags_fn,
+  rename_tag as rename_tag_fn,
+  validate_tags as validate_tags_fn,
+  get_tag_taxonomy as get_tag_taxonomy_fn
+} from './tools/tag-management.js';
 import { init_project, list_project_templates, list_playbooks } from './tools/project-management.js';
-import { get_working_context, get_research_context } from './tools/vault-operations.js';
 import { run_benchmark, view_search_metrics } from './tools/benchmark.js';
 import { ProjectInitializer } from './tools/project-init.js';
 import { loadConfig as loadConfigUtil } from './utils/config-loader.js';
@@ -76,6 +103,9 @@ export class McpServer {
         startTime: new Date().toISOString()
       }
     });
+    
+    // Initialize tag taxonomy (singleton, doesn't require async)
+    this.taxonomy = getTagTaxonomy();
     
     // Only create server if not in test mode
     if (!this.config.testMode) {
@@ -127,7 +157,10 @@ export class McpServer {
             "move_file": true,
             "rename_tag": true,
             "init_project": true,
-            "list_project_templates": true
+            "list_project_templates": true,
+            "get_tag_taxonomy": true,
+            "validate_tags": true,
+            "list_playbooks": true
           }
         }
       }
@@ -140,19 +173,39 @@ export class McpServer {
       };
     }
     
-    // Initialize cache if enabled
+    // Initialize cache (even if disabled, create a minimal instance for handlers)
     if (this.config.cacheEnabled !== false) {
       this.cache = new VaultCache(this.config);
+    } else {
+      // Create a minimal cache stub for handlers that expect it
+      this.cache = {
+        getVaultStructure: async () => ({ files: [], folders: [] }),
+        getCachedNote: async () => null,
+        setCachedNote: async () => {},
+        invalidateFile: async () => {},
+        clear: async () => {}
+      };
     }
     
     this.apiClient = new ObsidianAPIClient(this.config);
     
-    // Initialize handlers
+    // Initialize shared services (dependency injection)
+    // Initialize DateManager once with config
+    DateManager.init(this.config);
+    
+    this.frontmatterManager = new FrontmatterManager(this.config, this.apiClient);
+    
+    // Initialize refactored tool modules with dependencies
+    initTagManagement(this.config, this.frontmatterManager, this.apiClient);
+    initVaultOperations(this.config, this.frontmatterManager);
+    initDailyNotes(this.config, this.frontmatterManager, DateManager);
+    initFileOperations(this.config, this.frontmatterManager);
+    
+    // Initialize handlers with dependencies
     this.vaultHandler = new VaultHandler(this.config, this.cache, this.apiClient);
-    this.noteHandler = new NoteHandler(this.config, this.cache, this.apiClient);
+    this.noteHandler = new NoteHandler(this.config, this.cache, this.apiClient, this.frontmatterManager);
     this.searchHandler = new SearchHandler(this.config, this.cache, this.apiClient);
     this.gitHandler = new GitHandler(this.config);
-    this.tagHandler = new TagHandler(this.config, this.cache, this.apiClient);
     
     if (!this.config.testMode) {
       this.setupErrorHandlers();
@@ -414,6 +467,35 @@ export class McpServer {
               }
             },
             required: ["path", "tags"]
+          }
+        },
+        {
+          name: "get_tag_taxonomy",
+          description: "Get the complete tag taxonomy configuration showing allowed tags and restrictions",
+          inputSchema: {
+            type: "object",
+            properties: {
+              format: {
+                type: "string",
+                enum: ["full", "summary", "tree"],
+                description: "Output format: full (all details), summary (key restrictions), tree (hierarchical view). Default: summary"
+              }
+            }
+          }
+        },
+        {
+          name: "validate_tags",
+          description: "Validate tags against the taxonomy configuration",
+          inputSchema: {
+            type: "object",
+            properties: {
+              tags: {
+                type: "array",
+                items: { type: "string" },
+                description: "Tags to validate (without # prefix)"
+              }
+            },
+            required: ["tags"]
           }
         },
         {
@@ -775,7 +857,6 @@ export class McpServer {
     this.noteHandler = new NoteHandler(this.config, this.cache, this.apiClient);
     this.searchHandler = new SearchHandler(this.config, this.cache, this.apiClient);
     this.gitHandler = new GitHandler(this.config);
-    this.tagHandler = new TagHandler(this.config, this.cache, this.apiClient);
     
     // Initialize metrics collector
     this.metricsCollector = new EnhancedMetricsCollector(this.config, this);
@@ -839,19 +920,25 @@ export class McpServer {
           
         // Tag operations
         case 'get_tags':
-          result = await this.tagHandler.getTags(args);
+          result = await get_tags_fn(args);
           break;
         case 'analyze_tags':
-          result = await this.tagHandler.analyzeTags();
+          result = await analyze_tags_fn(args);
           break;
         case 'suggest_tags':
-          result = await this.tagHandler.suggestTags(args);
+          result = await suggest_tags_fn(args);
           break;
         case 'update_tags':
-          result = await this.tagHandler.updateNoteTags(args);
+          result = await update_tags_fn(args);
+          break;
+        case 'validate_tags':
+          result = await validate_tags_fn(args);
+          break;
+        case 'get_tag_taxonomy':
+          result = await get_tag_taxonomy_fn();
           break;
         case 'rename_tag':
-          result = await this.tagHandler.renameGlobalTag(args);
+          result = await rename_tag_fn(args);
           break;
           
         // Daily notes (using existing tools)
@@ -1052,19 +1139,6 @@ export class McpServer {
           result = await this.gitHandler.getChanges(args);
           break;
           
-        // Tag operations
-        case 'get_tags':
-          result = await this.tagHandler.getTags(args);
-          break;
-          
-        case 'analyze_tags':
-          result = await this.tagHandler.analyzeTags(args);
-          break;
-          
-        case 'update_tags':
-          result = await this.tagHandler.updateTags(args);
-          break;
-          
         // Daily note operations
         case 'get_daily_note':
           result = await get_daily_note(args);
@@ -1142,7 +1216,7 @@ export class McpServer {
       
       // Execute with error handling
       try {
-        result = await executeWithErrorHandling();
+        await executeWithErrorHandling();
       } catch (error) {
         // Report error if it's significant
         const errorReport = await this.errorReporter.captureAndReport(error, {

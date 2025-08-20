@@ -1,19 +1,74 @@
-import matter from 'gray-matter';
 import { format, parse, isValid, startOfDay } from 'date-fns';
 
 export class DateManager {
+  static config = {};
+  
   /**
-   * Get current date in specified format
+   * Initialize with config
    */
-  static getCurrentDate(dateFormat = 'yyyy-MM-dd') {
-    return format(new Date(), dateFormat);
+  static init(config) {
+    this.config = config || {};
   }
 
   /**
-   * Get current datetime in ISO format
+   * Format a date according to configuration
+   * This is THE method for formatting dates consistently
+   * @throws {Error} If the date cannot be parsed or is invalid
    */
-  static getCurrentDateTime() {
-    return new Date().toISOString();
+  static formatDate(date = new Date()) {
+    const parsedDate = date instanceof Date ? date : this.parseDate(date);
+    
+    if (!parsedDate || !isValid(parsedDate)) {
+      throw new Error(`Invalid date: ${date}`);
+    }
+    
+    const dateFormat = this.config.dateFormat || 'yyyy-MM-dd';
+    const includeTime = this.config.includeTimeInDates || false;
+    
+    // If time should be included, use ISO format
+    if (includeTime) {
+      return parsedDate.toISOString();
+    }
+    
+    // Otherwise use configured date format
+    return format(parsedDate, dateFormat);
+  }
+
+  /**
+   * Get current date in configured format
+   * @param {number} daysOffset - Optional offset in days from today (positive or negative)
+   * @returns {string} Formatted date string
+   */
+  static getCurrentDate(daysOffset = 0) {
+    const date = new Date();
+    if (daysOffset !== 0) {
+      date.setDate(date.getDate() + daysOffset);
+    }
+    return this.formatDate(date);
+  }
+
+  /**
+   * Get today's date formatted
+   * @returns {string} Today's date in configured format
+   */
+  static getToday() {
+    return this.getCurrentDate(0);
+  }
+
+  /**
+   * Get yesterday's date formatted
+   * @returns {string} Yesterday's date in configured format
+   */
+  static getYesterday() {
+    return this.getCurrentDate(-1);
+  }
+
+  /**
+   * Get tomorrow's date formatted
+   * @returns {string} Tomorrow's date in configured format
+   */
+  static getTomorrow() {
+    return this.getCurrentDate(1);
   }
 
   /**
@@ -52,53 +107,6 @@ export class DateManager {
     return null;
   }
 
-  /**
-   * Ensure content has proper created/modified timestamps
-   */
-  static ensureTimestamps(content, options = {}) {
-    const { 
-      isNewFile = true, 
-      dateFormat = 'yyyy-MM-dd',
-      includeTime = false 
-    } = options;
-    
-    try {
-      const parsed = matter(content);
-      const now = new Date();
-      
-      // Set created date for new files (always override to ensure correct date)
-      if (isNewFile) {
-        parsed.data.created = includeTime 
-          ? now.toISOString() 
-          : format(now, dateFormat);
-      }
-      
-      // Always update modified date
-      parsed.data.modified = includeTime 
-        ? now.toISOString() 
-        : format(now, dateFormat);
-      
-      // Validate and fix ALL date fields to ensure consistent format
-      const dateFields = ['created', 'date', 'published', 'updated'];
-      
-      for (const field of dateFields) {
-        if (parsed.data[field]) {
-          const parsedDate = this.parseDate(parsed.data[field]);
-          if (parsedDate) {
-            // Always reformat to the configured format
-            parsed.data[field] = includeTime 
-              ? parsedDate.toISOString() 
-              : format(parsedDate, dateFormat);
-          }
-        }
-      }
-      
-      return matter.stringify(parsed.content, parsed.data);
-    } catch (error) {
-      console.error('Failed to ensure timestamps:', error);
-      return content;
-    }
-  }
 
   /**
    * Get daily note filename for a given date

@@ -8,17 +8,16 @@ import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { format } from 'date-fns';
 import { LinkFormatter } from '../tools/link-formatter.js';
-import { TagFormatter } from '../tools/tag-formatter.js';
 import { FrontmatterManager } from '../tools/frontmatter-manager.js';
+import { getTagTaxonomy } from '../tools/tag-taxonomy.js';
 
 export class NoteHandler {
-  constructor(config, cache, apiClient) {
+  constructor(config, cache, apiClient, frontmatterManager) {
     this.config = config;
     this.cache = cache;
     this.apiClient = apiClient;
+    this.frontmatterManager = frontmatterManager || new FrontmatterManager(config, apiClient);
     this.linkFormatter = new LinkFormatter();
-    this.tagFormatter = new TagFormatter();
-    this.frontmatterManager = new FrontmatterManager(config, cache, apiClient);
   }
 
   /**
@@ -152,14 +151,54 @@ export class NoteHandler {
         finalContent = this.formatLinks(finalContent);
       }
       
+      // Validate inline tags - try Obsidian API first for accurate tag detection
+      const taxonomy = getTagTaxonomy();
+      let inlineTags = [];
+      
+      // Try to use Obsidian API to get proper tag detection
+      if (this.apiClient.isConnected()) {
+        try {
+          // Use Obsidian API to parse tags from content (it knows context rules)
+          const parseResult = await this.apiClient.request('tags/parse', {
+            content: finalContent
+          });
+          
+          if (parseResult.success && parseResult.data) {
+            inlineTags = parseResult.data.tags || [];
+          }
+        } catch (apiError) {
+          // API not available or doesn't have this endpoint, fall back to regex
+          console.debug('Obsidian API tag parsing not available, using regex fallback');
+          const inlineTagRegex = /#[\w-]+(\/[\w-]+)*/g;
+          const matches = finalContent.match(inlineTagRegex) || [];
+          inlineTags = matches.map(tag => tag.substring(1)); // Remove # prefix
+        }
+      } else {
+        // No API connection, use simple regex (may have false positives)
+        const inlineTagRegex = /#[\w-]+(\/[\w-]+)*/g;
+        const matches = finalContent.match(inlineTagRegex) || [];
+        inlineTags = matches.map(tag => tag.substring(1)); // Remove # prefix
+      }
+      
+      // Validate detected tags
+      if (inlineTags.length > 0) {
+        try {
+          taxonomy.validateTags(inlineTags);
+        } catch (error) {
+          // Re-throw with more context for inline tags
+          throw new Error(`Invalid inline tags: ${error.message}`);
+        }
+      }
+      
       // Handle frontmatter
       if (finalContent.includes('---\n') || finalContent.startsWith('---\n')) {
         // Parse content to handle frontmatter
         const parsed = matter(finalContent);
         
-        // Format tags if present (remove # from frontmatter, clean up)
+        // Format and validate tags if present
         if (parsed.data.tags) {
           if (Array.isArray(parsed.data.tags)) {
+            // Clean tags first
             parsed.data.tags = parsed.data.tags.map(tag => {
               if (typeof tag === 'string') {
                 // Remove # prefix, replace spaces with hyphens, convert to lowercase
@@ -170,6 +209,14 @@ export class NoteHandler {
               }
               return tag;
             });
+            
+            // Validate tags against taxonomy
+            try {
+              taxonomy.validateTags(parsed.data.tags);
+            } catch (error) {
+              // Re-throw with more context for frontmatter tags
+              throw new Error(`Invalid frontmatter tags: ${error.message}`);
+            }
           }
         }
         
@@ -195,16 +242,16 @@ export class NoteHandler {
           parsed.data.modified = new Date().toISOString().split('T')[0];
         }
         
-        // Reconstruct content with frontmatter
-        finalContent = matter.stringify(parsed.content, parsed.data);
+        // Reconstruct content with frontmatter using FrontmatterManager
+        finalContent = this.frontmatterManager.buildContentWithFrontmatter(parsed.content, parsed.data);
       } else if (args.preserveFrontmatter && Object.keys(existingFrontmatter).length > 0) {
         // Content has no frontmatter but we want to preserve existing
         existingFrontmatter.modified = new Date().toISOString().split('T')[0];
-        finalContent = matter.stringify(content, existingFrontmatter);
+        finalContent = this.frontmatterManager.buildContentWithFrontmatter(content, existingFrontmatter);
       } else if (args.addModifiedDate && !finalContent.includes('---\n')) {
         // Content has no frontmatter but we want to add modified date
         const frontmatter = { modified: new Date().toISOString().split('T')[0] };
-        finalContent = matter.stringify(content, frontmatter);
+        finalContent = this.frontmatterManager.buildContentWithFrontmatter(content, frontmatter);
       }
       
       // Write file
@@ -309,8 +356,8 @@ export class NoteHandler {
         ? { ...parsed.data, ...updates, modified: new Date().toISOString().split('T')[0] }
         : updates;
       
-      // Temporarily disable auto-modified date for non-merge updates
-      const tempContent = matter.stringify(parsed.content, newFrontmatter);
+      // Use FrontmatterManager to build content with validation
+      const tempContent = this.frontmatterManager.buildContentWithFrontmatter(parsed.content, newFrontmatter);
       
       // Write without processing frontmatter again
       const fullPath = path.join(this.config.vaultPath, notePath);

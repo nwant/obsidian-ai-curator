@@ -15,17 +15,6 @@
   "dailyNotesPath": "Daily",
   "dailyNoteDateFormat": "yyyy-MM-dd",
   "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [daily-note]\n---\n\n# {{title}}\n\n## Tasks\n- [ ] \n\n## Notes\n\n\n## Reflections\n\n",
-  "tagIntelligence": {
-    "taxonomyDocument": "Meta/Tags.md",
-    "autoTagging": true,
-    "enforceHierarchy": false,
-    "preventDuplicates": true,
-    "suggestFromTaxonomy": true,
-    "thresholds": {
-      "similarity": 0.7,
-      "suggestionRelevance": 0.3
-    }
-  },
   "researchContext": {
     "description": "Configure your AI research partner's behavior and context",
     "contextDocuments": {

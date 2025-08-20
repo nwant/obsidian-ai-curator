@@ -50,10 +50,10 @@ Common scenarios and example commands for Obsidian AI Curator.
 - "Find and consolidate similar or duplicate tags"
 
 ### Smart Tagging
-- "Suggest tags for this note about Python async/await patterns and performance"
-- "What tags should I add to my Python Async note? It already has 'programming'"
 - "Add tags python, async, and performance to my Python Async note"
-- "Remove the draft tag and add appropriate topic tags to this note"
+- "Remove the draft tag from all completed project notes"
+- "Rename the 'javascript' tag to 'js' across all notes"
+- "Validate all tags against the taxonomy configuration"
 
 ## Advanced Queries
 
