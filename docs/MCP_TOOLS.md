@@ -154,17 +154,27 @@ Comprehensive tag analysis with recommendations.
 - Improvement recommendations
 
 ### update_tags
-Efficiently update tags without rewriting files.
+Efficiently update tags with validation against taxonomy.
 
 **Examples:**
-- "Add tags 'active' and 'important' to my Meeting.md note"
-- "Remove the 'draft' tag from all completed projects"
-- "Replace all tags on this note with just 'archive' and 'reference'"
+- "Add tags 'type/meeting' and 'status/active' to my Meeting.md note"
+- "Remove the 'status/draft' tag from all completed projects"
+- "Replace all tags on this note with 'status/archived' and 'type/reference'"
 
-**Options:**
-- Add: Tags to add to existing ones
-- Remove: Tags to remove
-- Replace: Completely replace all tags
+**Modes:**
+- `mode: 'add'` - Only add specified tags
+- `mode: 'remove'` - Only remove specified tags
+- `mode: 'replace'` - Replace all tags with specified ones
+- `mode: 'merge'` (default) - Add and remove as specified
+
+**Parameters:**
+- `path`: File path relative to vault
+- `tags`: Array of tags (for replace mode)
+- `add`: Array of tags to add
+- `remove`: Array of tags to remove
+- `mode`: Operation mode
+
+**Note:** Tags are validated against your taxonomy configuration. Case is preserved for hierarchical tags.
 
 ### rename_tag
 Rename a tag globally across the vault.

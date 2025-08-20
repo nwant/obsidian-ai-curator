@@ -1,7 +1,8 @@
 {
   "tags": {
     "project": {
-      "description": "Project-related tags for tracking initiatives",
+      "description": "Project-related tags for tracking initiatives (must use specific subcategories)",
+      "depth": { "min": 1, "max": 1 },
       "allowCustomChildren": false,
       "children": {
         "active": {
@@ -63,7 +64,8 @@
       }
     },
     "status": {
-      "description": "Document or task status indicators",
+      "description": "Document or task status indicators (must use specific status)",
+      "depth": { "min": 1, "max": 1 },
       "allowCustomChildren": false,
       "children": {
         "draft": {
@@ -111,7 +113,8 @@
       }
     },
     "priority": {
-      "description": "Priority levels for tasks and projects",
+      "description": "Priority levels for tasks and projects (must use specific level)",
+      "depth": { "min": 1, "max": 1 },
       "allowCustomChildren": false,
       "children": {
         "high": {

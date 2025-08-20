@@ -69,32 +69,51 @@ Configure daily note handling:
 - `{{title}}`: Human-readable date
 - `{{datetime}}`: ISO datetime
 
-## Tag Intelligence
+## Tag Taxonomy Configuration
 
-Configure tag behavior:
+Configure tag validation and hierarchy rules:
+
+Create a `config/tag-taxonomy.json` file to define your tag structure:
 
 ```json
 {
-  "tagIntelligence": {
-    "taxonomyDocument": "Meta/Tag Taxonomy.md",
-    "autoTagging": true,
-    "enforceHierarchy": true,
-    "preventDuplicates": true,
-    "thresholds": {
-      "similarity": 0.7,
-      "suggestionRelevance": 0.3
+  "tags": {
+    "type": {
+      "description": "Document types",
+      "depth": { "min": 1, "max": 1 },
+      "allowCustomChildren": false,
+      "children": {
+        "meeting": { "description": "Meeting notes" },
+        "project": { "description": "Project documentation" }
+      }
+    },
+    "status": {
+      "description": "Document status",
+      "depth": { "max": 0 },
+      "allowCustomChildren": false
     }
+  },
+  "settings": {
+    "allowCustomRootTags": true,
+    "defaultMaxDepth": 3,
+    "defaultAllowCustomChildren": true
   }
 }
 ```
 
+### Depth Configuration
+
+The `depth` property controls tag hierarchy validation:
+- `"depth": { "min": 1, "max": 1 }` - Tag requires exactly one child level (e.g., `type/meeting`)
+- `"depth": { "max": 0 }` - Standalone tag with no children allowed
+- `"depth": { "min": 0, "max": 2 }` - Optional children up to 2 levels deep
+- No `depth` property - Uses default settings
+
 ### Settings
 
-- `taxonomyDocument`: Path to your tag taxonomy document
-- `autoTagging`: Automatically apply tags based on content
-- `enforceHierarchy`: Require tags to follow defined hierarchies
-- `preventDuplicates`: Prevent creation of similar tags
-- `thresholds`: Similarity thresholds for tag operations
+- `allowCustomRootTags`: Allow tags not defined in taxonomy at root level
+- `defaultMaxDepth`: Maximum depth for tags without explicit depth settings
+- `defaultAllowCustomChildren`: Whether undefined tags can have children
 
 ## Git Integration
 
@@ -194,16 +213,6 @@ Ensure all writes go through MCP tools:
   "dailyNoteDateFormat": "yyyy-MM-dd",
   "dailyNoteTemplate": "---\ndate: {{date}}\ntags: [daily]\n---\n\n# {{title}}\n\n## Tasks\n- [ ] ",
   
-  "tagIntelligence": {
-    "taxonomyDocument": "Meta/Tags.md",
-    "autoTagging": true,
-    "enforceHierarchy": false,
-    "thresholds": {
-      "similarity": 0.7,
-      "suggestionRelevance": 0.3
-    }
-  },
-  
   "gitCheckpoints": true,
   
   "researchContext": {
@@ -219,6 +228,8 @@ Ensure all writes go through MCP tools:
   }
 }
 ```
+
+**Note:** Tag taxonomy is configured separately in `config/tag-taxonomy.json`. See the Tag Taxonomy Configuration section above for details.
 
 ## Environment Variables
 

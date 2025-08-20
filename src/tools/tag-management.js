@@ -259,6 +259,7 @@ export class TagManagement {
       add = [], 
       remove = [], 
       replace,
+      tags,  // Support both 'tags' and 'replace' parameters
       mode = 'merge'
     } = args;
     
@@ -276,32 +277,65 @@ export class TagManagement {
       currentTags = [currentTags];
     }
     
-    // Normalize tags (remove # prefix, trim, lowercase)
+    // Normalize tags (remove # prefix, trim, but PRESERVE case for hierarchical tags)
     const normalizeTag = (tag) => {
       return tag.replace(/^#/, '')  // Remove # prefix
                 .trim()              // Trim whitespace
-                .replace(/\s+/g, '-')  // Replace spaces with hyphens
-                .toLowerCase();        // Convert to lowercase
+                .replace(/\s+/g, '-');  // Replace spaces with hyphens
+                // Note: NOT lowercasing to preserve tag hierarchy structure
     };
     
-    currentTags = currentTags.map(normalizeTag);
+    currentTags = currentTags.map(normalizeTag).filter(t => t); // Filter out empty tags
     const cleanAdd = add.map(normalizeTag);
     const cleanRemove = remove.map(normalizeTag);
     
-    // Apply changes
+    // Apply changes based on mode
     let newTags;
-    if (replace !== undefined) {
-      newTags = Array.isArray(replace) ? replace.map(normalizeTag) : [];
+    let actuallyAdded = [];
+    let actuallyRemoved = [];
+    
+    if (mode === 'replace' || replace !== undefined || tags !== undefined) {
+      // Replace mode - use 'tags' or 'replace' parameter
+      const replaceTags = tags || replace || [];
+      newTags = Array.isArray(replaceTags) ? replaceTags.map(normalizeTag) : [];
+      actuallyRemoved = currentTags.filter(tag => !newTags.includes(tag));
+      actuallyAdded = newTags.filter(tag => !currentTags.includes(tag));
+    } else if (mode === 'add') {
+      // Add mode - only add tags
+      newTags = [...currentTags];
+      cleanAdd.forEach(tag => {
+        if (!newTags.includes(tag)) {
+          newTags.push(tag);
+          actuallyAdded.push(tag);
+        }
+      });
+    } else if (mode === 'remove') {
+      // Remove mode - only remove tags
+      newTags = currentTags.filter(tag => {
+        if (cleanRemove.includes(tag)) {
+          actuallyRemoved.push(tag);
+          return false;
+        }
+        return true;
+      });
     } else {
+      // Default merge mode - add and remove as specified
       newTags = [...currentTags];
       
       // Remove tags
-      newTags = newTags.filter(tag => !cleanRemove.includes(tag));
+      newTags = newTags.filter(tag => {
+        if (cleanRemove.includes(tag)) {
+          actuallyRemoved.push(tag);
+          return false;
+        }
+        return true;
+      });
       
       // Add tags
       cleanAdd.forEach(tag => {
         if (!newTags.includes(tag)) {
           newTags.push(tag);
+          actuallyAdded.push(tag);
         }
       });
     }
@@ -328,8 +362,8 @@ export class TagManagement {
     return {
       path: filePath,
       tags: newTags,
-      added: cleanAdd,
-      removed: cleanRemove,
+      added: actuallyAdded,
+      removed: actuallyRemoved,
       success: true
     };
   }

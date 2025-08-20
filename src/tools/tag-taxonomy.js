@@ -15,6 +15,7 @@ class TagTaxonomy {
     this.config = config;
     this.taxonomy = null;
     this.configPath = path.join(__dirname, '../../config/tag-taxonomy.json');
+    this.validTagsCache = null; // Cache for processed valid tags
     this.loadTaxonomy();
   }
 
@@ -159,18 +160,35 @@ class TagTaxonomy {
     const parts = tag.split('/');
     let currentLevel = this.taxonomy.tags;
     let currentConfig = this.taxonomy.settings;
-    let depth = 0;
     let pathSoFar = [];
+    let parentConfig = null;
 
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
       pathSoFar.push(part);
-      depth++;
+      const currentDepth = i; // 0-based depth (root tag is at depth 0)
 
       // Check if this part exists in taxonomy
       if (currentLevel && currentLevel[part]) {
-        // Known tag - move to its config
+        // Known tag - check depth constraints
+        parentConfig = currentConfig;
         currentConfig = currentLevel[part];
+        
+        // Get depth constraints using new format
+        const minDepth = currentConfig.depth?.min ?? 0;
+        const maxDepth = currentConfig.depth?.max ?? null;  // null means unbounded
+        
+        // If this is the final part, check if depth is valid
+        if (i === parts.length - 1) {
+          const tagDepth = parts.length - 1; // How deep from the root tag
+          if (tagDepth < minDepth) {
+            throw new Error(`Tag '${tag}' requires at least ${minDepth} level(s) of children`);
+          }
+          if (maxDepth !== null && tagDepth > maxDepth) {
+            throw new Error(`Tag '${tag}' exceeds maximum depth of ${maxDepth}`);
+          }
+        }
+        
         currentLevel = currentLevel[part].children || {};
       } else {
         // Unknown tag - check if allowed
@@ -184,24 +202,24 @@ class TagTaxonomy {
           currentLevel = {};
           currentConfig = {
             allowCustomChildren: this.taxonomy.settings.defaultAllowCustomChildren,
-            maxChildDepth: this.taxonomy.settings.defaultMaxDepth
+            depth: { min: 0, max: this.taxonomy.settings.defaultMaxDepth }
           };
         } else {
           // Check if custom children allowed at this level
-          const allowCustom = currentConfig.allowCustomChildren ?? 
+          const allowCustom = parentConfig?.allowCustomChildren ?? 
                             this.taxonomy.settings.defaultAllowCustomChildren;
           
           if (!allowCustom) {
-            throw new Error(`Custom children not allowed under '${pathSoFar.slice(0, -1).join('/')}`);
+            throw new Error(`Custom children not allowed under '${pathSoFar.slice(0, -1).join('/')}'`);
           }
 
-          // Check depth limit for remaining parts
-          const maxDepth = currentConfig.maxChildDepth ?? 
-                          this.taxonomy.settings.defaultMaxDepth;
-          const remainingDepth = parts.length - i;
+          // Check depth limit
+          const parentMaxDepth = parentConfig?.depth?.max ?? null;
           
-          if (remainingDepth > maxDepth) {
-            throw new Error(`Tag depth exceeds maximum of ${maxDepth} levels under '${pathSoFar.slice(0, -1).join('/')}`);
+          const depthFromParent = parts.length - i;
+          
+          if (parentMaxDepth !== null && depthFromParent > parentMaxDepth) {
+            throw new Error(`Tag depth exceeds maximum of ${parentMaxDepth} levels under '${pathSoFar.slice(0, i).join('/')}'`);
           }
 
           // Rest of path is custom but valid
@@ -277,24 +295,46 @@ class TagTaxonomy {
   }
 
   /**
-   * Get all defined tags with their descriptions
-   * @returns {Array} - Array of tag info objects
+   * Get all valid tags with their descriptions
+   * Only returns tags that can actually be used (respects depth constraints)
+   * @returns {Array} - Array of valid tag info objects
    */
   getAllDefinedTags() {
+    // Return cached result if available
+    if (this.validTagsCache) {
+      return this.validTagsCache;
+    }
+
     const tags = [];
     
-    const traverse = (level, prefix = '') => {
+    const traverse = (level, prefix = '', depth = 0) => {
       for (const [key, value] of Object.entries(level)) {
         const fullTag = prefix ? `${prefix}/${key}` : key;
-        tags.push({
-          tag: fullTag,
-          description: value.description,
-          allowCustomChildren: value.allowCustomChildren,
-          maxChildDepth: value.maxChildDepth
-        });
+        const currentDepth = prefix ? depth + 1 : 0;
         
-        if (value.children) {
-          traverse(value.children, fullTag);
+        // Get depth constraints using new format
+        // depth: {min: 0, max: 1} or missing entirely
+        const minDepth = value.depth?.min ?? 0;  // Default min is 0
+        const maxDepth = value.depth?.max ?? null;  // Default max is unbounded (null)
+        
+        const hasChildren = value.children && Object.keys(value.children).length > 0;
+        
+        // Include the tag if current depth is >= minDepth
+        // This means if minDepth is 0, the tag itself is valid
+        // If minDepth is 1, only children are valid
+        if (currentDepth >= minDepth) {
+          tags.push({
+            tag: fullTag,
+            description: value.description,
+            allowCustomChildren: value.allowCustomChildren,
+            depth: { min: minDepth, max: maxDepth },
+            hasDefinedChildren: hasChildren
+          });
+        }
+        
+        // Traverse children if we haven't exceeded maxDepth (null means no limit)
+        if (value.children && (maxDepth === null || currentDepth < maxDepth)) {
+          traverse(value.children, fullTag, currentDepth);
         }
       }
     };
@@ -303,7 +343,17 @@ class TagTaxonomy {
       traverse(this.taxonomy.tags);
     }
 
+    // Cache the result for future calls
+    this.validTagsCache = tags;
     return tags;
+  }
+
+  /**
+   * Reload taxonomy (useful if config changes)
+   */
+  reload() {
+    this.validTagsCache = null; // Clear cache when reloading
+    this.loadTaxonomy();
   }
 
   /**
