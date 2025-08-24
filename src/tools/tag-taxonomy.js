@@ -161,7 +161,6 @@ class TagTaxonomy {
     let currentLevel = this.taxonomy.tags;
     let currentConfig = this.taxonomy.settings;
     let pathSoFar = [];
-    let parentConfig = null;
 
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
@@ -171,7 +170,6 @@ class TagTaxonomy {
       // Check if this part exists in taxonomy
       if (currentLevel && currentLevel[part]) {
         // Known tag - check depth constraints
-        parentConfig = currentConfig;
         currentConfig = currentLevel[part];
         
         // Get depth constraints using new format
@@ -206,17 +204,20 @@ class TagTaxonomy {
           };
         } else {
           // Check if custom children allowed at this level
-          const allowCustom = parentConfig?.allowCustomChildren ?? 
+          // currentConfig holds the parent's config (set when we found the parent in the taxonomy)
+          const parentPath = pathSoFar.slice(0, -1).join('/');
+          const allowCustom = currentConfig?.allowCustomChildren ?? 
                             this.taxonomy.settings.defaultAllowCustomChildren;
           
           if (!allowCustom) {
-            throw new Error(`Custom children not allowed under '${pathSoFar.slice(0, -1).join('/')}'`);
+            throw new Error(`Custom children not allowed under '${parentPath}'`);
           }
 
-          // Check depth limit
-          const parentMaxDepth = parentConfig?.depth?.max ?? null;
+          // Check depth limit from the parent's perspective
+          const parentMaxDepth = currentConfig?.depth?.max ?? null;
           
-          const depthFromParent = parts.length - i;
+          // Calculate depth from parent (0-based: immediate child is at depth 0)
+          const depthFromParent = parts.length - i - 1;
           
           if (parentMaxDepth !== null && depthFromParent > parentMaxDepth) {
             throw new Error(`Tag depth exceeds maximum of ${parentMaxDepth} levels under '${pathSoFar.slice(0, i).join('/')}'`);
